@@ -1,0 +1,14 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+body,
+html {
+  overflow: hidden;
+}
+#myCanvas {
+  display: block;
+  position: fixed;
+  inset: 0;
+  outline: none;
+}
