@@ -39,19 +39,15 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-
-/**
- * Lights
- */
-// Ambient Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
-
-// Directional Light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(4, 4, -3);
-scene.add(directionalLight);
-directionalLight.castShadow = true;
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const environmentMapTexture = cubeTextureLoader.load([
+  "./static/textures/environmentMaps/4/px.png",
+  "./static/textures/environmentMaps/4/nx.png",
+  "./static/textures/environmentMaps/4/py.png",
+  "./static/textures/environmentMaps/4/ny.png",
+  "./static/textures/environmentMaps/4/pz.png",
+  "./static/textures/environmentMaps/4/nz.png",
+]);
 
 /**
  * Objects
@@ -60,23 +56,48 @@ directionalLight.castShadow = true;
 // Sphere
 const sphere = new THREE.Mesh(
   new THREE.SphereGeometry(0.5, 32, 32),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture,
+  })
 );
-sphere.material.metalness = 0.2;
-sphere.material.roughness = 0.3;
 sphere.castShadow = true;
+sphere.position.y = 0.5;
+scene.add(sphere);
 
 // Plane
-const plane = new THREE.Mesh(
+const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({
+    color: 0x777777,
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture,
+  })
 );
-plane.receiveShadow = true;
+floor.receiveShadow = true;
+floor.rotation.x = -Math.PI * 0.5;
+scene.add(floor);
 
-plane.material.metalness = 0.9;
-plane.rotation.x = -Math.PI * 0.5;
-plane.position.y = -0.65;
-scene.add(sphere, plane);
+/**
+ * Lights
+ */
+// Ambient Light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+scene.add(ambientLight);
+
+// Directional Light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.set(1024, 1024);
+directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.camera.top = 7;
+directionalLight.shadow.camera.right = 7;
+directionalLight.shadow.camera.bottom = -7;
+directionalLight.shadow.camera.left = -7;
+directionalLight.position.set(5, 5, 5);
+scene.add(directionalLight);
 
 /**
  * Sizes
@@ -93,7 +114,7 @@ const aspectRatio = () => {
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.set(3, 3, 3);
+camera.position.set(-3, 3, 3);
 scene.add(camera);
 
 /**
@@ -106,9 +127,12 @@ controls.enableDamping = true;
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({ canvas });
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
 
 /**
  * Tick
@@ -118,6 +142,9 @@ const clock = new THREE.Clock();
 const tick = () => {
   // Update Controls
   controls.update();
+
+  // Elapsed Time
+  const elapsedTime = clock.getElapsedTime();
 
   // Render
   renderer.render(scene, camera);
