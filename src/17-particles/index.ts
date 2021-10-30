@@ -81,7 +81,7 @@ const makeGalaxy = () => {
   if (particles !== undefined) {
     particlesGeometry.dispose();
     particlesMaterial.dispose();
-    particles.remove();
+    scene.remove(particles);
   }
   // Calculate Positions of particles
   for (let i = 0; i < galaxyParameters.noOfParticles; i++) {
