@@ -42,12 +42,12 @@ scene.add(axesHelper);
  * Objects
  */
 
-const particlesMaterial = new THREE.PointsMaterial({
+let particlesMaterial = new THREE.PointsMaterial({
   size: 0.02,
   vertexColors: true,
 });
 
-const particlesGeometry = new THREE.BufferGeometry();
+let particlesGeometry = new THREE.BufferGeometry();
 const noOfParticle = 1000;
 let positions = new Float32Array(noOfParticle * 3);
 let colors = new Float32Array(noOfParticle * 3);
@@ -75,19 +75,22 @@ const galaxyParameters = {
   height: 0.1,
   subDivisionThickness: 0.25,
   bending: 3,
-  insideColor: 0xff0000,
-  outsideColor: 0xffff00,
+  insideColor: 0xff6030,
+  outsideColor: 0x1b3984,
 };
 let particles: THREE.Points;
 const makeGalaxy = () => {
-  positions = new Float32Array(galaxyParameters.noOfParticles * 3);
-  colors = new Float32Array(galaxyParameters.noOfParticles * 3);
   // Remove Previous Particles
   if (particles !== undefined) {
     particlesGeometry.dispose();
     particlesMaterial.dispose();
     scene.remove(particles);
   }
+
+  particlesGeometry = new THREE.BufferGeometry();
+  positions = new Float32Array(galaxyParameters.noOfParticles * 3);
+  colors = new Float32Array(galaxyParameters.noOfParticles * 3);
+
   const insideColor = new THREE.Color(galaxyParameters.insideColor);
   const outsideColor = new THREE.Color(galaxyParameters.outsideColor);
 

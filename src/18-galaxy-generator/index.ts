@@ -115,8 +115,8 @@ gui.addColor(parameters, "outsideColor").onFinishChange(() => {
   generateGalaxy();
 });
 
-let geometry: THREE.BufferGeometry | null = null;
-let material: THREE.PointsMaterial | null = null;
+let geometry: THREE.BufferGeometry;
+let material: THREE.PointsMaterial;
 let points: THREE.Points | null = null;
 
 const generateGalaxy = () => {
