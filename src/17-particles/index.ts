@@ -44,11 +44,13 @@ scene.add(axesHelper);
 
 const particlesMaterial = new THREE.PointsMaterial({
   size: 0.02,
+  vertexColors: true,
 });
 
 const particlesGeometry = new THREE.BufferGeometry();
 const noOfParticle = 1000;
 let positions = new Float32Array(noOfParticle * 3);
+let colors = new Float32Array(noOfParticle * 3);
 
 const makeCircle = (radius: number, thickness: number) => {
   for (let i = 0; i < noOfParticle; i++) {
@@ -73,27 +75,37 @@ const galaxyParameters = {
   height: 0.1,
   subDivisionThickness: 0.25,
   bending: 3,
+  insideColor: 0xff0000,
+  outsideColor: 0xffff00,
 };
 let particles: THREE.Points;
 const makeGalaxy = () => {
   positions = new Float32Array(galaxyParameters.noOfParticles * 3);
+  colors = new Float32Array(galaxyParameters.noOfParticles * 3);
   // Remove Previous Particles
   if (particles !== undefined) {
     particlesGeometry.dispose();
     particlesMaterial.dispose();
     scene.remove(particles);
   }
+  const insideColor = new THREE.Color(galaxyParameters.insideColor);
+  const outsideColor = new THREE.Color(galaxyParameters.outsideColor);
+
   // Calculate Positions of particles
   for (let i = 0; i < galaxyParameters.noOfParticles; i++) {
     let index = i * 3;
+
     // Distance From Center Of Galaxy (radius)
     let distanceFromCenterOfGalaxy = Math.random() * galaxyParameters.radius;
     // Find How Many SubDivision
     let whichSubDivision = i % galaxyParameters.noOfSubDivision;
+    let rnd = Math.random();
     // Angle For Each Subdivision
     let angleOfSubDivision =
       Math.PI * 2 * (whichSubDivision / galaxyParameters.noOfSubDivision) +
-      (Math.random() - 0.5) * galaxyParameters.subDivisionThickness +
+      (Math.random() - 0.5) *
+        galaxyParameters.subDivisionThickness *
+        (rnd < 0.5 ? 0.2 : 1) +
       Math.pow(distanceFromCenterOfGalaxy, galaxyParameters.bending) * 0.01;
     // x Position
     positions[index + 0] =
@@ -103,12 +115,23 @@ const makeGalaxy = () => {
     // z Position
     positions[index + 2] =
       Math.sin(angleOfSubDivision) * distanceFromCenterOfGalaxy;
+
+    // Colors
+    const mixedColor = insideColor.clone();
+    mixedColor.lerp(
+      outsideColor,
+      distanceFromCenterOfGalaxy / galaxyParameters.radius
+    );
+    colors[index + 0] = mixedColor.r;
+    colors[index + 1] = mixedColor.g;
+    colors[index + 2] = mixedColor.b;
   }
   // SetAttribute in Buffer Geometry
   particlesGeometry.setAttribute(
     "position",
     new THREE.BufferAttribute(positions, 3)
   );
+  particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   // New Particles
   particles = new THREE.Points(particlesGeometry, particlesMaterial);
 
@@ -145,7 +168,7 @@ gui
 gui
   .add(galaxyParameters, "subDivisionThickness")
   .min(0)
-  .max(0.25)
+  .max(0.5)
   .step(0.0001)
   .onFinishChange(makeGalaxy);
 gui
@@ -154,6 +177,8 @@ gui
   .max(5)
   .step(1)
   .onFinishChange(makeGalaxy);
+gui.addColor(galaxyParameters, "insideColor").onFinishChange(makeGalaxy);
+gui.addColor(galaxyParameters, "outsideColor").onFinishChange(makeGalaxy);
 
 /**
  * Sizes
