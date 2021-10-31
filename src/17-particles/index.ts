@@ -227,6 +227,90 @@ const makeStars = () => {
 };
 makeStars();
 
+const cometParameters = {
+  noOfParticle: 85000,
+  length: 5,
+  radius: 1,
+  startColor: 0xff0000,
+  endColor: 0xffff00,
+};
+const cometGUI = gui.addFolder("comet");
+cometGUI
+  .add(cometParameters, "noOfParticle")
+  .min(100)
+  .max(100000)
+  .step(100)
+  .onFinishChange(() => {
+    makeComet();
+  });
+cometGUI
+  .add(cometParameters, "length")
+  .min(1)
+  .max(20)
+  .step(0.0001)
+  .onFinishChange(() => {
+    makeComet();
+  });
+cometGUI
+  .add(cometParameters, "radius")
+  .min(1)
+  .max(5)
+  .step(0.0001)
+  .onFinishChange(() => {
+    makeComet();
+  });
+let cometParticles: THREE.Points;
+let cometMaterials: THREE.PointsMaterial;
+let cometGeometry: THREE.BufferGeometry;
+let cometParticlesPositions: Float32Array;
+let cometParticlesColors: Float32Array;
+
+const makeComet = () => {
+  if (cometParticles !== undefined) {
+    cometGeometry.dispose();
+    cometMaterials.dispose();
+    scene.remove(cometParticles);
+  }
+  cometParticlesPositions = new Float32Array(cometParameters.noOfParticle * 3);
+  cometParticlesColors = new Float32Array(cometParameters.noOfParticle * 3);
+  cometGeometry = new THREE.BufferGeometry();
+  cometMaterials = new THREE.PointsMaterial({ size: 0.02, vertexColors: true });
+  // Finding Positions of comet particles
+  let startColor = new THREE.Color(cometParameters.startColor);
+  let endColor = new THREE.Color(cometParameters.endColor);
+
+  for (let i = 0; i < cometParameters.noOfParticle; i++) {
+    let index = i * 3;
+    let length = Math.random() * cometParameters.length;
+    cometParticlesPositions[index + 0] = length;
+    let angle = Math.random() * Math.PI * 2;
+    let randomRadius = (Math.random() - 0.5) * cometParameters.radius;
+    let rnd = Math.sqrt(length) * (Math.random() - 0.5);
+    let sin = Math.sin(angle) * randomRadius * rnd;
+    let cos = Math.cos(angle) * randomRadius * rnd;
+    cometParticlesPositions[index + 1] = sin;
+    cometParticlesPositions[index + 2] = cos;
+    let mixedColor = startColor.clone();
+    mixedColor.lerp(endColor, length / cometParameters.length);
+
+    cometParticlesColors[index + 0] = mixedColor.r;
+    cometParticlesColors[index + 1] = mixedColor.g;
+    cometParticlesColors[index + 2] = mixedColor.b;
+  }
+
+  cometGeometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(cometParticlesPositions, 3)
+  );
+  cometGeometry.setAttribute(
+    "color",
+    new THREE.BufferAttribute(cometParticlesColors, 3)
+  );
+  cometParticles = new THREE.Points(cometGeometry, cometMaterials);
+  scene.add(cometParticles);
+};
+makeComet();
+
 /**
  * Sizes
  */
