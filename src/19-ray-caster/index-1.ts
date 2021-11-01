@@ -126,7 +126,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  * Tick
  */
 const clock = new THREE.Clock();
-let currentIntersect = null;
+let currentIntersect: THREE.Intersection | null = null;
 const tick = () => {
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
