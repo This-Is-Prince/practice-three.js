@@ -57,7 +57,7 @@ const colorObj = {
   color: 0xff0000,
 };
 
-const material = new THREE.RawShaderMaterial({
+const material = new THREE.ShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
   uniforms: {
