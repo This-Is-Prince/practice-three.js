@@ -28,9 +28,18 @@ const debugObject = {
       z: (Math.random() - 0.5) * 3,
     });
   },
+  reset: () => {
+    for (let object of objectsToUpdate) {
+      object.body.removeEventListener("collide", playHitSound);
+      world.removeBody(object.body);
+      scene.remove(object.mesh);
+    }
+    objectsToUpdate = [];
+  },
 };
 gui.add(debugObject, "createSphere");
 gui.add(debugObject, "createBox");
+gui.add(debugObject, "reset");
 
 /**
  * Window Events
@@ -46,6 +55,26 @@ window.addEventListener("resize", () => {
   // Update Renderer
   updateRenderer();
 });
+
+/**
+ * Sounds
+ */
+type CollisionType = {
+  body: CANNON.Body;
+  contact: CANNON.ContactEquation;
+  target: Body;
+  type: "collide";
+};
+const hitSound = new Audio("./static/sounds/hit.mp3");
+const playHitSound = (collision: CollisionType) => {
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+
+  if (impactStrength > 1.5) {
+    hitSound.volume = Math.random();
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
 
 /**
  * Textures
@@ -113,6 +142,7 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
 // const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.8, 0) });
 const world = new CANNON.World();
 world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;
 world.gravity = new CANNON.Vec3(0, -9.8, 0);
 
 // --1.way
@@ -244,7 +274,7 @@ updateRenderer();
  * Utils
  */
 type PositionType = { x: number; y: number; z: number };
-const objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
+let objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
 
 // Sphere
 const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
@@ -270,6 +300,7 @@ const createSphere = (radius: number, { x, y, z }: PositionType) => {
     position: new CANNON.Vec3(x, y, z),
     material: defaultMaterial,
   });
+  body.addEventListener("collide", playHitSound);
   body.position.set(x, y, z);
   world.addBody(body);
   objectsToUpdate.push({ mesh, body });
@@ -306,6 +337,7 @@ const createBox = (
     material: defaultMaterial,
     position: new CANNON.Vec3(x, y, z),
   });
+  body.addEventListener("collide", playHitSound);
   body.position.set(x, y, z);
   world.addBody(body);
   objectsToUpdate.push({ mesh, body });
