@@ -2,8 +2,8 @@ import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import testFragmentShader from "./shaders/test/fragment.glsl?raw";
-import testVertexShader from "./shaders/test/vertex.glsl?raw";
+import testFragmentShader from "./shaders/test/fragment.fs.glsl?raw";
+import testVertexShader from "./shaders/test/vertex.vs.glsl?raw";
 
 /**
  * Debug GUI
