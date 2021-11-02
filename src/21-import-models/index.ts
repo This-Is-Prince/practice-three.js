@@ -40,6 +40,18 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 /**
+ * Fox Model
+ */
+let mixer: THREE.AnimationMixer;
+gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  const action = mixer.clipAction(gltf.animations[2]);
+  action.play();
+  gltf.scene.scale.set(0.025, 0.025, 0.025);
+  scene.add(gltf.scene);
+});
+
+/**
  * FlightHelmet Model
  */
 
@@ -82,9 +94,9 @@ gltfLoader.setDRACOLoader(dracoLoader);
 //   scene.add(gltf.scene);
 // });
 
-gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
-  scene.add(gltf.scene);
-});
+// gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene);
+// });
 
 // ---- 4.type
 // gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
@@ -171,6 +183,7 @@ updateRenderer();
  */
 // Clock
 const clock = new THREE.Clock();
+let oldElapsedTime = 0;
 
 // Tick
 const tick = () => {
@@ -179,6 +192,13 @@ const tick = () => {
 
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+  const deltaTime = elapsedTime - oldElapsedTime;
+  oldElapsedTime = elapsedTime;
+
+  // Update mixer
+  if (mixer !== undefined) {
+    mixer.update(deltaTime);
+  }
 
   // Render
   renderer.render(scene, camera);
