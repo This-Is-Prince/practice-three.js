@@ -1,6 +1,7 @@
 import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
@@ -28,6 +29,54 @@ window.addEventListener("resize", () => {
   // Update Renderer
   updateRenderer();
 });
+
+/**
+ * GLTF Loader
+ */
+const gltfLoader = new GLTFLoader();
+
+/**
+ * FlightHelmet Model
+ */
+gltfLoader.load(
+  "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+  (gltf) => {
+    // console.log(gltf.scene);
+    // scene.add(gltf.scene.children[0]);
+
+    // Don't Do This
+    // for (let child of gltf.scene.children) {
+    //   scene.add(child);
+    // }
+
+    while (gltf.scene.children.length) {
+      scene.add(gltf.scene.children[0]);
+    }
+  }
+);
+
+/**
+ * Duck Model
+ */
+// ---- 1.type
+// const model = gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ---- 2.type
+// gltfLoader.load("./static/models/Duck/glTF-Binary/Duck.glb", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ---- 3.type
+// gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ---- 4.type
+// gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
 
 /**
  * Scene
