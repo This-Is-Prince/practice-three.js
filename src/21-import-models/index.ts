@@ -2,6 +2,7 @@ import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
@@ -31,29 +32,37 @@ window.addEventListener("resize", () => {
 });
 
 /**
- * GLTF Loader
+ *  Loader
  */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
 const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
 
 /**
  * FlightHelmet Model
  */
-gltfLoader.load(
-  "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
-  (gltf) => {
-    // console.log(gltf.scene);
-    // scene.add(gltf.scene.children[0]);
 
-    // Don't Do This
-    // for (let child of gltf.scene.children) {
-    //   scene.add(child);
-    // }
+// ----1.way
+// gltfLoader.load(
+//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   (gltf) => {
+//     // console.log(gltf.scene);
+//     // scene.add(gltf.scene.children[0]);
 
-    while (gltf.scene.children.length) {
-      scene.add(gltf.scene.children[0]);
-    }
-  }
-);
+//     // Don't Do This
+//     // for (let child of gltf.scene.children) {
+//     //   scene.add(child);
+//     // }
+
+//     // const children = [...gltf.scene.children];
+//     // for (const child of children) {
+//     //   scene.add(child);
+//     // }
+
+//     scene.add(gltf.scene);
+//   }
+// );
 
 /**
  * Duck Model
@@ -70,8 +79,12 @@ gltfLoader.load(
 
 // ---- 3.type
 // gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
-//   scene.add(gltf.scene.children[0]);
+//   scene.add(gltf.scene);
 // });
+
+gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+  scene.add(gltf.scene);
+});
 
 // ---- 4.type
 // gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
