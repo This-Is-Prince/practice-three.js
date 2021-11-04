@@ -2,6 +2,8 @@ import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import fragmentShader from "./shaders/galaxy-fragment/fragment.fs.glsl?raw";
+import vertexShader from "./shaders/galaxy-vertex/vertex.vs.glsl?raw";
 
 /**
  * Canvas
@@ -48,12 +50,12 @@ const parameters = {
   outsideColor: "#1b3984",
 };
 
-let geometry = null;
-let material = null;
-let points = null;
+let geometry: THREE.BufferGeometry;
+let material: THREE.ShaderMaterial;
+let points: THREE.Points;
 
 const generateGalaxy = () => {
-  if (points !== null) {
+  if (points !== undefined) {
     geometry.dispose();
     material.dispose();
     scene.remove(points);
@@ -66,6 +68,8 @@ const generateGalaxy = () => {
 
   const positions = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
+  const scales = new Float32Array(parameters.count);
+  const randomness = new Float32Array(parameters.count * 3);
 
   const insideColor = new THREE.Color(parameters.insideColor);
   const outsideColor = new THREE.Color(parameters.outsideColor);
@@ -79,6 +83,11 @@ const generateGalaxy = () => {
     const branchAngle =
       ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
 
+    positions[i3] = Math.cos(branchAngle) * radius;
+    positions[i3 + 1] = 0;
+    positions[i3 + 2] = Math.sin(branchAngle) * radius;
+
+    // Randomness
     const randomX =
       Math.pow(Math.random(), parameters.randomnessPower) *
       (Math.random() < 0.5 ? 1 : -1) *
@@ -94,10 +103,9 @@ const generateGalaxy = () => {
       (Math.random() < 0.5 ? 1 : -1) *
       parameters.randomness *
       radius;
-
-    positions[i3] = Math.cos(branchAngle) * radius + randomX;
-    positions[i3 + 1] = randomY;
-    positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ;
+    randomness[i3 + 0] = randomX;
+    randomness[i3 + 1] = randomY;
+    randomness[i3 + 2] = randomZ;
 
     // Color
     const mixedColor = insideColor.clone();
@@ -106,10 +114,18 @@ const generateGalaxy = () => {
     colors[i3] = mixedColor.r;
     colors[i3 + 1] = mixedColor.g;
     colors[i3 + 2] = mixedColor.b;
+
+    // Scales
+    scales[i] = Math.random();
   }
 
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1));
+  geometry.setAttribute(
+    "aRandomness",
+    new THREE.BufferAttribute(randomness, 3)
+  );
 
   /**
    * Material
@@ -118,6 +134,12 @@ const generateGalaxy = () => {
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     vertexColors: true,
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+    uniforms: {
+      uSize: { value: 30.0 * renderer.getPixelRatio() },
+      uTime: { value: 0 },
+    },
   });
 
   /**
@@ -126,8 +148,6 @@ const generateGalaxy = () => {
   points = new THREE.Points(geometry, material);
   scene.add(points);
 };
-
-generateGalaxy();
 
 gui
   .add(parameters, "count")
@@ -185,7 +205,7 @@ updateSizes();
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.set(2, 2, 2);
+camera.position.set(3, 3, 3);
 scene.add(camera);
 
 /**
@@ -205,6 +225,11 @@ const updateRenderer = () => {
 updateRenderer();
 
 /**
+ * Generate Galaxy
+ */
+generateGalaxy();
+
+/**
  * Tick
  */
 const clock = new THREE.Clock();
@@ -214,6 +239,9 @@ const tick = () => {
 
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+
+  // Update Materials
+  material.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);
