@@ -40,56 +40,71 @@ const scene = new THREE.Scene();
  * Axes Helper
  */
 const axesHelper = new THREE.AxesHelper();
+axesHelper.visible = false;
 scene.add(axesHelper);
 
 /**
  * Texture Loader
  */
 const textureLoader = new THREE.TextureLoader();
-const matcapTexture = textureLoader.load("./static/textures/matcaps/8.png");
+const matcapTexture = textureLoader.load("./static/textures/matcaps/1.png");
+
 /**
  * Font Loader
  */
 const fontLoader = new FontLoader();
 fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
+  // Text Geometry Code Start
   const textGeometry = new TextGeometry("Hello Three.js", {
     font,
     size: 0.5,
     height: 0.2,
-    curveSegments: 12,
+    curveSegments: 5,
     bevelEnabled: true,
-    bevelThickness: 0.02,
-    bevelSize: 0.03,
+    bevelThickness: 0.03,
+    bevelSize: 0.02,
     bevelOffset: 0,
     bevelSegments: 4,
   });
+  // textGeometry.computeBoundingBox();
+  // let bBox = textGeometry.boundingBox!;
+  // textGeometry.translate(
+  //   -(bBox.max.x - 0.02) * 0.5,
+  //   -(bBox.max.y - 0.02) * 0.5,
+  //   -(bBox.max.z - 0.03) * 0.5
+  // );
+
   textGeometry.center();
-  const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
-  const text = new THREE.Mesh(textGeometry, material);
+
+  const textMaterial = new THREE.MeshMatcapMaterial();
+  textMaterial.matcap = matcapTexture;
+  // textMaterial.wireframe = true;
+  const text = new THREE.Mesh(textGeometry, textMaterial);
   scene.add(text);
 
-  const torusGeometry = new THREE.TorusGeometry(0.3, 0.2, 16, 32);
-  let count = 500;
+  let count = 1000;
+  console.time("Donut");
+  const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+  // const donutMaterial = new THREE.MeshMatcapMaterial({
+  //   matcap: matcapTexture,
+  // });
+  const donutMaterial = textMaterial;
   for (let i = 0; i < count; i++) {
-    const torus = new THREE.Mesh(torusGeometry, material);
+    const donut = new THREE.Mesh(donutGeometry, donutMaterial);
+    donut.position.x = (Math.random() - 0.5) * 10;
+    donut.position.y = (Math.random() - 0.5) * 10;
+    donut.position.z = (Math.random() - 0.5) * 10;
 
-    // Position
-    torus.position.x = (Math.random() - 0.5) * 100;
-    torus.position.y = (Math.random() - 0.5) * 100;
-    torus.position.z = (Math.random() - 0.5) * 100;
+    donut.rotation.x = Math.random() * Math.PI;
+    donut.rotation.y = Math.random() * Math.PI;
 
-    // Rotation
-    torus.rotation.x = Math.PI * Math.random();
-    torus.rotation.y = Math.PI * Math.random();
-    torus.rotation.z = Math.PI * Math.random();
-
-    // Scale
-    let scaleFactor = Math.random();
-    torus.scale.set(scaleFactor, scaleFactor, scaleFactor);
-
-    // Adding Torus into scene
-    scene.add(torus);
+    let scale = Math.random();
+    donut.scale.set(scale, scale, scale);
+    scene.add(donut);
   }
+  console.timeEnd("Donut");
+
+  // Text Geometry Code End
 });
 
 /**
