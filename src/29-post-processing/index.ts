@@ -6,6 +6,9 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { DotScreenPass } from "three/examples/jsm/postprocessing/DotScreenPass";
+import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader";
 
 /**
  * Canvas
@@ -30,6 +33,10 @@ window.addEventListener("resize", () => {
 
   // Update Renderer
   updateRenderer();
+
+  // Update EffectComposer
+  effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  effectComposer.setSize(sizes.width, sizes.height);
 });
 
 /**
@@ -151,15 +158,39 @@ updateRenderer();
 /**
  * Post Processing
  */
-const effectComposer = new EffectComposer(renderer);
+
+// Render Target
+const renderTarget = new THREE.WebGLRenderTarget(800, 600, {
+  minFilter: THREE.LinearFilter,
+  magFilter: THREE.LinearFilter,
+  format: THREE.RGBAFormat,
+  encoding: THREE.sRGBEncoding,
+});
+
+// Composer
+const effectComposer = new EffectComposer(renderer, renderTarget);
 effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 effectComposer.setSize(sizes.width, sizes.height);
 
+// Passes
 const renderPass = new RenderPass(scene, camera);
 effectComposer.addPass(renderPass);
 
+// DotScreenPass
 const dotScreenPass = new DotScreenPass();
+dotScreenPass.enabled = false;
 effectComposer.addPass(dotScreenPass);
+
+// GlitchPass
+const glitchPass = new GlitchPass();
+glitchPass.goWild = false;
+glitchPass.enabled = false;
+effectComposer.addPass(glitchPass);
+
+// ShaderPass
+const rgbShiftPass = new ShaderPass(RGBShiftShader);
+rgbShiftPass.enabled = true;
+effectComposer.addPass(rgbShiftPass);
 
 /**
  * Tick
@@ -172,8 +203,10 @@ const tick = () => {
 
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+
   // Render
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
+  effectComposer.render();
 
   // Next Frame
   window.requestAnimationFrame(tick);
