@@ -36,43 +36,10 @@ window.addEventListener("resize", () => {
 const scene = new THREE.Scene();
 
 /**
- * Textures
- */
-const loadingManager = new THREE.LoadingManager();
-const textureLoader = new THREE.TextureLoader(loadingManager);
-const doorColorTexture = textureLoader.load("./static/textures/minecraft.png");
-const doorAlphaTexture = textureLoader.load("./static/textures/door/alpha.jpg");
-const doorHeightTexture = textureLoader.load(
-  "./static/textures/door/height.jpg"
-);
-const doorNormalTexture = textureLoader.load(
-  "./static/textures/door/normal.jpg"
-);
-const doorAmbientOcclusionTexture = textureLoader.load(
-  "./static/textures/door/ambientOcclusion.jpg"
-);
-const doorMetalnessTexture = textureLoader.load(
-  "./static/textures/door/metalness.jpg"
-);
-const doorRoughnessTexture = textureLoader.load(
-  "./static/textures/door/roughness.jpg"
-);
-
-// doorColorTexture.repeat.set(2, 3);
-// doorColorTexture.wrapS = THREE.RepeatWrapping;
-// doorColorTexture.wrapT = THREE.MirroredRepeatWrapping;
-// doorColorTexture.center.set(0.5, 0.5);
-// doorColorTexture.rotation = Math.PI * 0.25;
-
-doorColorTexture.generateMipmaps = false;
-doorColorTexture.minFilter = THREE.NearestFilter;
-doorColorTexture.magFilter = THREE.NearestFilter;
-
-/**
  * Objects
  */
-const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ map: doorColorTexture });
+const boxGeometry = new THREE.BoxGeometry(1, 1);
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
 const box = new THREE.Mesh(boxGeometry, material);
 scene.add(box);
@@ -92,7 +59,7 @@ const aspectRatio = () => {
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.set(0.5, 1, 0.5);
+camera.position.set(1, 1, 1);
 scene.add(camera);
 
 /**
