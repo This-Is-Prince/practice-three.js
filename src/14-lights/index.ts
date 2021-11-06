@@ -2,6 +2,7 @@ import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
 /**
  * Debug GUI
@@ -39,88 +40,72 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const checkerBoard8x8Texture = textureLoader.load(
-  "./static/textures/checkerboard-8x8.png"
-);
-
-/**
- * Color
- */
 
 /**
  * Lights
  */
-const lightGUI = gui.addFolder("Lights");
 
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-
-// Directional Light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.target.position.set(0, 0, 0);
-directionalLight.position.set(1, 1, 0);
-
-// Adding All Light into scene
 scene.add(ambientLight);
-scene.add(directionalLight);
-scene.add(directionalLight.target);
 
-/**
- * All Lights GUI
- */
-// AmbientLightGUI
-const ambientLightGUI = lightGUI.addFolder("AmbientLight");
-ambientLightGUI.add(ambientLight, "intensity").min(0).max(1).step(0.0001);
 // Directional Light
-const directionalLightGUI = lightGUI.addFolder("DirectionalLight");
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.5);
+directionalLight.position.set(1, 0.25, 0);
+scene.add(directionalLight);
 
-directionalLightGUI
-  .add(directionalLight, "intensity")
-  .min(0)
-  .max(1)
-  .step(0.0001);
-directionalLightGUI
-  .add(directionalLight.position, "x")
-  .min(-5)
-  .max(5)
-  .step(0.0001);
-directionalLightGUI
-  .add(directionalLight.position, "y")
-  .min(-5)
-  .max(5)
-  .step(0.0001);
-directionalLightGUI
-  .add(directionalLight.position, "z")
-  .min(-5)
-  .max(5)
-  .step(0.0001);
-directionalLightGUI
-  .add(directionalLight.target.position, "x")
-  .min(-5)
-  .max(5)
-  .step(0.0001)
-  .name("tX");
-directionalLightGUI
-  .add(directionalLight.target.position, "y")
-  .min(-5)
-  .max(5)
-  .step(0.0001)
-  .name("tY");
-directionalLightGUI
-  .add(directionalLight.target.position, "z")
-  .min(-5)
-  .max(5)
-  .step(0.0001)
-  .name("tZ");
+// Hemisphere Light
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.3);
+scene.add(hemisphereLight);
+
+// Point Light
+const pointLight = new THREE.PointLight(0xff9000, 0.5, 10, 2);
+pointLight.position.set(1, -0.5, 1);
+scene.add(pointLight);
+
+// Rect Area Light
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1);
+rectAreaLight.position.set(-1.5, 0, 1.5);
+rectAreaLight.lookAt(new THREE.Vector3());
+scene.add(rectAreaLight);
+
+// Spot Light
+const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 6, Math.PI * 0.1, 0.25, 1);
+spotLight.position.set(0, 2, 3);
+spotLight.target.position.x = -0.75;
+scene.add(spotLight);
+scene.add(spotLight.target);
+
+// Rect Area Light Helper
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+scene.add(rectAreaLightHelper);
 
 /**
- * Lights Helper
+ * Helpers
  */
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+  hemisphereLight,
+  0.2
+);
+scene.add(hemisphereLightHelper);
+
+// Directional Light Helper
 const directionalLightHelper = new THREE.DirectionalLightHelper(
   directionalLight,
-  0.25
+  0.2
 );
 scene.add(directionalLightHelper);
+
+// Point Light Helper
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+scene.add(pointLightHelper);
+
+// Spot Light Helper
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
+window.requestAnimationFrame(() => {
+  spotLightHelper.update();
+});
 
 /**
  * Materials
@@ -148,7 +133,6 @@ torus.position.x = 1.5;
 const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
 plane.rotation.x = -Math.PI * 0.5;
 plane.position.y = -0.65;
-
 scene.add(sphere, cube, torus, plane);
 
 /**
