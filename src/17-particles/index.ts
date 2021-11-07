@@ -62,35 +62,44 @@ const particlesGeometry = new THREE.BufferGeometry();
 const particlesMaterial = new THREE.PointsMaterial();
 particlesMaterial.size = 0.1;
 particlesMaterial.sizeAttenuation = true;
-particlesMaterial.color = new THREE.Color(0xff88cc);
+// particlesMaterial.color = new THREE.Color(0xff88cc);
 particlesMaterial.transparent = true;
 particlesMaterial.alphaMap = particleTexture;
 // particlesMaterial.alphaTest = 0.001;
 // particlesMaterial.depthTest = false;
-// particlesMaterial.depthWrite = false;
+particlesMaterial.depthWrite = false;
+particlesMaterial.blending = THREE.AdditiveBlending;
+particlesMaterial.vertexColors = true;
 
-const count = 5000;
+const count = 20000;
 const positions = new Float32Array(count * 3);
+const colors = new Float32Array(count * 3);
 for (let i = 0; i < count; i++) {
   let index = i * 3;
   positions[index + 0] = (Math.random() - 0.5) * 10;
   positions[index + 1] = (Math.random() - 0.5) * 10;
   positions[index + 2] = (Math.random() - 0.5) * 10;
+
+  // Colors
+  colors[index + 0] = Math.random();
+  colors[index + 1] = Math.random();
+  colors[index + 2] = Math.random();
 }
 particlesGeometry.setAttribute(
   "position",
   new THREE.BufferAttribute(positions, 3)
 );
+particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 scene.add(particles);
 
 // mesh
-const box = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial()
-);
-scene.add(box);
+// const box = new THREE.Mesh(
+//   new THREE.BoxGeometry(1, 1, 1),
+//   new THREE.MeshBasicMaterial()
+// );
+// scene.add(box);
 
 /**
  * Sizes
@@ -131,6 +140,17 @@ const clock = new THREE.Clock();
 const tick = () => {
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+
+  // Update Particles
+  // particles.rotation.y = elapsedTime * 0.3;
+  for (let i = 0; i < count; i++) {
+    const i3 = i * 3;
+    let x = particlesGeometry.attributes.position.array[i3];
+    particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(
+      elapsedTime + x
+    );
+  }
+  particlesGeometry.attributes.position.needsUpdate = true;
 
   // Update Controls
   controls.update();
