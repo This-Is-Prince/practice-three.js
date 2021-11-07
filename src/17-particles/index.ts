@@ -59,14 +59,15 @@ const particleTexture = textureLoader.load("./static/textures/particles/2.png");
 
 // Custom Geometry
 const particlesGeometry = new THREE.BufferGeometry();
-const particlesMaterial = new THREE.PointsMaterial({
-  size: 0.1,
-  color: 0xff88cc,
-  sizeAttenuation: true,
-  transparent: true,
-  alphaMap: particleTexture,
-  alphaTest: 0.001,
-});
+const particlesMaterial = new THREE.PointsMaterial();
+particlesMaterial.size = 0.1;
+particlesMaterial.sizeAttenuation = true;
+particlesMaterial.color = new THREE.Color(0xff88cc);
+particlesMaterial.transparent = true;
+particlesMaterial.alphaMap = particleTexture;
+// particlesMaterial.alphaTest = 0.001;
+// particlesMaterial.depthTest = false;
+// particlesMaterial.depthWrite = false;
 
 const count = 5000;
 const positions = new Float32Array(count * 3);
@@ -83,6 +84,13 @@ particlesGeometry.setAttribute(
 
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 scene.add(particles);
+
+// mesh
+const box = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial()
+);
+scene.add(box);
 
 /**
  * Sizes
