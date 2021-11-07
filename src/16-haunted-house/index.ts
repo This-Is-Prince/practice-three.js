@@ -120,6 +120,36 @@ const brickAmbientOcclusionTexture = textureLoader.load(
 // brickAmbientOcclusionTexture.minFilter = THREE.NearestFilter;
 // brickAmbientOcclusionTexture.magFilter = THREE.NearestFilter;
 
+// Grass
+const grassColorTexture = textureLoader.load(
+  "./static/textures/grass/color.jpg"
+);
+const grassNormalTexture = textureLoader.load(
+  "./static/textures/grass/normal.jpg"
+);
+const grassRoughnessTexture = textureLoader.load(
+  "./static/textures/grass/roughness.jpg"
+);
+const grassAmbientOcclusionTexture = textureLoader.load(
+  "./static/textures/grass/ambientOcclusion.jpg"
+);
+
+grassColorTexture.repeat.set(10, 10);
+grassColorTexture.wrapS = THREE.MirroredRepeatWrapping;
+grassColorTexture.wrapT = THREE.MirroredRepeatWrapping;
+
+grassNormalTexture.repeat.set(10, 10);
+grassNormalTexture.wrapS = THREE.MirroredRepeatWrapping;
+grassNormalTexture.wrapT = THREE.MirroredRepeatWrapping;
+
+grassRoughnessTexture.repeat.set(10, 10);
+grassRoughnessTexture.wrapS = THREE.MirroredRepeatWrapping;
+grassRoughnessTexture.wrapT = THREE.MirroredRepeatWrapping;
+
+grassAmbientOcclusionTexture.repeat.set(10, 10);
+grassAmbientOcclusionTexture.wrapS = THREE.MirroredRepeatWrapping;
+grassAmbientOcclusionTexture.wrapT = THREE.MirroredRepeatWrapping;
+
 /**
  * Lights
  */
@@ -135,54 +165,87 @@ scene.add(directionalLight);
 /**
  * Material
  */
-const floorMaterial = new THREE.MeshStandardMaterial();
+const floorMaterial = new THREE.MeshStandardMaterial({
+  map: grassColorTexture,
+  aoMap: grassAmbientOcclusionTexture,
+  roughnessMap: grassRoughnessTexture,
+  normalMap: grassNormalTexture,
+  roughness: 1,
+});
+const wallMaterial = new THREE.MeshStandardMaterial({
+  map: brickColorTexture,
+  aoMap: brickAmbientOcclusionTexture,
+  roughnessMap: brickRoughnessTexture,
+  normalMap: brickNormalTexture,
+  roughness: 0.5,
+});
+const doorMaterial = new THREE.MeshStandardMaterial({
+  map: doorColorTexture,
+  transparent: true,
+  alphaMap: doorAlphaTexture,
+  aoMap: doorAmbientOcclusionTexture,
+  displacementMap: doorHeightTexture,
+  roughnessMap: doorRoughnessTexture,
+  normalMap: doorNormalTexture,
+  metalnessMap: doorMetalnessTexture,
+});
+const roofMaterial = new THREE.MeshStandardMaterial({
+  side: THREE.DoubleSide,
+  map: brickColorTexture,
+  aoMap: brickAmbientOcclusionTexture,
+  roughnessMap: brickRoughnessTexture,
+  normalMap: brickNormalTexture,
+  roughness: 0.5,
+});
 
 /**
  * Objects
  */
 // floor
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), floorMaterial);
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(20, 20, 100, 100),
+  floorMaterial
+);
+floor.geometry.setAttribute(
+  "uv2",
+  new THREE.BufferAttribute(floor.geometry.attributes.uv.array, 2)
+);
 floor.rotation.x = -Math.PI * 0.5;
 scene.add(floor);
 
 // House
-const debugObj = {
-  color: 0xca8f5e,
-};
 const house = new THREE.Group();
 house.position.y = 2;
 scene.add(house);
-const wall = new THREE.Mesh(
-  new THREE.BoxGeometry(5, 4, 5),
-  new THREE.MeshStandardMaterial({
-    map: brickColorTexture,
-    transparent: true,
-    aoMap: brickAmbientOcclusionTexture,
-    roughnessMap: brickRoughnessTexture,
-    normalMap: brickNormalTexture,
-    roughness: 0.5,
-  })
-);
+
+// Wall
+const wall = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 5), wallMaterial);
 wall.geometry.setAttribute(
   "uv2",
   new THREE.BufferAttribute(wall.geometry.attributes.uv.array, 2)
 );
-const door = new THREE.Mesh(
-  new THREE.PlaneGeometry(5, 4),
-  new THREE.MeshStandardMaterial({
-    map: doorColorTexture,
-    transparent: true,
-    alphaMap: doorAlphaTexture,
-    aoMap: doorAmbientOcclusionTexture,
-    displacementMap: doorHeightTexture,
-    roughnessMap: doorRoughnessTexture,
-    normalMap: doorNormalTexture,
-    metalnessMap: doorMetalnessTexture,
-  })
-);
-door.position.z = 2.5 + 0.01;
 
-house.add(wall, door);
+// Door
+const door = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), doorMaterial);
+door.geometry.setAttribute(
+  "uv2",
+  new THREE.BufferAttribute(door.geometry.attributes.uv.array, 2)
+);
+door.position.set(0, -0.65, 2.5 + 0.01);
+
+// Roof
+const roof = new THREE.Group();
+roof.position.y = 2.5;
+const leftRoof = new THREE.Mesh(new THREE.PlaneGeometry(3, 6), roofMaterial);
+leftRoof.position.x = -1.38;
+leftRoof.rotation.set(-Math.PI * 0.5, -Math.PI / 8, 0);
+
+const rightRoof = new THREE.Mesh(new THREE.PlaneGeometry(3, 6), roofMaterial);
+rightRoof.position.x = 1.38;
+rightRoof.rotation.set(-Math.PI * 0.5, Math.PI / 8, 0);
+
+roof.add(leftRoof, rightRoof);
+house.add(wall, door, roof);
 
 /**
  * Sizes
