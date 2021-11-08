@@ -1,6 +1,8 @@
 import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
@@ -28,6 +30,78 @@ window.addEventListener("resize", () => {
   // Update Renderer
   updateRenderer();
 });
+
+/**
+ *  Loader
+ */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+/**
+ * Fox Model
+ */
+let mixer: THREE.AnimationMixer;
+gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  const action = mixer.clipAction(gltf.animations[2]);
+  action.play();
+  gltf.scene.scale.set(0.025, 0.025, 0.025);
+  scene.add(gltf.scene);
+});
+
+/**
+ * FlightHelmet Model
+ */
+
+// ----1.way
+// gltfLoader.load(
+//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   (gltf) => {
+//     // console.log(gltf.scene);
+//     // scene.add(gltf.scene.children[0]);
+
+//     // Don't Do This
+//     // for (let child of gltf.scene.children) {
+//     //   scene.add(child);
+//     // }
+
+//     // const children = [...gltf.scene.children];
+//     // for (const child of children) {
+//     //   scene.add(child);
+//     // }
+
+//     scene.add(gltf.scene);
+//   }
+// );
+
+/**
+ * Duck Model
+ */
+// ---- 1.type
+// const model = gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ---- 2.type
+// gltfLoader.load("./static/models/Duck/glTF-Binary/Duck.glb", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ---- 3.type
+// gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene);
+// });
+
+// gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene);
+// });
+
+// ---- 4.type
+// gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
 
 /**
  * Scene
@@ -120,6 +194,11 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
+
+  // Update mixer
+  if (mixer !== undefined) {
+    mixer.update(deltaTime);
+  }
 
   // Render
   renderer.render(scene, camera);
