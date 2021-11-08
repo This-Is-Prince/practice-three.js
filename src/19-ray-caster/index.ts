@@ -22,10 +22,27 @@ window.addEventListener("resize", () => {
   // Update Renderer
   updateRenderer();
 });
-// Mousemove
-window.addEventListener("mousemove", (e) => {
-  mouse.x = (e.clientX / sizes.width - 0.5) * 2;
-  mouse.y = -(e.clientY / sizes.height - 0.5) * 2;
+// Mouse Hover
+const mouse = new THREE.Vector2();
+window.addEventListener("mousemove", (event) => {
+  mouse.x = (event.clientX / sizes.width) * 2 - 1;
+  mouse.y = -((event.clientY / sizes.height) * 2 - 1);
+});
+// Mouse Click
+window.addEventListener("click", (event) => {
+  if (currentIntersect) {
+    switch (currentIntersect.object) {
+      case object1:
+        console.log("object1");
+        break;
+      case object2:
+        console.log("object2");
+        break;
+      case object3:
+        console.log("object3");
+        break;
+    }
+  }
 });
 
 /**
@@ -36,14 +53,6 @@ const scene = new THREE.Scene();
 /**
  * Objects
  */
-// Meshes
-// const object1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// object1.geometry.translate(-2, 0, 0);
-// const object2 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// object2.geometry.translate(0, 0, 0);
-// const object3 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 });
-// object3.geometry.translate(2, 0, 0);
-// scene.add(object1, object2, object3);
 
 const object1 = new THREE.Mesh(
   new THREE.SphereGeometry(0.5, 16, 16),
@@ -62,24 +71,19 @@ object2.position.x = 2;
 scene.add(object1, object2, object3);
 
 /**
- * RayCaster
+ * Raycaster
  */
 const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2(-100000000, 0);
 
-// const origin = new THREE.Vector3(-3, 0, 0);
-// const direction = new THREE.Vector3(10, 0, 0);
-// direction.normalize();
-// raycaster.set(origin, direction);
+// const rayOrigin = new THREE.Vector3(-3, 0, 0);
+// const rayDirection = new THREE.Vector3(10, 0, 0);
+// rayDirection.normalize();
+// raycaster.set(rayOrigin, rayDirection);
 
-// const intersectObject = raycaster.intersectObject(object1);
-// console.log(intersectObject);
-// const intersectObjects = raycaster.intersectObjects([
-//   object1,
-//   object2,
-//   object3,
-// ]);
-// console.log(intersectObjects);
+// const intersect = raycaster.intersectObject(object1);
+// console.log(intersect);
+// const intersects = raycaster.intersectObjects([object1, object2, object3]);
+// console.log(intersects);
 
 /**
  * Sizes
@@ -141,33 +145,53 @@ const tick = () => {
   object3.position.y = Math.sin(elapsedTime * 1.4) * 1.5;
 
   // Cast a ray
+  // 1.way
   raycaster.setFromCamera(mouse, camera);
 
-  // const origin = new THREE.Vector3(-3, 0, 0);
-  // const direction = new THREE.Vector3(10, 0, 0);
-  // direction.normalize();
-  // raycaster.set(origin, direction);
   const objectsToTest = [object1, object2, object3];
-  for (let object of objectsToTest) {
+  const intersects = raycaster.intersectObjects(objectsToTest);
+
+  for (const object of objectsToTest) {
     object.material.color.set(0xff0000);
   }
-  const intersectObjects = raycaster.intersectObjects(objectsToTest);
-  for (const intersectObject of intersectObjects) {
-    if (intersectObject.object instanceof THREE.Mesh) {
-      intersectObject.object.material.color.set(0x0000ff);
+
+  for (const intersect of intersects) {
+    if (intersect.object instanceof THREE.Mesh) {
+      intersect.object.material.color.set(0x0000ff);
     }
   }
-  if (intersectObjects.length) {
+
+  if (intersects.length) {
     if (currentIntersect === null) {
       console.log("mouse enter");
     }
-    currentIntersect = intersectObjects[0];
+    currentIntersect = intersects[0];
   } else {
     if (currentIntersect) {
       console.log("mouse leave");
     }
     currentIntersect = null;
   }
+
+  // 2.way
+
+  // const rayOrigin = new THREE.Vector3(-3, 0, 0);
+  // const rayDirection = new THREE.Vector3(1, 0, 0);
+  // rayDirection.normalize();
+
+  // raycaster.set(rayOrigin, rayDirection);
+
+  // const objectsToTest = [object1, object2, object3];
+  // const intersects = raycaster.intersectObjects(objectsToTest);
+
+  // for (let object of objectsToTest) {
+  //   object.material.color.set(0xff0000);
+  // }
+  // for (let intersect of intersects) {
+  //   if (intersect.object instanceof THREE.Mesh) {
+  //     intersect.object.material.color.set(0x0000ff);
+  //   }
+  // }
 
   // Render
   renderer.render(scene, camera);
