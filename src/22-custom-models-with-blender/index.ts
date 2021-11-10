@@ -28,6 +28,15 @@ window.addEventListener("resize", () => {
 /**
  * Loaders
  */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.load("./static/models/Hamburger-1/hamburger.glb", (gltf) => {
+  console.log(gltf);
+  gltf.scene.scale.set(0.15, 0.15, 0.15);
+  scene.add(gltf.scene);
+});
 
 /**
  * Scene
