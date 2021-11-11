@@ -44,10 +44,11 @@ const textureLoader = new THREE.TextureLoader();
  * Geometry
  */
 let obj = {
-  count: 10000,
+  count: 100000,
   size: 0.02,
-  radius: 1,
-  circle: 3,
+  radius: 8,
+  heightDiff: 2,
+  width: 2,
 };
 
 let geometry: THREE.BufferGeometry;
@@ -71,18 +72,27 @@ const make = () => {
   // Calculation points
   for (let i = 0; i < obj.count; i++) {
     let i3 = i * 3;
+    let half = obj.count / 2;
+    if (i < half) {
+      let width = obj.width;
+      let radius = Math.random() * (i % obj.radius);
+      let spinAngle = radius * 2 * Math.PI;
 
-    let circle = i % obj.circle;
-    let radius = Math.random() * circle;
-    let spinAngle = radius;
+      let x =
+        Math.sin(spinAngle) * radius * (Math.random() < 0 ? -width : width);
+      let z =
+        Math.cos(spinAngle) * radius * (Math.random() < 0 ? -width : width);
+      let y = radius * obj.heightDiff + (Math.random() - 0.5);
 
-    let x = Math.sin(spinAngle) * radius;
-    let y = 0;
-    let z = Math.cos(spinAngle) * radius;
-
-    positions[i3 + 0] = x;
-    positions[i3 + 1] = y;
-    positions[i3 + 2] = z;
+      positions[i3 + 0] = x;
+      positions[i3 + 1] = y;
+      positions[i3 + 2] = z;
+    } else {
+      let index = (i - half) * 3;
+      positions[i3 + 0] = -positions[index + 0];
+      positions[i3 + 1] = -positions[index + 1];
+      positions[i3 + 2] = -positions[index + 2];
+    }
   }
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
@@ -100,7 +110,8 @@ make();
 gui.add(obj, "count").min(100).max(1000000).step(100).onFinishChange(make);
 gui.add(obj, "size").min(0.001).max(0.1).step(0.0001).onFinishChange(make);
 gui.add(obj, "radius").min(1).max(10).step(0.01).onFinishChange(make);
-gui.add(obj, "circle").min(1).max(100).step(0.01).onFinishChange(make);
+gui.add(obj, "heightDiff").min(1).max(10).step(0.01).onFinishChange(make);
+gui.add(obj, "width").min(1).max(10).step(0.01).onFinishChange(make);
 
 /**
  * Sizes
@@ -117,7 +128,8 @@ const aspectRatio = () => {
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 1000);
-camera.position.y = 3;
+camera.position.z = 100;
+camera.position.y = 5;
 scene.add(camera);
 
 /**
