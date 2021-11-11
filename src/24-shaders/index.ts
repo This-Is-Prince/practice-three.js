@@ -2,6 +2,8 @@ import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import vertexShader from "./shaders/second/vertex.vs.glsl?raw";
+import fragmentShader from "./shaders/second/fragment.fs.glsl?raw";
 
 /**
  * Canvas
@@ -37,6 +39,47 @@ const scene = new THREE.Scene();
  */
 const textureLoader = new THREE.TextureLoader();
 const flagTexture = textureLoader.load("./static/textures/flag-indian.png");
+
+/**
+ * Test mesh
+ */
+// Geometry
+const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+
+// Material
+// <----- 1.way ----->
+
+// const material = new THREE.RawShaderMaterial({
+//   vertexShader: `
+//   uniform mat4 projectionMatrix;
+//   uniform mat4 viewMatrix;
+//   uniform mat4 modelMatrix;
+
+//   attribute vec3 position;
+
+//   void main(){
+//       gl_Position = projectionMatrix * viewMatrix *  modelMatrix *  vec4(position,1.0);
+//   }
+//   `,
+//   fragmentShader: `
+//   precision mediump float;
+
+//   void main(){
+// gl_FragColor=vec4(1.0,0.0,0.0,1.0);
+//   }
+//   `,
+// });
+
+// <----- 2.way ----->
+
+const material = new THREE.RawShaderMaterial({
+  vertexShader,
+  fragmentShader,
+});
+
+// Mesh
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
 
 /**
  * Sizes
