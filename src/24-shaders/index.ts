@@ -46,15 +46,28 @@ const flagTexture = textureLoader.load("./static/textures/flag-indian.png");
 // Geometry
 const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 
+// const geometry = new THREE.BufferGeometry();
+
+// let count = 1000;
+// let positions = new Float32Array(count * 3);
+
+// for (let i = 0; i < count; i++) {
+//   let index = i * 3;
+//   positions[index + 0] = Math.random() - 0.5;
+//   positions[index + 1] = 0;
+//   positions[index + 2] = Math.random() - 0.5;
+// }
+// geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
 // Random Value
-const count = geometry.attributes.position.count;
-const randoms = new Float32Array(count);
+// const count = geometry.attributes.position.count;
+// const randoms = new Float32Array(count);
 
-for (let i = 0; i < count; i++) {
-  randoms[i] = Math.random();
-}
+// for (let i = 0; i < count; i++) {
+//   randoms[i] = Math.random();
+// }
 
-geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+// geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
 
 // Material
 // <----- 1.way ----->
@@ -96,7 +109,7 @@ const material = new THREE.RawShaderMaterial({
     uColor: { value: new THREE.Color("orange") },
     uTexture: { value: flagTexture },
   },
-  wireframe: true,
+  // wireframe: true,
 });
 
 gui
