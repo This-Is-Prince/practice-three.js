@@ -48,11 +48,16 @@ let obj = {
   size: 0.02,
   radius: 8,
   heightDiff: 2,
-  width: 2,
+  width: 6,
+  randomnessPower: 2,
+  randomness: 0.7,
+  insideColor: 0xffff,
+  outsideColor: 0xf73e3e,
 };
 
 let geometry: THREE.BufferGeometry;
 let positions: Float32Array;
+let colors: Float32Array;
 let material: THREE.PointsMaterial;
 let points: THREE.Points;
 
@@ -68,13 +73,20 @@ const make = () => {
   geometry = new THREE.BufferGeometry();
   // Positions
   positions = new Float32Array(obj.count * 3);
+  colors = new Float32Array(obj.count * 3);
 
   // Calculation points
+  let half = obj.count / 2;
+  let randomness = obj.randomness;
+  let randomnessPower = obj.randomnessPower;
+  let width = obj.width;
+
+  let insideColor = new THREE.Color(obj.insideColor);
+  let outsideColor = new THREE.Color(obj.outsideColor);
+
   for (let i = 0; i < obj.count; i++) {
     let i3 = i * 3;
-    let half = obj.count / 2;
     if (i < half) {
-      let width = obj.width;
       let radius = Math.random() * (i % obj.radius);
       let spinAngle = radius * 2 * Math.PI;
 
@@ -84,22 +96,45 @@ const make = () => {
         Math.cos(spinAngle) * radius * (Math.random() < 0 ? -width : width);
       let y = radius * obj.heightDiff + (Math.random() - 0.5);
 
-      positions[i3 + 0] = x;
-      positions[i3 + 1] = y;
-      positions[i3 + 2] = z;
+      const randomX =
+        Math.pow(Math.random(), randomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1) *
+        randomness;
+      const randomZ =
+        Math.pow(Math.random(), randomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1) *
+        randomness;
+
+      positions[i3 + 0] = x + randomX;
+      positions[i3 + 1] = y + 0;
+      positions[i3 + 2] = z + randomZ;
+
+      // Colors
+      let mixedColor = insideColor.clone();
+      mixedColor.lerp(outsideColor, y / obj.radius);
+      colors[i3 + 0] = mixedColor.r;
+      colors[i3 + 1] = mixedColor.g;
+      colors[i3 + 2] = mixedColor.b;
     } else {
       let index = (i - half) * 3;
       positions[i3 + 0] = -positions[index + 0];
       positions[i3 + 1] = -positions[index + 1];
       positions[i3 + 2] = -positions[index + 2];
+
+      // Colors
+      colors[i3 + 0] = colors[index + 0];
+      colors[i3 + 1] = colors[index + 1];
+      colors[i3 + 2] = colors[index + 2];
     }
   }
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
   // Materials
   material = new THREE.PointsMaterial({
     size: obj.size,
     sizeAttenuation: true,
+    vertexColors: true,
   });
 
   // Points
@@ -112,6 +147,10 @@ gui.add(obj, "size").min(0.001).max(0.1).step(0.0001).onFinishChange(make);
 gui.add(obj, "radius").min(1).max(10).step(0.01).onFinishChange(make);
 gui.add(obj, "heightDiff").min(1).max(10).step(0.01).onFinishChange(make);
 gui.add(obj, "width").min(1).max(10).step(0.01).onFinishChange(make);
+gui.add(obj, "randomness").min(0.01).max(5).step(0.001).onFinishChange(make);
+gui.add(obj, "randomnessPower").min(1).max(5).step(0.01).onFinishChange(make);
+gui.addColor(obj, "insideColor").onFinishChange(make);
+gui.addColor(obj, "outsideColor").onFinishChange(make);
 
 /**
  * Sizes
