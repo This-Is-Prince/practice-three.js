@@ -26,6 +26,23 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
+// Mouse Events
+const mouse = new THREE.Vector2();
+window.addEventListener("mousemove", (event) => {
+  let y = Math.tan((camera.fov * Math.PI) / 180 / 2) * camera.position.z;
+  mouse.x = ((event.clientX / sizes.width) * 2 - 1) * aspectRatio() * y;
+  mouse.y = -((event.clientY / sizes.height) * 2 - 1) * y;
+  make();
+});
+
+// click
+// window.addEventListener("click", (event) => {
+//   let y = Math.tan((camera.fov * Math.PI) / 180 / 2) * camera.position.z;
+//   mouse.x = ((event.clientX / sizes.width) * 2 - 1) * aspectRatio() * y;
+//   mouse.y = -((event.clientY / sizes.height) * 2 - 1) * y;
+//   make();
+// });
+
 /**
  * Canvas
  */
@@ -45,8 +62,8 @@ const textureLoader = new THREE.TextureLoader();
  * Geometry
  */
 let obj = {
-  count: 10000,
-  size: 0.02,
+  count: 100,
+  size: 0.2,
   radiusOffset: 1,
   radius: 2,
 };
@@ -72,16 +89,11 @@ const make = () => {
 
   for (let i = 0; i < obj.count; i++) {
     let i3 = i * 3;
-    let angle = Math.random() * 2 * Math.PI;
-    let radius = 1 + Math.random();
-    let side = 4;
-    let x = (Math.random() - 0.5) * side;
-    let y = (Math.random() - 0.5) * side;
+    let angle = Math.random() * Math.PI * 2;
+    let radius = Math.random();
 
-    positions[i3 + 0] =
-      x >= -radius && x <= radius ? Math.sin(angle) * radius : x;
-    positions[i3 + 1] =
-      y >= -radius && y <= radius ? Math.cos(angle) * radius : y;
+    positions[i3 + 0] = Math.sin(angle) * radius;
+    positions[i3 + 1] = Math.cos(angle) * radius;
     positions[i3 + 2] = 0;
   }
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -94,9 +106,9 @@ const make = () => {
 
   // Points
   points = new THREE.Points(geometry, material);
+  points.position.set(mouse.x, mouse.y, 0);
   scene.add(points);
 };
-make();
 
 gui.add(obj, "count").min(100).max(1000000).step(100).onFinishChange(make);
 gui.add(obj, "size").min(0.001).max(0.1).step(0.0001).onFinishChange(make);
@@ -133,6 +145,11 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
+ * Ray caster
+ */
+// const rayCaster = new THREE.Raycaster();
+
+/**
  * Tick
  */
 const clock = new THREE.Clock();
@@ -140,6 +157,20 @@ const clock = new THREE.Clock();
 const tick = () => {
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+
+  // Update
+  // rayCaster.setFromCamera(mouse, camera);
+  if (points) {
+    for (let i = 0; i < obj.count; i++) {
+      let i3 = i * 3;
+      geometry.attributes.position.array[i3 + 0] =
+        geometry.attributes.position.array[i3 + 0] * 1.05;
+      geometry.attributes.position.array[i3 + 1] =
+        geometry.attributes.position.array[i3 + 1] * 1.05;
+      geometry.attributes.position.array[i3 + 2] = 0;
+    }
+    geometry.attributes.position.needsUpdate = true;
+  }
 
   // Update Controls
   controls.update();
