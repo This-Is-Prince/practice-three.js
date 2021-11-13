@@ -45,7 +45,36 @@ const flagTexture = textureLoader.load("./static/textures/flag-indian.png");
  */
 // Geometry
 const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
-const material = new THREE.RawShaderMaterial({ fragmentShader, vertexShader });
+
+const count = geometry.attributes.position.count;
+const randoms = new Float32Array(count);
+
+for (let i = 0; i < count; i++) {
+  randoms[i] = Math.random();
+}
+
+geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+
+// Material
+const material = new THREE.RawShaderMaterial({
+  fragmentShader,
+  vertexShader,
+  // transparent: true,
+  uniforms: { uFrequency: { value: new THREE.Vector2(10, 5) } },
+});
+
+gui
+  .add(material.uniforms.uFrequency.value, "x")
+  .min(0)
+  .max(20)
+  .step(0.01)
+  .name("uFrequencyX");
+gui
+  .add(material.uniforms.uFrequency.value, "y")
+  .min(0)
+  .max(20)
+  .step(0.01)
+  .name("uFrequencyY");
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material);
