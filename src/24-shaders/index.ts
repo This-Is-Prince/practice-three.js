@@ -4,6 +4,7 @@ import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import vertexShader from "./shaders/second/vertex.vs.glsl?raw";
 import fragmentShader from "./shaders/second/fragment.fs.glsl?raw";
+import BasicCustomShader from "./shaders/CustomMaterial/BasicCustomShader";
 
 /**
  * Canvas
@@ -39,7 +40,17 @@ const scene = new THREE.Scene();
  */
 const textureLoader = new THREE.TextureLoader();
 const flagTexture = textureLoader.load("./static/textures/flag-indian.png");
-
+/**
+ * Lights
+ */
+// Ambient Light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+// Directional Light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(0, 5, 5);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
 /**
  * Test mesh
  */
@@ -56,7 +67,7 @@ for (let i = 0; i < count; i++) {
 geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
 
 // Material
-const material = new THREE.RawShaderMaterial({
+const material = new THREE.ShaderMaterial({
   fragmentShader,
   vertexShader,
   // transparent: true,
@@ -67,24 +78,51 @@ const material = new THREE.RawShaderMaterial({
     uTexture: { value: flagTexture },
   },
 });
+// const material = new THREE.ShaderMaterial({
+//   ...BasicCustomShader,
+//   fog: true,
+//   lights: true,
+//   dithering: true,
+// });
 
-gui
-  .add(material.uniforms.uFrequency.value, "x")
-  .min(0)
-  .max(20)
-  .step(0.01)
-  .name("uFrequencyX");
-gui
-  .add(material.uniforms.uFrequency.value, "y")
-  .min(0)
-  .max(20)
-  .step(0.01)
-  .name("uFrequencyY");
+// gui
+//   .add(material.uniforms.uFrequency.value, "x")
+//   .min(0)
+//   .max(20)
+//   .step(0.01)
+//   .name("uFrequencyX");
+// gui
+//   .add(material.uniforms.uFrequency.value, "y")
+//   .min(0)
+//   .max(20)
+//   .step(0.01)
+//   .name("uFrequencyY");
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material);
 mesh.scale.y = 2 / 3;
+mesh.position.y = 0.65;
+mesh.castShadow = true;
 scene.add(mesh);
+
+/**
+ * Floor
+ */
+let lightMaterial = new THREE.MeshStandardMaterial();
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), lightMaterial);
+floor.rotation.x = -Math.PI * 0.5;
+floor.position.y = -0.5;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/**
+ * Pole
+ */
+const poleGeometry = new THREE.CylinderGeometry(0.025, 0.025, 2);
+const pole = new THREE.Mesh(poleGeometry, lightMaterial);
+pole.castShadow = true;
+pole.position.x = -0.55;
+scene.add(pole);
 
 /**
  * Sizes
@@ -106,7 +144,8 @@ updateSizes();
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.set(0.25, -0.25, 1);
+// camera.position.set(0.25, -0.25, 1);
+camera.position.set(-2, 2, 4);
 scene.add(camera);
 
 /**
@@ -123,6 +162,8 @@ const updateRenderer = () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 updateRenderer();
 
 /**
@@ -138,7 +179,7 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Update Materials
-  material.uniforms.uTime.value = elapsedTime;
+  // material.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);

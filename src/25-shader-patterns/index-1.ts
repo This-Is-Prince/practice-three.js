@@ -2,8 +2,8 @@ import "../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import fragmentShader from "./shaders/first/fragment.fs.glsl?raw";
-import vertexShader from "./shaders/first/vertex.vs.glsl?raw";
+import fragmentShader from "./shaders/fragment.fs.glsl?raw";
+import vertexShader from "./shaders/vertex.vs.glsl?raw";
 
 /**
  * Canvas
