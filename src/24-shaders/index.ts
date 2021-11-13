@@ -60,7 +60,12 @@ const material = new THREE.RawShaderMaterial({
   fragmentShader,
   vertexShader,
   // transparent: true,
-  uniforms: { uFrequency: { value: new THREE.Vector2(10, 5) } },
+  uniforms: {
+    uFrequency: { value: new THREE.Vector2(10, 5) },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color(0x00ffff) },
+    uTexture: { value: flagTexture },
+  },
 });
 
 gui
@@ -78,6 +83,7 @@ gui
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material);
+mesh.scale.y = 2 / 3;
 scene.add(mesh);
 
 /**
@@ -130,6 +136,9 @@ const tick = () => {
 
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+
+  // Update Materials
+  material.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);
