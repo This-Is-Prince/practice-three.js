@@ -84,7 +84,28 @@ gui
 // Mesh
 const mesh = new THREE.Mesh(geometry, material);
 mesh.scale.y = 2 / 3;
+mesh.position.y = 0.65;
 scene.add(mesh);
+
+/**
+ * Floor
+ */
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(50, 50),
+  new THREE.MeshBasicMaterial({ color: 0x888888 })
+);
+floor.rotation.x = -Math.PI * 0.5;
+floor.position.y = -0.5;
+scene.add(floor);
+
+/**
+ * Pole
+ */
+const poleGeometry = new THREE.CylinderGeometry(0.025, 0.025, 2);
+const poleMaterial = new THREE.MeshBasicMaterial({ color: 0x999999 });
+const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+pole.position.x = -0.55;
+scene.add(pole);
 
 /**
  * Sizes
@@ -106,7 +127,8 @@ updateSizes();
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.set(0.25, -0.25, 1);
+// camera.position.set(0.25, -0.25, 1);
+camera.position.set(0.25, -0.25, 2);
 scene.add(camera);
 
 /**
