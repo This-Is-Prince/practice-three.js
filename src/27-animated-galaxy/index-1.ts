@@ -1,20 +1,38 @@
 import "../style.css";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
-import vertexShader from "./shaders/galaxy-vertex/vertex-1.vs.glsl?raw";
-import fragmentShader from "./shaders/galaxy-fragment/fragment-1.fs.glsl?raw";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import fragmentShader from "./shaders/galaxy-fragment/fragment.fs.glsl?raw";
+import vertexShader from "./shaders/galaxy-vertex/vertex.vs.glsl?raw";
 
 /**
- * Base
+ * Canvas
  */
-// Debug
+const canvas = document.getElementById("myCanvas")!;
+
+/**
+ * Debug GUI
+ */
 const gui = new dat.GUI();
 
-// Canvas
-const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+/**
+ * Window Events
+ */
+window.addEventListener("resize", () => {
+  // Update Sizes
+  updateSizes();
 
-// Scene
+  // Update Camera
+  camera.aspect = aspectRatio();
+  camera.updateProjectionMatrix();
+
+  // Update Renderer
+  updateRenderer();
+});
+
+/**
+ * Scene
+ */
 const scene = new THREE.Scene();
 
 /**
@@ -51,6 +69,7 @@ const generateGalaxy = () => {
   const positions = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
   const scales = new Float32Array(parameters.count);
+  const randomness = new Float32Array(parameters.count * 3);
 
   const insideColor = new THREE.Color(parameters.insideColor);
   const outsideColor = new THREE.Color(parameters.outsideColor);
@@ -64,6 +83,11 @@ const generateGalaxy = () => {
     const branchAngle =
       ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
 
+    positions[i3] = Math.cos(branchAngle) * radius;
+    positions[i3 + 1] = 0;
+    positions[i3 + 2] = Math.sin(branchAngle) * radius;
+
+    // Randomness
     const randomX =
       Math.pow(Math.random(), parameters.randomnessPower) *
       (Math.random() < 0.5 ? 1 : -1) *
@@ -79,10 +103,9 @@ const generateGalaxy = () => {
       (Math.random() < 0.5 ? 1 : -1) *
       parameters.randomness *
       radius;
-
-    positions[i3] = Math.cos(branchAngle) * radius + randomX;
-    positions[i3 + 1] = randomY;
-    positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ;
+    randomness[i3 + 0] = randomX;
+    randomness[i3 + 1] = randomY;
+    randomness[i3 + 2] = randomZ;
 
     // Color
     const mixedColor = insideColor.clone();
@@ -99,17 +122,24 @@ const generateGalaxy = () => {
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   geometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1));
+  geometry.setAttribute(
+    "aRandomness",
+    new THREE.BufferAttribute(randomness, 3)
+  );
 
   /**
    * Material
    */
   material = new THREE.ShaderMaterial({
     depthWrite: false,
-    // blending: THREE.AdditiveBlending,
+    blending: THREE.AdditiveBlending,
     vertexColors: true,
-    vertexShader,
-    fragmentShader,
-    uniforms: { uSize: { value: 8.0 * renderer.getPixelRatio() } },
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+    uniforms: {
+      uSize: { value: 30.0 * renderer.getPixelRatio() },
+      uTime: { value: 0 },
+    },
   });
 
   /**
@@ -156,68 +186,67 @@ gui.addColor(parameters, "outsideColor").onFinishChange(generateGalaxy);
  * Sizes
  */
 const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 0,
+  height: 0,
 };
 
-window.addEventListener("resize", () => {
-  // Update sizes
+const aspectRatio = () => {
+  return sizes.width / sizes.height;
+};
+
+const updateSizes = () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
+};
 
-  // Update camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-
-  // Update renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
+updateSizes();
 
 /**
  * Camera
  */
-// Base camera
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  100
-);
+const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
 camera.position.set(3, 3, 3);
 scene.add(camera);
 
-// Controls
+/**
+ * Controls
+ */
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-});
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ canvas });
+const updateRenderer = () => {
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+};
+updateRenderer();
 
+/**
+ * Generate Galaxy
+ */
 generateGalaxy();
 
 /**
- * Animate
+ * Tick
  */
 const clock = new THREE.Clock();
-
 const tick = () => {
+  // Update Controls
+  controls.update();
+
+  // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
 
-  // Update controls
-  controls.update();
+  // Update Materials
+  material.uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);
 
-  // Call tick again on the next frame
+  // Next Frame
   window.requestAnimationFrame(tick);
 };
-
 tick();
