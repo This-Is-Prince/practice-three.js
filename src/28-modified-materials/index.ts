@@ -1,37 +1,19 @@
 import "../style.css";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as dat from "dat.gui";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 /**
- * Canvas
+ * Base
  */
-const canvas = document.getElementById("myCanvas")!;
-
-/**
- * Debug GUI
- */
+// Debug
 const gui = new dat.GUI();
 
-/**
- * Window Events
- */
-window.addEventListener("resize", () => {
-  // Update Sizes
-  updateSizes();
+// Canvas
+const canvas = document.getElementById("myCanvas")!;
 
-  // Update Camera
-  camera.aspect = aspectRatio();
-  camera.updateProjectionMatrix();
-
-  // Update Renderer
-  updateRenderer();
-});
-
-/**
- * Scene
- */
+// Scene
 const scene = new THREE.Scene();
 
 /**
@@ -58,6 +40,9 @@ const updateAllMaterials = () => {
   });
 };
 
+/**
+ * Environment map
+ */
 const environmentMap = cubeTextureLoader.load([
   "./static/textures/environmentMaps/0/px.jpg",
   "./static/textures/environmentMaps/0/nx.jpg",
@@ -91,102 +76,25 @@ const material = new THREE.MeshStandardMaterial({
   normalMap: normalTexture,
 });
 
-const depthMaterial = new THREE.MeshDepthMaterial({
-  depthPacking: THREE.RGBADepthPacking,
-});
-
-const customUniforms = {
-  uTime: { value: 0 },
-};
-
 material.onBeforeCompile = (shader) => {
-  shader.uniforms.uTime = customUniforms.uTime;
-  shader.vertexShader = shader.vertexShader.replace(
-    "#include <common>",
-    `
-      #include <common>
-
-      uniform float uTime;
-
-      mat2 get2dRotateMatrix(float _angle){
-        return mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
-      }
-    `
-  );
-
-  shader.vertexShader = shader.vertexShader.replace(
-    "#include <begin_vertex>",
-    `
-      #include <begin_vertex>
-
-      objectNormal.xz = rotateMatrix * objectNormal.xz;
-    `
-  );
-
-  shader.vertexShader = shader.vertexShader.replace(
-    "#include <begin_vertex>",
-    `
-        #include <begin_vertex>
-
-        float angle = (position.y + uTime) * 0.9;
-        mat2 rotateMatrix = get2dRotateMatrix(angle);
-
-        transformed.xz = rotateMatrix * transformed.xz;
-    `
-  );
+  console.log(shader);
 };
 
-depthMaterial.onBeforeCompile = (shader) => {
-  shader.uniforms.uTime = customUniforms.uTime;
-  shader.vertexShader = shader.vertexShader.replace(
-    "#include <common>",
-    `
-      #include <common>
-
-      uniform float uTime;
-
-      mat2 get2dRotateMatrix(float _angle){
-        return mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
-      }
-    `
-  );
-  shader.vertexShader = shader.vertexShader.replace(
-    "#include <begin_vertex>",
-    `
-        #include <begin_vertex>
-
-        float angle = (position.y + uTime) * 0.9;
-        mat2 rotateMatrix = get2dRotateMatrix(angle);
-
-        transformed.xz = rotateMatrix * transformed.xz;
-    `
-  );
-};
-
+/**
+ * Models
+ */
 gltfLoader.load("./static/models/LeePerrySmith/LeePerrySmith.glb", (gltf) => {
   // Model
   const mesh = gltf.scene.children[0];
   mesh.rotation.y = Math.PI * 0.5;
   if (mesh instanceof THREE.Mesh) {
     mesh.material = material;
-    mesh.customDepthMaterial = depthMaterial;
   }
   scene.add(mesh);
 
   // Update materials
   updateAllMaterials();
 });
-
-/**
- * Plane
- */
-const plane = new THREE.Mesh(
-  new THREE.PlaneGeometry(15, 15, 15),
-  new THREE.MeshStandardMaterial()
-);
-plane.rotation.y = Math.PI;
-plane.position.set(0, -5, 5);
-scene.add(plane);
 
 /**
  * Lights
@@ -203,66 +111,73 @@ scene.add(directionalLight);
  * Sizes
  */
 const sizes = {
-  width: 0,
-  height: 0,
+  width: window.innerWidth,
+  height: window.innerHeight,
 };
-const aspectRatio = () => {
-  return sizes.width / sizes.height;
-};
-const updateSizes = () => {
+
+window.addEventListener("resize", () => {
+  // Update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
-};
-updateSizes();
+
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
 
 /**
  * Camera
  */
-const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
+// Base camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  sizes.width / sizes.height,
+  0.1,
+  100
+);
 camera.position.set(4, 1, -4);
 scene.add(camera);
 
-/**
- * Controls
- */
+// Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+  antialias: true,
+});
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.physicallyCorrectLights = true;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
-
-const updateRenderer = () => {
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-};
-updateRenderer();
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
- * Tick
+ * Animate
  */
 const clock = new THREE.Clock();
-const tick = () => {
-  // Update Controls
-  controls.update();
 
-  // Elapsed Time
+const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
-  // Update Materials
-  customUniforms.uTime.value = elapsedTime;
+  // Update controls
+  controls.update();
 
   // Render
   renderer.render(scene, camera);
 
-  // Next Frame
+  // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
+
 tick();
