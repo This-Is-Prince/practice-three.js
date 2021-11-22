@@ -1,54 +1,28 @@
 import "../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { DotScreenPass } from "three/examples/jsm/postprocessing/DotScreenPass";
-import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass";
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
-import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader";
+import * as dat from "dat.gui";
 
 /**
- * Canvas
+ * Base
  */
-const canvas = document.getElementById("myCanvas")!;
-
-/**
- * Debug GUI
- */
+// Debug
 const gui = new dat.GUI();
 
-/**
- * Window Events
- */
-window.addEventListener("resize", () => {
-  // Update Sizes
-  updateSizes();
+// Canvas
+const canvas = document.getElementById("myCanvas")!;
 
-  // Update Camera
-  camera.aspect = aspectRatio();
-  camera.updateProjectionMatrix();
-
-  // Update Renderer
-  updateRenderer();
-
-  // Update EffectComposer
-  effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  effectComposer.setSize(sizes.width, sizes.height);
-});
-
-/**
- * Scene
- */
+// Scene
 const scene = new THREE.Scene();
 
 /**
  * Loaders
  */
-const cubeTextureLoader = new THREE.CubeTextureLoader();
 const gltfLoader = new GLTFLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
 const textureLoader = new THREE.TextureLoader();
 
 /**
@@ -113,102 +87,84 @@ scene.add(directionalLight);
  * Sizes
  */
 const sizes = {
-  width: 0,
-  height: 0,
+  width: window.innerWidth,
+  height: window.innerHeight,
 };
-const aspectRatio = () => {
-  return sizes.width / sizes.height;
-};
-const updateSizes = () => {
+
+window.addEventListener("resize", () => {
+  // Update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
-};
-updateSizes();
+
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
 
 /**
  * Camera
  */
-const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
+// Base camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  sizes.width / sizes.height,
+  0.1,
+  100
+);
 camera.position.set(4, 1, -4);
 scene.add(camera);
 
-/**
- * Controls
- */
+// Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true,
+});
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.physicallyCorrectLights = true;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.toneMappingExposure = 1.5;
-
-const updateRenderer = () => {
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-};
-updateRenderer();
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Post Processing
  */
-
-// Render Target
-const renderTarget = new THREE.WebGLRenderTarget(800, 600, {
-  minFilter: THREE.LinearFilter,
-  magFilter: THREE.LinearFilter,
-  format: THREE.RGBAFormat,
-  encoding: THREE.sRGBEncoding,
-});
-
-// Composer
-const effectComposer = new EffectComposer(renderer, renderTarget);
+const effectComposer = new EffectComposer(renderer);
 effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 effectComposer.setSize(sizes.width, sizes.height);
 
-// Passes
 const renderPass = new RenderPass(scene, camera);
 effectComposer.addPass(renderPass);
 
-// DotScreenPass
-const dotScreenPass = new DotScreenPass();
-dotScreenPass.enabled = false;
-effectComposer.addPass(dotScreenPass);
-
-// GlitchPass
-const glitchPass = new GlitchPass();
-glitchPass.goWild = false;
-glitchPass.enabled = false;
-effectComposer.addPass(glitchPass);
-
-// ShaderPass
-const rgbShiftPass = new ShaderPass(RGBShiftShader);
-rgbShiftPass.enabled = true;
-effectComposer.addPass(rgbShiftPass);
-
 /**
- * Tick
+ * Animate
  */
 const clock = new THREE.Clock();
 
 const tick = () => {
-  // Update Controls
-  controls.update();
-
-  // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
+
+  // Update controls
+  controls.update();
 
   // Render
   // renderer.render(scene, camera);
   effectComposer.render();
 
-  // Next Frame
+  // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
+
 tick();
