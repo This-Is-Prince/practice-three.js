@@ -24,12 +24,37 @@ scene.add(mesh);
  * Sizes
  */
 const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 0,
+  height: 0,
 };
+const updateSizes = () => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+};
+updateSizes();
 const aspectRatio = () => {
   return sizes.width / sizes.height;
 };
+
+window.addEventListener("resize", () => {
+  // Update Sizes
+  updateSizes();
+
+  // Update Camera
+  camera.aspect = aspectRatio();
+  camera.updateProjectionMatrix();
+
+  // Update Renderer
+  updateRenderer();
+});
+
+window.addEventListener("dblclick", () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    canvas.requestFullscreen();
+  }
+});
 
 /**
  * Camera
@@ -48,7 +73,11 @@ controls.enableDamping = true;
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({ canvas });
-renderer.setSize(sizes.width, sizes.height);
+const updateRenderer = () => {
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+};
+updateRenderer();
 
 /**
  * Next Frame
