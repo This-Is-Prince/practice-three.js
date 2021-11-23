@@ -3,38 +3,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
- * Window Events
- */
-window.addEventListener("resize", () => {
-  // Update Sizes
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
-
-  // Update Camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-
-  // Update Renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
-
-// FUllScreen
-const exitFullScreen = async () => {
-  await document.exitFullscreen();
-};
-const goFullScreen = async () => {
-  await canvas.requestFullscreen();
-};
-window.addEventListener("dblclick", () => {
-  if (document.fullscreenElement) {
-    exitFullScreen();
-  } else {
-    goFullScreen();
-  }
-});
-
-/**
  * Canvas
  */
 const canvas = document.getElementById("myCanvas")!;
@@ -59,16 +27,14 @@ const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
+const aspectRatio = () => {
+  return sizes.width / sizes.height;
+};
 
 /**
  * Camera
  */
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  100
-);
+const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
 camera.position.z = 3;
 scene.add(camera);
 
@@ -76,7 +42,6 @@ scene.add(camera);
  * Controls
  */
 const controls = new OrbitControls(camera, canvas);
-// controls.enabled = false;
 controls.enableDamping = true;
 
 /**
