@@ -3,25 +3,24 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
- * Window Events
+ * Canvas
+ */
+const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+
+/**
+ * Resize
  */
 window.addEventListener("resize", () => {
   // Update Sizes
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
+  updateSizes();
 
   // Update Camera
-  camera.aspect = sizes.width / sizes.height;
+  camera.aspect = aspectRatio();
   camera.updateProjectionMatrix();
 
-  // Update  Renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Update Renderer
+  updateRenderer();
 });
-/**
- * Canvas
- */
-const canvas = document.getElementById("myCanvas")!;
 
 /**
  * Scene
@@ -29,28 +28,10 @@ const canvas = document.getElementById("myCanvas")!;
 const scene = new THREE.Scene();
 
 /**
- * Objects
+ * Object
  */
-
-// const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
-
-const geometry = new THREE.BufferGeometry();
-// const vertices = new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0]);
-// geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-const count = 50;
-const positionsAttribute = new Float32Array(count * 3 * 3);
-for (let i = 0; i < count * 3 * 3; i++) {
-  positionsAttribute[i] = (Math.random() - 0.5) * 3;
-}
-geometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(positionsAttribute, 3)
-);
-
-const material = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
-  wireframe: true,
-});
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
@@ -58,19 +39,22 @@ scene.add(mesh);
  * Sizes
  */
 const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 0,
+  height: 0,
+};
+const updateSizes = () => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+};
+updateSizes();
+const aspectRatio = () => {
+  return sizes.width / sizes.height;
 };
 
 /**
  * Camera
  */
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  100
-);
+const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
 camera.position.z = 3;
 scene.add(camera);
 
@@ -84,18 +68,24 @@ controls.enableDamping = true;
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({ canvas });
-renderer.setSize(sizes.width, sizes.height);
+
+const updateRenderer = () => {
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+};
+updateRenderer();
 
 /**
- * Next Frame
+ * Animation
  */
 const tick = () => {
   // Update Controls
   controls.update();
+
   // Render
   renderer.render(scene, camera);
 
-  // Request Animation Frame
+  // Next Frame
   window.requestAnimationFrame(tick);
 };
 tick();
