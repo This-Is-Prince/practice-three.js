@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import gsap from "gsap";
 
 // Scene
 const scene = new THREE.Scene();
@@ -32,4 +33,24 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 // Renderer
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(sizes.width, sizes.height);
-renderer.render(scene, camera);
+
+// Clock
+const clock = new THREE.Clock();
+
+// Animations
+gsap.to(mesh.position, { x: 2, duration: 1, delay: 1 });
+gsap.to(mesh.position, { x: 0, delay: 2, duration: 1 });
+
+const tick = () => {
+  // Elapsed Time
+  const elapsedTime = clock.getElapsedTime();
+
+  // Update Objects
+
+  // Renderer
+  renderer.render(scene, camera);
+
+  // Next Frame
+  window.requestAnimationFrame(tick);
+};
+tick();
