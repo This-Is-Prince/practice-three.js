@@ -36,60 +36,10 @@ window.addEventListener("resize", () => {
 const scene = new THREE.Scene();
 
 /**
- * Textures
- */
-const loadingManager = new THREE.LoadingManager();
-// loadingManager.onStart = () => {
-//   console.log("onStart");
-// };
-// loadingManager.onLoad = () => {
-//   console.log("onLoad");
-// };
-// loadingManager.onProgress = () => {
-//   console.log("onProgress");
-// };
-// loadingManager.onError = () => {
-//   console.log("onError");
-// };
-
-const textureLoader = new THREE.TextureLoader(loadingManager);
-const colorTexture = textureLoader.load("./static/textures/minecraft.png");
-const alphaTexture = textureLoader.load("./static/textures/door/alpha.jpg");
-const heightTexture = textureLoader.load("./static/textures/door/height.jpg");
-const normalTexture = textureLoader.load("./static/textures/door/normal.jpg");
-const ambientOcclusionTexture = textureLoader.load(
-  "./static/textures/door/ambientOcclusion.jpg"
-);
-const metalnessTexture = textureLoader.load(
-  "./static/textures/door/metalness.jpg"
-);
-const roughnessTexture = textureLoader.load(
-  "./static/textures/door/roughness.jpg"
-);
-
-// Transforming textures
-// colorTexture.repeat.set(2, 3);
-// colorTexture.wrapS = THREE.MirroredRepeatWrapping;
-// colorTexture.wrapT = THREE.MirroredRepeatWrapping;
-
-// colorTexture.offset.x = 0.5;
-// colorTexture.offset.y = 0.5;
-
-// colorTexture.center.set(0.5, 0.5);
-// colorTexture.rotation = Math.PI * 0.25;
-
-// Minification and mip mapping
-colorTexture.generateMipmaps = false;
-colorTexture.minFilter = THREE.NearestFilter;
-colorTexture.magFilter = THREE.NearestFilter;
-
-/**
  * Objects
  */
 const boxGeometry = new THREE.BoxGeometry(1, 1);
-const material = new THREE.MeshBasicMaterial({
-  map: colorTexture,
-});
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
 const box = new THREE.Mesh(boxGeometry, material);
 scene.add(box);
