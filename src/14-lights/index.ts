@@ -1,35 +1,18 @@
 import "../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import * as dat from "dat.gui";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
 /**
- * Debug GUI
+ * GUI
  */
-const gui = new dat.GUI({ closed: true });
+const gui = new dat.GUI();
 
 /**
  * Canvas
  */
-const canvas = document.getElementById("myCanvas")!;
-
-/**
- * Window Events
- */
-
-// Resize
-window.addEventListener("resize", () => {
-  // Update Sizes
-  updateSizes();
-
-  // Update Camera
-  camera.aspect = aspectRatio();
-  camera.updateProjectionMatrix();
-
-  // Update Renderer
-  updateRenderer();
-});
+const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
 /**
  * Scene
@@ -37,20 +20,14 @@ window.addEventListener("resize", () => {
 const scene = new THREE.Scene();
 
 /**
- * Textures
- */
-const textureLoader = new THREE.TextureLoader();
-
-/**
  * Lights
  */
-
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 // Directional Light
-const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.5);
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3);
 directionalLight.position.set(1, 0.25, 0);
 scene.add(directionalLight);
 
@@ -70,15 +47,18 @@ rectAreaLight.lookAt(new THREE.Vector3());
 scene.add(rectAreaLight);
 
 // Spot Light
-const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 6, Math.PI * 0.1, 0.25, 1);
+const spotLight = new THREE.SpotLight(
+  0x78ff00,
+  0.5,
+  10,
+  Math.PI * 0.1,
+  0.25,
+  1
+);
 spotLight.position.set(0, 2, 3);
-spotLight.target.position.x = -0.75;
 scene.add(spotLight);
+spotLight.target.position.x = -0.75;
 scene.add(spotLight.target);
-
-// Rect Area Light Helper
-const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
-scene.add(rectAreaLightHelper);
 
 /**
  * Helpers
@@ -89,32 +69,44 @@ const hemisphereLightHelper = new THREE.HemisphereLightHelper(
 );
 scene.add(hemisphereLightHelper);
 
-// Directional Light Helper
 const directionalLightHelper = new THREE.DirectionalLightHelper(
   directionalLight,
   0.2
 );
 scene.add(directionalLightHelper);
 
-// Point Light Helper
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
 scene.add(pointLightHelper);
 
-// Spot Light Helper
 const spotLightHelper = new THREE.SpotLightHelper(spotLight);
 scene.add(spotLightHelper);
 window.requestAnimationFrame(() => {
   spotLightHelper.update();
 });
 
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+scene.add(rectAreaLightHelper);
+
+// window.requestAnimationFrame(() => {
+//   rectAreaLightHelper.position.copy(rectAreaLight.position);
+//   rectAreaLightHelper.quaternion.copy(rectAreaLight.quaternion);
+// });
+
 /**
- * Materials
+ * Debug
  */
-const material = new THREE.MeshStandardMaterial({ roughness: 0.4 });
+gui.add(ambientLight, "intensity").min(0).max(1).step(0.0001);
+
+/**
+ * Material
+ */
+const material = new THREE.MeshStandardMaterial();
+material.roughness = 0.4;
 
 /**
  * Meshes
  */
+
 // Sphere
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
 sphere.position.x = -1.5;
@@ -124,7 +116,7 @@ const cube = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 0.75), material);
 
 // Torus
 const torus = new THREE.Mesh(
-  new THREE.TorusGeometry(0.3, 0.2, 32, 64),
+  new THREE.TorusGeometry(0.3, 0.2, 64, 128),
   material
 );
 torus.position.x = 1.5;
@@ -133,6 +125,7 @@ torus.position.x = 1.5;
 const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
 plane.rotation.x = -Math.PI * 0.5;
 plane.position.y = -0.65;
+
 scene.add(sphere, cube, torus, plane);
 
 /**
@@ -142,14 +135,14 @@ const sizes = {
   width: 0,
   height: 0,
 };
-const aspectRatio = () => {
-  return sizes.width / sizes.height;
-};
 const updateSizes = () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 };
 updateSizes();
+const aspectRatio = () => {
+  return sizes.width / sizes.height;
+};
 
 /**
  * Camera
@@ -167,7 +160,7 @@ controls.enableDamping = true;
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas })!;
+const renderer = new THREE.WebGLRenderer({ canvas });
 const updateRenderer = () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -175,28 +168,42 @@ const updateRenderer = () => {
 updateRenderer();
 
 /**
- * Tick
+ * Window Events
  */
-// Clock
+window.addEventListener("resize", () => {
+  // Update Sizes
+  updateSizes();
+
+  // Update Camera
+  camera.aspect = aspectRatio();
+  camera.updateProjectionMatrix();
+
+  // Update Renderer
+  updateRenderer();
+});
+
+/**
+ * Animations
+ */
 const clock = new THREE.Clock();
 
 const tick = () => {
-  // Update Controls
-  controls.update();
-
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
 
-  // Update Objects
-  sphere.rotation.x = 0.15 * elapsedTime;
-  cube.rotation.x = 0.15 * elapsedTime;
-  torus.rotation.x = 0.15 * elapsedTime;
+  // Update Controls
+  controls.update();
 
+  // Update Meshes
   sphere.rotation.y = 0.1 * elapsedTime;
   cube.rotation.y = 0.1 * elapsedTime;
   torus.rotation.y = 0.1 * elapsedTime;
 
-  // Renderer
+  sphere.rotation.x = 0.15 * elapsedTime;
+  cube.rotation.x = 0.15 * elapsedTime;
+  torus.rotation.x = 0.15 * elapsedTime;
+
+  // Render
   renderer.render(scene, camera);
 
   // Next Frame
