@@ -9,10 +9,10 @@ import * as dat from "dat.gui";
 const textureLoader = new THREE.TextureLoader();
 const bakedShadow = textureLoader.load("./static/textures/bakedShadow.jpg");
 const simpleShadow = textureLoader.load("./static/textures/simpleShadow.jpg");
+
 /**
  * Debug GUI
  */
-
 const gui = new dat.GUI({ closed: true });
 
 /**
@@ -35,7 +35,7 @@ window.addEventListener("resize", () => {
 /**
  * Canvas
  */
-const canvas = document.getElementById("myCanvas")!;
+const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
 /**
  * Scene
@@ -62,15 +62,17 @@ scene.add(directionalLight);
 // Shadow
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.far = 6;
-directionalLight.shadow.camera.near = 1;
-directionalLight.shadow.camera.top = 2;
-directionalLight.shadow.camera.bottom = -2;
 directionalLight.shadow.camera.left = -2;
 directionalLight.shadow.camera.right = 2;
-// Radius Does't work with PCFSoftShadowMap
+directionalLight.shadow.camera.top = 2;
+directionalLight.shadow.camera.bottom = -2;
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 6;
+
+// Radius Does'nt work with PCFSoftShadowMap
 // directionalLight.shadow.radius = 10;
 
+// Camera Helper
 const directionalLightCameraHelper = new THREE.CameraHelper(
   directionalLight.shadow.camera
 );
@@ -78,18 +80,16 @@ directionalLightCameraHelper.visible = false;
 scene.add(directionalLightCameraHelper);
 
 // Spot Light
-const spotLight = new THREE.SpotLight(0xffffff, 0.3, 10, Math.PI * 0.3);
-
-spotLight.position.set(0, 2, 2);
-scene.add(spotLight);
-scene.add(spotLight.target);
-
-// Shadow
+const spotLight = new THREE.SpotLight(0xffffff, 0.4, 10, Math.PI * 0.3);
 spotLight.castShadow = true;
 spotLight.shadow.mapSize.set(1024, 1024);
 spotLight.shadow.camera.fov = 30;
 spotLight.shadow.camera.near = 1;
 spotLight.shadow.camera.far = 6;
+
+spotLight.position.set(0, 2, 2);
+scene.add(spotLight);
+scene.add(spotLight.target);
 
 const spotLightCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
 spotLightCameraHelper.visible = false;
@@ -97,14 +97,13 @@ scene.add(spotLightCameraHelper);
 
 // Point Light
 const pointLight = new THREE.PointLight(0xffffff, 0.3);
-pointLight.position.set(-1, 1, 0);
-scene.add(pointLight);
-
-// Shadow
 pointLight.castShadow = true;
 pointLight.shadow.mapSize.set(1024, 1024);
 pointLight.shadow.camera.near = 0.1;
 pointLight.shadow.camera.far = 5;
+
+pointLight.position.set(-1, 1, 0);
+scene.add(pointLight);
 
 const pointLightCameraHelper = new THREE.CameraHelper(pointLight.shadow.camera);
 pointLightCameraHelper.visible = false;
@@ -140,7 +139,6 @@ scene.add(plane);
 // Shadow
 plane.receiveShadow = true;
 
-// Baked Shadow
 const sphereShadow = new THREE.Mesh(
   new THREE.PlaneGeometry(1.5, 1.5),
   new THREE.MeshBasicMaterial({
@@ -185,8 +183,8 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-// Shadows
-renderer.shadowMap.enabled = false;
+// Shadow
+// renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
@@ -196,21 +194,21 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const clock = new THREE.Clock();
 
 const tick = () => {
-  // Update Controls
-  controls.update();
-
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
 
-  // Update The Sphere
+  // Update Sphere
   sphere.position.x = Math.cos(elapsedTime) * 1.5;
   sphere.position.z = Math.sin(elapsedTime) * 1.5;
-  sphere.position.y = Math.abs(Math.sin(elapsedTime * 3));
+  sphere.position.y = Math.abs(Math.sin(elapsedTime * 3) * 1);
 
-  // Update Baked Shadow
+  // Update SphereShadow
   sphereShadow.position.x = sphere.position.x;
   sphereShadow.position.z = sphere.position.z;
-  sphereShadow.material.opacity = (1 - sphere.position.y) * 0.5;
+  sphereShadow.material.opacity = 1 - sphere.position.y;
+
+  // Update Controls
+  controls.update();
 
   // Render
   renderer.render(scene, camera);
