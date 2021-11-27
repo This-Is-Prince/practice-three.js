@@ -14,6 +14,11 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
  * Debug GUI
  */
 const gui = new dat.GUI();
+const parameters = {
+  floorColor: 0xfcbc5d,
+  treeTop: 0x27cc32,
+  treeBottom: 0xcca913,
+};
 
 /**
  * Window Events
@@ -44,7 +49,30 @@ dracoLoader.setDecoderPath("./static/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
-  console.log(gltf);
+  let treeTop = gltf.scene.children[0].children[0];
+  let treeBottom = gltf.scene.children[0].children[1];
+
+  gui.addColor(parameters, "treeTop").onChange(() => {
+    if (treeTop instanceof THREE.Mesh) {
+      if (treeTop.material instanceof THREE.MeshStandardMaterial) {
+        treeTop.material.color.set(parameters.treeTop);
+      }
+    }
+  });
+
+  gui.addColor(parameters, "treeBottom").onChange(() => {
+    if (treeBottom instanceof THREE.Mesh) {
+      if (treeBottom.material instanceof THREE.MeshStandardMaterial) {
+        treeBottom.material.color.set(parameters.treeBottom);
+      }
+    }
+  });
+
+  if (treeTop instanceof THREE.Mesh) {
+    if (treeTop.material instanceof THREE.MeshStandardMaterial) {
+      console.log(treeTop.material.color.getHexString());
+    }
+  }
   gltf.scene.scale.set(0.25, 0.25, 0.25);
   scene.add(gltf.scene);
 });
@@ -54,8 +82,14 @@ gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
  */
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 })
+  new THREE.MeshStandardMaterial({
+    color: parameters.floorColor,
+    roughness: 0.5,
+  })
 );
+gui.addColor(parameters, "floorColor").onChange(() => {
+  floor.material.color.set(parameters.floorColor);
+});
 floor.receiveShadow = true;
 floor.rotation.x = Math.PI * -0.5;
 scene.add(floor);
