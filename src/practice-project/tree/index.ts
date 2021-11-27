@@ -67,13 +67,13 @@ gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
       }
     }
   });
-
-  if (treeTop instanceof THREE.Mesh) {
-    if (treeTop.material instanceof THREE.MeshStandardMaterial) {
-      console.log(treeTop.material.color.getHexString());
-    }
-  }
   gltf.scene.scale.set(0.25, 0.25, 0.25);
+  gltf.scene.position.set(2, 0, 0);
+  scene.add(gltf.scene);
+});
+
+gltfLoader.load("./static/models/table/table.glb", (gltf) => {
+  console.log(gltf.scene);
   scene.add(gltf.scene);
 });
 
