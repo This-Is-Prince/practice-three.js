@@ -33,6 +33,7 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load("./static/models/fence/fence.glb", (gltf) => {
   const fenceWood = gltf.scene.children[0].children[0];
+  fenceWood.castShadow = true;
   const fenceBolt = gltf.scene.children[0].children[1];
   gui.addColor(parameters, "boltColor").onChange(() => {
     if (fenceBolt instanceof THREE.Mesh) {
@@ -82,6 +83,7 @@ const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(5, 5),
   new THREE.MeshStandardMaterial()
 );
+floor.receiveShadow = true;
 floor.rotation.x = -Math.PI * 0.5;
 floor.position.y = -0.6;
 scene.add(floor);
