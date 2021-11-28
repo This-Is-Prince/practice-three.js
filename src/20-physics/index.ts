@@ -7,43 +7,13 @@ import * as CANNON from "cannon-es";
 /**
  * Canvas
  */
-const canvas = document.getElementById("myCanvas")!;
+const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
 /**
  * Debug GUI
  */
 const gui = new dat.GUI();
-const debugObject = {
-  createSphere: () => {
-    createSphere(Math.random() * 0.5, {
-      x: (Math.random() - 0.5) * 3,
-      y: 3,
-      z: (Math.random() - 0.5) * 3,
-    });
-  },
-  createBox: () => {
-    createBox(Math.random(), Math.random(), Math.random(), {
-      x: (Math.random() - 0.5) * 3,
-      y: 3,
-      z: (Math.random() - 0.5) * 3,
-    });
-  },
-  reset: () => {
-    for (const object of objectsToUpdate) {
-      let { mesh, body } = object;
-      // Remove Body
-      body.removeEventListener("collide", playHitSound);
-      world.removeBody(body);
-
-      // Remove Mesh
-      scene.remove(mesh);
-    }
-  },
-};
-gui.add(debugObject, "createSphere");
-gui.add(debugObject, "createBox");
-gui.add(debugObject, "reset");
-
+const debugObject = {};
 /**
  * Window Events
  */
@@ -60,25 +30,6 @@ window.addEventListener("resize", () => {
 });
 
 /**
- * Sounds
- */
-type CollisionType = {
-  type: "collide";
-  body: CANNON.Body;
-  contact: CANNON.ContactEquation;
-  target: CANNON.Body;
-};
-const hitSound = new Audio("./static/sounds/hit.mp3");
-const playHitSound = (collision: CollisionType) => {
-  const impactStrength = collision.contact.getImpactVelocityAlongNormal();
-  if (impactStrength > 1.5) {
-    hitSound.volume = Math.random();
-    hitSound.currentTime = 0;
-    hitSound.play();
-  }
-};
-
-/**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
@@ -93,93 +44,49 @@ const environmentMapTexture = cubeTextureLoader.load([
 ]);
 
 /**
- * Physics
- */
-// World
-const world = new CANNON.World();
-world.broadphase = new CANNON.SAPBroadphase(world);
-world.allowSleep = true;
-world.gravity = new CANNON.Vec3(0, -9.82, 0);
-
-// Materials
-// 1.way
-// const concreteMaterial = new CANNON.Material("concrete");
-// const plasticMaterial = new CANNON.Material("plastic");
-
-// const concretePlasticContactMaterial = new CANNON.ContactMaterial(
-//   concreteMaterial,
-//   plasticMaterial,
-//   { friction: 0.1, restitution: 0.7 }
-// );
-// world.addContactMaterial(concretePlasticContactMaterial);
-
-// 2.way
-// const defaultMaterial = new CANNON.Material("default");
-// const defaultContactMaterial = new CANNON.ContactMaterial(
-//   defaultMaterial,
-//   defaultMaterial,
-//   { friction: 0.1, restitution: 0.7 }
-// );
-// world.addContactMaterial(defaultContactMaterial);
-
-// 3.way
-const defaultMaterial = new CANNON.Material("default");
-const defaultContactMaterial = new CANNON.ContactMaterial(
-  defaultMaterial,
-  defaultMaterial,
-  { friction: 0.1, restitution: 0.7 }
-);
-world.addContactMaterial(defaultContactMaterial);
-world.defaultContactMaterial = defaultContactMaterial;
-
-// Sphere
-// const sphereShape = new CANNON.Sphere(0.5);
-// const sphereBody = new CANNON.Body({
-//   mass: 1,
-//   position: new CANNON.Vec3(0, 3, 0),
-//   shape: sphereShape,
-//   // 1.way
-//   // material: plasticMaterial,
-//   // 2.way
-//   // material: defaultMaterial,
-// });
-// sphereBody.applyLocalForce(
-//   new CANNON.Vec3(150, 0, 0),
-//   new CANNON.Vec3(0, 0, 0)
-// );
-// world.addBody(sphereBody);
-
-// Floor
-const floorShape = new CANNON.Plane();
-const floorBody = new CANNON.Body();
-floorBody.mass = 0;
-floorBody.addShape(floorShape);
-// 1.way
-// floorBody.material = concreteMaterial;
-// 2.way
-// floorBody.material = defaultMaterial;
-
-floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
-world.addBody(floorBody);
-
-/**
  * Scene
  */
 const scene = new THREE.Scene();
 
 /**
+ * Physics
+ */
+const world = new CANNON.World();
+world.gravity.set(0, -9.82, 0);
+
+// Sphere Body
+let radiusOfSphere = 0.5;
+const sphereShape = new CANNON.Sphere(radiusOfSphere);
+const sphereBody = new CANNON.Body({
+  shape: sphereShape,
+  mass: 1,
+  position: new CANNON.Vec3(0, 3, 0),
+});
+world.addBody(sphereBody);
+
+// Plane Body
+const planeShape = new CANNON.Plane();
+const planeBody = new CANNON.Body({
+  shape: planeShape,
+  mass: 0,
+  position: new CANNON.Vec3(0, 0, 0),
+});
+planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
+world.addBody(planeBody);
+
+/**
  * Test sphere
  */
-// const sphere = new THREE.Mesh(
-//   new THREE.SphereBufferGeometry(0.5, 32, 32),
-//   new THREE.MeshStandardMaterial({
-//     metalness: 0.3,
-//     roughness: 0.4,
-//   })
-// );
-// sphere.castShadow = true;
-// sphere.position.y = 0.5;
-// scene.add(sphere);
+const sphere = new THREE.Mesh(
+  new THREE.SphereBufferGeometry(radiusOfSphere, 32, 32),
+  new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+  })
+);
+sphere.castShadow = true;
+sphere.position.y = 0.5;
+scene.add(sphere);
 
 /**
  * Floor
@@ -258,81 +165,6 @@ const updateRenderer = () => {
 updateRenderer();
 
 /**
- * Utils
- */
-type PositionType = {
-  x: number;
-  y: number;
-  z: number;
-};
-
-const objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
-
-// Sphere
-type CreateSphereFunType = (radius: number, position: PositionType) => void;
-const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
-const sphereMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.3,
-  roughness: 0.4,
-});
-const createSphere: CreateSphereFunType = (radius, { x, y, z }) => {
-  // Three.js Mesh
-  const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  mesh.scale.set(radius, radius, radius);
-  mesh.castShadow = true;
-  mesh.position.set(x, y, z);
-  scene.add(mesh);
-
-  // Cannon.js Body
-  const shape = new CANNON.Sphere(radius);
-  const body = new CANNON.Body({
-    shape,
-    mass: 1,
-    position: new CANNON.Vec3(x, y, z),
-  });
-  body.position.set(x, y, z);
-  body.addEventListener("collide", playHitSound);
-  world.addBody(body);
-  objectsToUpdate.push({ mesh, body });
-};
-createSphere(0.5, { x: 0, y: 3, z: 0 });
-
-// Box
-type CreateBoxFunType = (
-  width: number,
-  height: number,
-  depth: number,
-  position: PositionType
-) => void;
-let boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-let boxMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.3,
-  roughness: 0.4,
-});
-const createBox: CreateBoxFunType = (width, height, depth, { x, y, z }) => {
-  // Three.js Mesh
-  const mesh = new THREE.Mesh(boxGeometry, boxMaterial);
-  mesh.scale.set(width, height, depth);
-  mesh.castShadow = true;
-  mesh.position.set(x, y, z);
-  scene.add(mesh);
-
-  // Cannon.js Body
-  const shape = new CANNON.Box(
-    new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5)
-  );
-  const body = new CANNON.Body({
-    mass: 1,
-    shape,
-    position: new CANNON.Vec3(x, y, z),
-  });
-  body.position.set(x, y, z);
-  body.addEventListener("collide", playHitSound);
-  world.addBody(body);
-  objectsToUpdate.push({ mesh, body });
-};
-
-/**
  * Animate
  */
 // Clock
@@ -340,33 +172,20 @@ const clock = new THREE.Clock();
 let oldElapsedTime = 0;
 
 const tick = () => {
-  // Update Controls
-  controls.update();
-
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
 
-  // Update Physics
-  // sphereBody.applyForce(new CANNON.Vec3(-0.5, 0, 0), sphereBody.position);
-
   // Update Physics World
   world.step(1 / 60, deltaTime, 3);
 
-  // Update Objects
-  // let { x: sX, y: sY, z: sZ } = sphereBody.position;
-  // sphere.position.set(sX, sY, sZ);
+  // Update Sphere
+  const { x: sX, y: sY, z: sZ } = sphereBody.position;
+  sphere.position.set(sX, sY, sZ);
 
-  // Update Objects
-  for (const object of objectsToUpdate) {
-    let { mesh, body } = object;
-    let { x: sX, y: sY, z: sZ } = body.position;
-    mesh.position.set(sX, sY, sZ);
-
-    let { x: rX, y: rY, z: rZ, w } = body.quaternion;
-    mesh.rotation.setFromQuaternion(new THREE.Quaternion(rX, rY, rZ, w));
-  }
+  // Update Controls
+  controls.update();
 
   // Render
   renderer.render(scene, camera);
