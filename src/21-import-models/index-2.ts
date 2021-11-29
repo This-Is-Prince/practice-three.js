@@ -8,7 +8,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 /**
  * Canvas
  */
-const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+const canvas = document.getElementById("myCanvas")!;
 
 /**
  * Debug GUI
@@ -35,6 +35,56 @@ window.addEventListener("resize", () => {
  * Scene
  */
 const scene = new THREE.Scene();
+
+/**
+ * Models
+ */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+// ######## 1.Duck Model
+
+// ------1.GLTF
+// gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ------2.GLTF Binary
+// gltfLoader.load("./static/models/Duck/glTF-Binary/Duck.glb", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ------3.GLTF Draco
+// gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ------4.GLTF Embedded
+// gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
+//   scene.add(gltf.scene.children[0]);
+// });
+
+// ######## 2.FlightHelmet Model
+// gltfLoader.load(
+//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   (gltf) => {
+//     scene.add(gltf.scene);
+//   }
+// );
+
+// ######## 3.Fox Model
+let mixer: THREE.AnimationMixer;
+gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  const action = mixer.clipAction(gltf.animations[1]);
+
+  action.play();
+
+  gltf.scene.scale.set(0.025, 0.025, 0.025);
+  scene.add(gltf.scene);
+});
 
 /**
  * Floor
@@ -122,6 +172,11 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
+
+  // Update Mixer
+  if (mixer) {
+    mixer.update(deltaTime);
+  }
 
   // Render
   renderer.render(scene, camera);
