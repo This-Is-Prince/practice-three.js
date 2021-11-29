@@ -44,8 +44,6 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
 world.addContactMaterial(defaultContactMaterial);
 world.defaultContactMaterial = defaultContactMaterial;
 
-// SHape
-
 /**
  * Models
  */
@@ -56,13 +54,39 @@ gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
   const cannon = new THREE.Group();
   const cannonObject = [...gltf.scene.children[0].children];
-  cannonObject.forEach((object) => {
+  cannonObject.forEach((object, index) => {
     object.castShadow = true;
     cannon.add(object);
   });
   cannon.scale.set(0.25, 0.25, 0.25);
   cannon.position.y = -0.4;
   scene.add(cannon);
+
+  // Physics
+  const chassis = cannonObject[3] as THREE.Mesh;
+  let min = chassis.geometry.boundingBox?.min!;
+  let max = chassis.geometry.boundingBox?.max!;
+  let x = (Math.abs(min.x) + Math.abs(max.x)) / 2;
+  let y = (Math.abs(min.y) + Math.abs(max.y)) / 2;
+  let z = (Math.abs(min.z) + Math.abs(max.z)) / 2;
+
+  if (chassis.material instanceof THREE.MeshStandardMaterial) {
+    chassis.material.color.set(0xffffff);
+  }
+
+  // Build The Car Chassis
+  const chassisShape = new CANNON.Box(new CANNON.Vec3(x, y, z));
+  const chassisBody = new CANNON.Body({
+    mass: 150,
+    shape: chassisShape,
+    position: new CANNON.Vec3(0, 4, 0),
+    angularVelocity: new CANNON.Vec3(0, 0.5, 0),
+  });
+
+  // Create The Vehicle
+  const vehicle = new CANNON.RaycastVehicle({
+    chassisBody,
+  });
 });
 
 /**
