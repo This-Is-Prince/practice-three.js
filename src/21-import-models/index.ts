@@ -37,6 +37,71 @@ window.addEventListener("resize", () => {
 const scene = new THREE.Scene();
 
 /**
+ * Models
+ */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+// Duck Model
+
+// 1.GLTF
+// gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+//   const duck = gltf.scene.children[0].children[1];
+//   duck.scale.set(0.01, 0.01, 0.01);
+//   scene.add(duck);
+// });
+
+// 2.Binary
+// gltfLoader.load("./static/models/Duck/glTF-Binary/Duck.glb", (gltf) => {
+//   const duck = gltf.scene.children[0].children[1];
+//   duck.scale.set(0.01, 0.01, 0.01);
+//   scene.add(duck);
+// });
+
+// 3.Binary
+// gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+//   const duck = gltf.scene.children[0].children[1];
+//   duck.scale.set(0.01, 0.01, 0.01);
+//   scene.add(duck);
+// });
+
+// 4.Binary
+// gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
+//   const duck = gltf.scene.children[0].children[1];
+//   duck.scale.set(0.01, 0.01, 0.01);
+//   scene.add(duck);
+// });
+
+// 2.FlightHelmet Model
+// gltfLoader.load(
+//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   (gltf) => {
+//     // while (gltf.scene.children.length) {
+//     //   scene.add(gltf.scene.children[0]);
+//     // }
+
+//     const children = [...gltf.scene.children];
+//     children.forEach((child) => {
+//       scene.add(child);
+//     });
+//   }
+// );
+
+// 3.Fox Model
+let mixer: THREE.AnimationMixer;
+gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
+  const fox = gltf.scene;
+  mixer = new THREE.AnimationMixer(fox);
+  const action = mixer.clipAction(gltf.animations[2]);
+  action.play();
+
+  fox.scale.set(0.025, 0.025, 0.025);
+  scene.add(fox);
+});
+
+/**
  * Floor
  */
 const floor = new THREE.Mesh(
@@ -122,6 +187,11 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
+
+  // Mixer
+  if (mixer) {
+    mixer.update(deltaTime);
+  }
 
   // Render
   renderer.render(scene, camera);
