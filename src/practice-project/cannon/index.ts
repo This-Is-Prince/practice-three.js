@@ -81,7 +81,7 @@ world.addBody(groundBody);
 const chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.3, 1));
 const chassisBody = new CANNON.Body({ mass: 150 });
 chassisBody.addShape(chassisShape);
-chassisBody.position.set(0, 0.2, 0);
+chassisBody.position.set(0, 4, 0);
 chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
 
 // car visual body
