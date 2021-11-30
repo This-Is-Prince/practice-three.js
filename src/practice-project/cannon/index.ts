@@ -38,14 +38,12 @@ const copyFromBodyToMesh = (body: CANNON.Body, mesh: THREE.Mesh) => {
 /**
  * Floor
  */
-const planeGeometry = new THREE.PlaneGeometry(10, 10, 10);
-const planeMaterial = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
-  side: THREE.DoubleSide,
-});
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.rotation.x = Math.PI / 2;
-scene.add(plane);
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(10, 10, 10),
+  new THREE.MeshStandardMaterial({ color: 0xff0000 })
+);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
 
 /**
  * Physics
@@ -56,6 +54,7 @@ world.broadphase = new CANNON.SAPBroadphase(world);
 world.gravity.set(0, -10, 0);
 world.defaultContactMaterial.friction = 0;
 
+// Physics Materials
 const groundMaterial = new CANNON.Material("groundMaterial");
 const wheelMaterial = new CANNON.Material("wheelMaterial");
 const wheelGroundContactMaterial = new CANNON.ContactMaterial(
@@ -67,8 +66,19 @@ const wheelGroundContactMaterial = new CANNON.ContactMaterial(
     contactEquationStiffness: 1000,
   }
 );
-
 world.addContactMaterial(wheelGroundContactMaterial);
+
+// ground physics Body
+const q = ground.quaternion;
+const p = ground.position;
+const groundBody = new CANNON.Body({
+  mass: 0, // mass = 0 makes the body static
+  material: groundMaterial,
+  shape: new CANNON.Plane(),
+  position: new CANNON.Vec3(p.x, p.y, p.z),
+  quaternion: new CANNON.Quaternion(q.x, q.y, q.z, q.w),
+});
+world.addBody(groundBody);
 
 // car physics body
 const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.3, 2));
@@ -79,7 +89,7 @@ chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
 
 // car visual body
 const geometry = new THREE.BoxGeometry(2, 0.6, 4); // double chassis shape
-const material = new THREE.MeshBasicMaterial({
+const material = new THREE.MeshStandardMaterial({
   color: 0xffff00,
   side: THREE.DoubleSide,
 });
@@ -174,32 +184,6 @@ world.addEventListener("postStep", function () {
   }
 });
 
-const q = plane.quaternion;
-const planeBody = new CANNON.Body({
-  mass: 0, // mass = 0 makes the body static
-  material: groundMaterial,
-  shape: new CANNON.Plane(),
-  quaternion: new CANNON.Quaternion(-q.x, q.y, q.z, q.w),
-});
-world.addBody(planeBody);
-
-/**
- * Main
- **/
-
-// function updatePhysics() {
-//   world.step(1 / 60);
-//   // update the chassis position
-//   box.position.copy(chassisBody.position);
-//   box.quaternion.copy(chassisBody.quaternion);
-// }
-
-// function render() {
-//   requestAnimationFrame(render);
-//   renderer.render(scene, camera);
-//   updatePhysics();
-// }
-
 function navigate(e: KeyboardEvent) {
   if (e.type != "keydown" && e.type != "keyup") return;
   let keyup = e.type == "keyup";
@@ -235,8 +219,6 @@ function navigate(e: KeyboardEvent) {
 
 window.addEventListener("keydown", navigate);
 window.addEventListener("keyup", navigate);
-
-// render();
 
 /**
  * Lights
