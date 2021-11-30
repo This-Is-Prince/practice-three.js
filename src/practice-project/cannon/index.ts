@@ -69,14 +69,11 @@ const wheelGroundContactMaterial = new CANNON.ContactMaterial(
 world.addContactMaterial(wheelGroundContactMaterial);
 
 // ground physics Body
-const q = ground.quaternion;
-const p = ground.position;
 const groundBody = new CANNON.Body({
   mass: 0, // mass = 0 makes the body static
   material: groundMaterial,
   shape: new CANNON.Plane(),
-  position: new CANNON.Vec3(p.x, p.y, p.z),
-  quaternion: new CANNON.Quaternion(q.x, q.y, q.z, q.w),
+  quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
 });
 world.addBody(groundBody);
 
@@ -88,13 +85,12 @@ chassisBody.position.set(0, 0.2, 0);
 chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
 
 // car visual body
-const geometry = new THREE.BoxGeometry(2, 0.6, 4); // double chassis shape
-const material = new THREE.MeshStandardMaterial({
+const chassisGeometry = new THREE.BoxGeometry(2, 0.6, 4); // double chassis shape
+const chassisMaterial = new THREE.MeshStandardMaterial({
   color: 0xffff00,
-  side: THREE.DoubleSide,
 });
-const box = new THREE.Mesh(geometry, material);
-scene.add(box);
+const chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
+scene.add(chassisMesh);
 
 // parent vehicle object
 const vehicle = new CANNON.RaycastVehicle({
@@ -122,7 +118,7 @@ var options = {
   useCustomSlidingRotationalSpeed: true,
 };
 
-var axlewidth = 0.7;
+var axlewidth = 1.7;
 options.chassisConnectionPointLocal.set(axlewidth, 0, -1);
 vehicle.addWheel(options);
 
@@ -310,7 +306,7 @@ const tick = () => {
 
   world.step(1 / 60, deltaTime, 3);
   // update the chassis position
-  copyFromBodyToMesh(chassisBody, box);
+  copyFromBodyToMesh(chassisBody, chassisMesh);
 
   // Update Controls
   controls.update();
