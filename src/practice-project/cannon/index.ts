@@ -187,24 +187,30 @@ function navigate(e: KeyboardEvent) {
   vehicle.setBrake(0, 3);
 
   let engineForce = 800,
-    maxSteerVal = 0.3;
-  switch (e.keyCode) {
-    case 38: // forward
+    maxSteerVal = 0.6;
+  switch (e.code) {
+    case "Space": // break
+      vehicle.setBrake(10, 0);
+      vehicle.setBrake(10, 1);
+      vehicle.setBrake(10, 2);
+      vehicle.setBrake(10, 3);
+      break;
+    case "ArrowUp": // forward
       vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
       vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
       break;
 
-    case 40: // backward
+    case "ArrowDown": // backward
       vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
       vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
       break;
 
-    case 39: // right
+    case "ArrowRight": // right
       vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 2);
       vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 3);
       break;
 
-    case 37: // left
+    case "ArrowLeft": // left
       vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 2);
       vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 3);
       break;
