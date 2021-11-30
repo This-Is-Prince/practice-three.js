@@ -137,34 +137,27 @@ vehicle.addToWorld(world);
 const wheelBodies: CANNON.Body[] = [],
   wheelVisuals: THREE.Mesh[] = [];
 vehicle.wheelInfos.forEach(function (wheel) {
-  const shape = new CANNON.Cylinder(
-    wheel.radius,
-    wheel.radius,
-    wheel.radius / 2,
-    20
-  );
+  const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.4, 32);
   const body = new CANNON.Body({ mass: 1, material: wheelMaterial });
-  const q = new CANNON.Quaternion();
-  q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
-  body.addShape(shape, new CANNON.Vec3(), q);
+  body.addShape(shape);
   wheelBodies.push(body);
+
   // wheel visual body
-  const geometry = new THREE.CylinderGeometry(
+  const wheelGeometry = new THREE.CylinderGeometry(
     wheel.radius,
     wheel.radius,
     0.4,
     32
   );
-  const material = new THREE.MeshPhongMaterial({
-    color: 0xd0901d,
-    emissive: 0xaa0000,
-    side: THREE.DoubleSide,
-    flatShading: true,
-  });
-  const cylinder = new THREE.Mesh(geometry, material);
-  cylinder.geometry.rotateZ(Math.PI / 2);
-  wheelVisuals.push(cylinder);
-  scene.add(cylinder);
+  const wheelMesh = new THREE.Mesh(
+    wheelGeometry,
+    new THREE.MeshStandardMaterial({
+      color: 0x0000ff,
+    })
+  );
+  wheelMesh.geometry.rotateZ(Math.PI / 2);
+  wheelVisuals.push(wheelMesh);
+  scene.add(wheelMesh);
 });
 
 // update the wheels to match the physics
