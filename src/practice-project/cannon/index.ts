@@ -78,14 +78,14 @@ const groundBody = new CANNON.Body({
 world.addBody(groundBody);
 
 // car physics body
-const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.3, 2));
+const chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.3, 1));
 const chassisBody = new CANNON.Body({ mass: 150 });
 chassisBody.addShape(chassisShape);
 chassisBody.position.set(0, 0.2, 0);
 chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
 
 // car visual body
-const chassisGeometry = new THREE.BoxGeometry(2, 0.6, 4); // double chassis shape
+const chassisGeometry = new THREE.BoxGeometry(4, 0.6, 2); // double chassis shape
 const chassisMaterial = new THREE.MeshStandardMaterial({
   color: 0xffff00,
 });
@@ -95,9 +95,9 @@ scene.add(chassisMesh);
 // parent vehicle object
 const vehicle = new CANNON.RaycastVehicle({
   chassisBody: chassisBody,
-  indexRightAxis: 0, // x
+  indexRightAxis: 2, // z
   indexUpAxis: 1, // y
-  indexForwardAxis: 2, // z
+  indexForwardAxis: 0, // x
 });
 
 // wheel options
@@ -111,24 +111,29 @@ var options = {
   dampingCompression: 4.5,
   maxSuspensionForce: 200000,
   rollInfluence: 0.01,
-  axleLocal: new CANNON.Vec3(-1, 0, 0),
+  axleLocal: new CANNON.Vec3(0, 0, 1),
   chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
   maxSuspensionTravel: 0.25,
   customSlidingRotationalSpeed: -30,
   useCustomSlidingRotationalSpeed: true,
 };
 
-var axlewidth = 1.7;
-options.chassisConnectionPointLocal.set(axlewidth, 0, -1);
+const axlewidth = 1.5;
+
+// Front Right Wheel
+options.chassisConnectionPointLocal.set(-axlewidth, 0, -0.7);
 vehicle.addWheel(options);
 
-options.chassisConnectionPointLocal.set(-axlewidth, 0, -1);
+// Front Left Wheel
+options.chassisConnectionPointLocal.set(-axlewidth, 0, 0.7);
 vehicle.addWheel(options);
 
-options.chassisConnectionPointLocal.set(axlewidth, 0, 1);
+// Back Right Wheel
+options.chassisConnectionPointLocal.set(axlewidth, 0, -0.7);
 vehicle.addWheel(options);
 
-options.chassisConnectionPointLocal.set(-axlewidth, 0, 1);
+// Back Left Wheel
+options.chassisConnectionPointLocal.set(axlewidth, 0, 0.7);
 vehicle.addWheel(options);
 
 vehicle.addToWorld(world);
@@ -155,7 +160,7 @@ vehicle.wheelInfos.forEach(function (wheel) {
       color: 0x0000ff,
     })
   );
-  wheelMesh.geometry.rotateZ(Math.PI / 2);
+  wheelMesh.geometry.rotateX(Math.PI / 2);
   wheelVisuals.push(wheelMesh);
   scene.add(wheelMesh);
 });
@@ -185,13 +190,13 @@ function navigate(e: KeyboardEvent) {
     maxSteerVal = 0.3;
   switch (e.keyCode) {
     case 38: // forward
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
+      vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
+      vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
       break;
 
     case 40: // backward
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
+      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
+      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
       break;
 
     case 39: // right
