@@ -39,6 +39,9 @@ let is = 0;
 
 let wheelBodies: CANNON.Body[] = [];
 let vehicle: CANNON.RaycastVehicle;
+let wheels: THREE.Mesh[];
+let chassisBody: CANNON.Body;
+let chassis: THREE.Mesh;
 
 /**
  * Models
@@ -50,7 +53,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
   const cannon = new THREE.Group();
   const cannonObject = [...gltf.scene.children] as THREE.Mesh[];
-  let chassis = new THREE.Mesh();
+  chassis = new THREE.Mesh();
 
   let frontLeftWheel = new THREE.Mesh();
   let frontRightWheel = new THREE.Mesh();
@@ -78,7 +81,6 @@ gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
     cannon.add(object);
   });
   cannon.scale.set(0.25, 0.25, 0.25);
-  cannon.position.set(0, 4, 0);
 
   scene.add(cannon);
 
@@ -88,13 +90,14 @@ gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
   let x = (Math.abs(min.x) + Math.abs(max.x)) / 2;
   let y = (Math.abs(min.y) + Math.abs(max.y)) / 2;
   let z = (Math.abs(min.z) + Math.abs(max.z)) / 2;
+  console.log(z);
 
   // Build The Car Chassis
   const chassisShape = new CANNON.Box(new CANNON.Vec3(x, y, z));
-  const chassisBody = new CANNON.Body({
+  chassisBody = new CANNON.Body({
     mass: 150,
     shape: chassisShape,
-    position: new CANNON.Vec3(0, 4, 0),
+    position: new CANNON.Vec3(0, 2, 0),
     angularVelocity: new CANNON.Vec3(0, 0.5, 0),
   });
 
@@ -120,7 +123,7 @@ gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
     customSlidingRotationalSpeed: -30,
     useCustomSlidingRotationalSpeed: true,
   };
-  let wheels = [] as THREE.Mesh[];
+  wheels = [] as THREE.Mesh[];
 
   wheelOptions.chassisConnectionPointLocal.set(
     frontLeftWheel.position.x,
@@ -175,56 +178,61 @@ gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
     wheelBody.collisionFilterGroup = 0; // turn off collisions
 
     const quaternion = new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0);
-    wheelBody.addShape(cylinderShape, new CANNON.Vec3(), quaternion);
+    wheel.chassisConnectionPointLocal;
+    wheelBody.addShape(
+      cylinderShape,
+      wheel.chassisConnectionPointLocal,
+      quaternion
+    );
     wheelBodies.push(wheelBody);
     world.addBody(wheelBody);
   });
 
   // Update the wheel bodies
-  world.addEventListener("postStep", () => {
-    chassis.position.set(
-      chassisBody.position.x,
-      chassisBody.position.y,
-      chassisBody.position.z
-    );
-    chassis.quaternion.set(
-      chassisBody.quaternion.x,
-      chassisBody.quaternion.y,
-      chassisBody.quaternion.z,
-      chassisBody.quaternion.w
-    );
+  // world.addEventListener("postStep", () => {
+  //   chassis.position.set(
+  //     chassisBody.position.x,
+  //     chassisBody.position.y,
+  //     chassisBody.position.z
+  //   );
+  //   chassis.quaternion.set(
+  //     chassisBody.quaternion.x,
+  //     chassisBody.quaternion.y,
+  //     chassisBody.quaternion.z,
+  //     chassisBody.quaternion.w
+  //   );
 
-    for (let i = 0; i < vehicle.wheelInfos.length; i++) {
-      vehicle.updateWheelTransform(i);
-      const transform = vehicle.wheelInfos[i].worldTransform;
-      const wheelBody = wheelBodies[i];
-      const wheel = wheels[i];
-      wheelBody.position.copy(transform.position);
-      wheel.position.set(
-        transform.position.x,
-        transform.position.y,
-        transform.position.z
-      );
+  //   for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+  //     vehicle.updateWheelTransform(i);
+  //     const transform = vehicle.wheelInfos[i].worldTransform;
+  //     const wheelBody = wheelBodies[i];
+  //     const wheel = wheels[i];
+  //     wheelBody.position.copy(transform.position);
+  //     wheel.position.set(
+  //       transform.position.x,
+  //       transform.position.y,
+  //       transform.position.z
+  //     );
 
-      // if (is < 5) {
-      //   console.log(transform.position);
-      // }
+  //     // if (is < 5) {
+  //     //   console.log(transform.position);
+  //     // }
 
-      wheelBody.quaternion.copy(transform.quaternion);
-      wheel.quaternion.set(
-        transform.quaternion.x,
-        transform.quaternion.y,
-        transform.quaternion.z,
-        transform.quaternion.w
-      );
-    }
-    if (is < 50) {
-      console.log(chassisBody.position);
-      console.log("space");
-    }
+  //     wheelBody.quaternion.copy(transform.quaternion);
+  //     wheel.quaternion.set(
+  //       transform.quaternion.x,
+  //       transform.quaternion.y,
+  //       transform.quaternion.z,
+  //       transform.quaternion.w
+  //     );
+  //   }
+  //   // if (is < 50) {
+  //   //   console.log(chassisBody.position);
+  //   //   console.log("space");
+  //   // }
 
-    is++;
-  });
+  //   is++;
+  // });
 
   // Ground
   const groundMaterial = new CANNON.Material("ground");
@@ -233,14 +241,15 @@ gltfLoader.load("./static/models/cannon/cannon.glb", (gltf) => {
     shape: groundShape,
     mass: 0,
     material: groundMaterial,
+    position: new CANNON.Vec3(0, 0, 0),
   });
-  ground.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+  ground.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
   world.addBody(ground);
 
   const wheel_ground = new CANNON.ContactMaterial(
     wheelMaterial,
     groundMaterial,
-    { friction: 0.3, restitution: 0, contactEquationStiffness: 1000 }
+    { friction: 0.3, restitution: 0.5, contactEquationStiffness: 10 }
   );
   world.addContactMaterial(wheel_ground);
 
@@ -423,6 +432,51 @@ const tick = () => {
 
   // Physics
   world.step(1 / 60, deltaTime, 3);
+
+  if (chassis && chassisBody) {
+    chassis.position.set(
+      chassisBody.position.x,
+      chassisBody.position.y,
+      chassisBody.position.z
+    );
+    chassis.quaternion.set(
+      chassisBody.quaternion.x,
+      chassisBody.quaternion.y,
+      chassisBody.quaternion.z,
+      chassisBody.quaternion.w
+    );
+
+    for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+      vehicle.updateWheelTransform(i);
+      const transform = vehicle.wheelInfos[i].worldTransform;
+      const wheelBody = wheelBodies[i];
+      const wheel = wheels[i];
+      wheelBody.position.copy(transform.position);
+      wheel.position.set(
+        transform.position.x,
+        transform.position.y,
+        transform.position.z
+      );
+
+      // if (is < 5) {
+      //   console.log(transform.position);
+      // }
+
+      wheelBody.quaternion.copy(transform.quaternion);
+      wheel.quaternion.set(
+        transform.quaternion.x,
+        transform.quaternion.y,
+        transform.quaternion.z,
+        transform.quaternion.w
+      );
+    }
+    // if (is < 50) {
+    //   console.log(chassisBody.position);
+    //   console.log("space");
+    // }
+
+    is++;
+  }
 
   // Update Controls
   controls.update();
