@@ -15,10 +15,6 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
  *  Debug GUI
  */
 const gui = new dat.GUI();
-const parameters = {
-  metalColor: 0xcccccc,
-  woodColor: 0xcc6022,
-};
 
 /**
  *  Scene
@@ -77,148 +73,189 @@ const groundBody = new CANNON.Body({
 });
 world.addBody(groundBody);
 
-// car physics body
-const chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.3, 1));
-const chassisBody = new CANNON.Body({ mass: 150 });
-chassisBody.addShape(chassisShape);
-chassisBody.position.set(0, 4, 0);
-chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
+let chassisBody: CANNON.Body;
+let chassisMesh: THREE.Mesh;
 
-// car visual body
-const chassisGeometry = new THREE.BoxGeometry(4, 0.6, 2); // double chassis shape
-const chassisMaterial = new THREE.MeshStandardMaterial({
-  color: 0xffff00,
-});
-const chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
-scene.add(chassisMesh);
+/**
+ * Models
+ */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.load("./static/models/car/car.glb", (gltf) => {
+  // All Car Meshes
+  const meshes = [...gltf.scene.children] as THREE.Mesh[];
 
-// parent vehicle object
-const vehicle = new CANNON.RaycastVehicle({
-  chassisBody: chassisBody,
-  indexRightAxis: 2, // z
-  indexUpAxis: 1, // y
-  indexForwardAxis: 0, // x
-});
+  // Car Chassis Mesh
+  chassisMesh = new THREE.Mesh();
 
-// wheel options
-var options = {
-  radius: 0.3,
-  directionLocal: new CANNON.Vec3(0, -1, 0),
-  suspensionStiffness: 45,
-  suspensionRestLength: 0.4,
-  frictionSlip: 5,
-  dampingRelaxation: 2.3,
-  dampingCompression: 4.5,
-  maxSuspensionForce: 200000,
-  rollInfluence: 0.01,
-  axleLocal: new CANNON.Vec3(0, 0, 1),
-  chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
-  maxSuspensionTravel: 0.25,
-  customSlidingRotationalSpeed: -30,
-  useCustomSlidingRotationalSpeed: true,
-};
+  // Car Wheel Meshes
+  let front_Left_Wheel = new THREE.Mesh();
+  let front_Right_Wheel = new THREE.Mesh();
+  let back_Left_Wheel = new THREE.Mesh();
+  let back_Right_Wheel = new THREE.Mesh();
 
-const axlewidth = 1.5;
-
-// Front Right Wheel
-options.chassisConnectionPointLocal.set(-axlewidth, 0, -0.7);
-vehicle.addWheel(options);
-
-// Front Left Wheel
-options.chassisConnectionPointLocal.set(-axlewidth, 0, 0.7);
-vehicle.addWheel(options);
-
-// Back Right Wheel
-options.chassisConnectionPointLocal.set(axlewidth, 0, -0.7);
-vehicle.addWheel(options);
-
-// Back Left Wheel
-options.chassisConnectionPointLocal.set(axlewidth, 0, 0.7);
-vehicle.addWheel(options);
-
-vehicle.addToWorld(world);
-
-// car wheels
-const wheelBodies: CANNON.Body[] = [],
-  wheelVisuals: THREE.Mesh[] = [];
-vehicle.wheelInfos.forEach(function (wheel) {
-  const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.4, 32);
-  const body = new CANNON.Body({ mass: 1, material: wheelMaterial });
-  body.addShape(shape);
-  wheelBodies.push(body);
-
-  // wheel visual body
-  const wheelGeometry = new THREE.CylinderGeometry(
-    wheel.radius,
-    wheel.radius,
-    0.4,
-    32
-  );
-  const wheelMesh = new THREE.Mesh(
-    wheelGeometry,
-    new THREE.MeshStandardMaterial({
-      color: 0x0000ff,
-    })
-  );
-  wheelMesh.geometry.rotateX(Math.PI / 2);
-  wheelVisuals.push(wheelMesh);
-  scene.add(wheelMesh);
-});
-
-// update the wheels to match the physics
-world.addEventListener("postStep", function () {
-  for (let i = 0; i < vehicle.wheelInfos.length; i++) {
-    vehicle.updateWheelTransform(i);
-    let t = vehicle.wheelInfos[i].worldTransform;
-    // update wheel physics
-    wheelBodies[i].position.copy(t.position);
-    wheelBodies[i].quaternion.copy(t.quaternion);
-    // update wheel visuals
-    copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
+  // Differentiating all meshes
+  for (let mesh of meshes) {
+    switch (mesh.name) {
+      case "Chassis":
+        chassisMesh = mesh;
+        break;
+      case "Front_Left_Wheel":
+        front_Left_Wheel = mesh;
+        break;
+      case "Front_Right_Wheel":
+        front_Right_Wheel = mesh;
+        break;
+      case "Back_Left_Wheel":
+        back_Left_Wheel = mesh;
+        break;
+      case "Back_Right_Wheel":
+        back_Right_Wheel = mesh;
+        break;
+    }
   }
-});
+  // Adding chassis into scene
+  scene.add(chassisMesh);
+  console.log(chassisMesh);
 
-function navigate(e: KeyboardEvent) {
-  if (e.type != "keydown" && e.type != "keyup") return;
-  let keyup = e.type == "keyup";
-  vehicle.setBrake(0, 0);
-  vehicle.setBrake(0, 1);
-  vehicle.setBrake(0, 2);
-  vehicle.setBrake(0, 3);
+  // Chassis Bounding Box
+  const chassisBoundingBox = chassisMesh.geometry.boundingBox!;
+  const max = chassisBoundingBox.max;
+  const min = chassisBoundingBox.min;
+  const x = Math.max(Math.abs(max.x), Math.abs(min.x));
+  const y = Math.max(Math.abs(max.y), Math.abs(min.y));
+  const z = Math.max(Math.abs(max.z), Math.abs(min.z));
 
-  let engineForce = 800,
-    maxSteerVal = 0.6;
-  switch (e.code) {
-    case "Space": // break
-      vehicle.setBrake(10, 0);
-      vehicle.setBrake(10, 1);
-      vehicle.setBrake(10, 2);
-      vehicle.setBrake(10, 3);
-      break;
-    case "ArrowUp": // forward
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
-      break;
+  // Car Physics Body
+  const chassisShape = new CANNON.Box(new CANNON.Vec3(x, y, z));
+  chassisBody = new CANNON.Body({ mass: 150 });
+  chassisBody.addShape(chassisShape);
+  chassisBody.position.set(0, 4, 0);
+  chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
 
-    case "ArrowDown": // backward
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
-      break;
+  // Parent vehicle object
+  const vehicle = new CANNON.RaycastVehicle({
+    chassisBody: chassisBody,
+    indexRightAxis: 2, // z
+    indexUpAxis: 1, // y
+    indexForwardAxis: 0, // x
+  });
 
-    case "ArrowRight": // right
-      vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 2);
-      vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 3);
-      break;
+  // wheel options
+  const options = {
+    radius: 0.18,
+    directionLocal: new CANNON.Vec3(0, -1, 0),
+    suspensionStiffness: 45,
+    suspensionRestLength: 0.4,
+    frictionSlip: 5,
+    dampingRelaxation: 2.3,
+    dampingCompression: 4.5,
+    maxSuspensionForce: 200000,
+    rollInfluence: 0.01,
+    axleLocal: new CANNON.Vec3(0, 0, 1),
+    chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
+    maxSuspensionTravel: 0.25,
+    customSlidingRotationalSpeed: -30,
+    useCustomSlidingRotationalSpeed: true,
+  };
+  const wheelVisuals: THREE.Mesh[] = [];
 
-    case "ArrowLeft": // left
-      vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 2);
-      vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 3);
-      break;
+  const wheelX = Math.abs(front_Right_Wheel.position.x);
+  const wheelZ = Math.abs(front_Right_Wheel.position.z);
+
+  // Front Right Wheel
+  options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(front_Right_Wheel);
+
+  // Front Left Wheel
+  options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(front_Left_Wheel);
+
+  // Back Right Wheel
+  options.chassisConnectionPointLocal.set(wheelX, 0, -wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(back_Right_Wheel);
+
+  // Back Left Wheel
+  options.chassisConnectionPointLocal.set(wheelX, 0, wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(back_Left_Wheel);
+
+  // Add vehicle to physics world;
+  vehicle.addToWorld(world);
+
+  // Car Wheels Body
+  const wheelBodies: CANNON.Body[] = [];
+  vehicle.wheelInfos.forEach((wheel, index) => {
+    // Wheel Body
+    const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.13, 32);
+    const body = new CANNON.Body({ mass: 1, material: wheelMaterial });
+    body.addShape(shape);
+    wheelBodies.push(body);
+
+    // Wheel Meshes
+    const wheelMesh = wheelVisuals[index];
+    scene.add(wheelMesh);
+  });
+
+  // update the wheels to match the physics
+  world.addEventListener("postStep", function () {
+    for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+      vehicle.updateWheelTransform(i);
+      let t = vehicle.wheelInfos[i].worldTransform;
+      // update wheel physics
+      wheelBodies[i].position.copy(t.position);
+      wheelBodies[i].quaternion.copy(t.quaternion);
+      // update wheel visuals
+      copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
+    }
+  });
+  function navigate(e: KeyboardEvent) {
+    if (e.type != "keydown" && e.type != "keyup") return;
+    let keyup = e.type == "keyup";
+    vehicle.setBrake(0, 0);
+    vehicle.setBrake(0, 1);
+    vehicle.setBrake(0, 2);
+    vehicle.setBrake(0, 3);
+
+    let engineForce = 800,
+      maxSteerVal = 0.6;
+    switch (e.code) {
+      case "Space": // break
+        vehicle.setBrake(10, 0);
+        vehicle.setBrake(10, 1);
+        vehicle.setBrake(10, 2);
+        vehicle.setBrake(10, 3);
+        break;
+      case "ArrowUp": // forward
+        vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
+        vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
+        break;
+
+      case "ArrowDown": // backward
+        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
+        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
+        break;
+
+      case "ArrowRight": // right
+        vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 2);
+        vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 3);
+        break;
+
+      case "ArrowLeft": // left
+        vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 2);
+        vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 3);
+        break;
+    }
   }
-}
 
-window.addEventListener("keydown", navigate);
-window.addEventListener("keyup", navigate);
+  window.addEventListener("keydown", navigate);
+  window.addEventListener("keyup", navigate);
+});
 
 /**
  * Lights
@@ -310,7 +347,10 @@ const tick = () => {
 
   world.step(1 / 60, deltaTime, 3);
   // update the chassis position
-  copyFromBodyToMesh(chassisBody, chassisMesh);
+  if (chassisBody && chassisMesh) {
+    copyFromBodyToMesh(chassisBody, chassisMesh);
+    chassisMesh.position.y -= 0.25;
+  }
 
   // Update Controls
   controls.update();
