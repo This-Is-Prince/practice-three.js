@@ -15,11 +15,24 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
  *  Debug GUI
  */
 const gui = new dat.GUI();
+const parameters = {
+  groundColor: 0xfff88d,
+  fogColor: 0xcadee3,
+};
+gui.addColor(parameters, "groundColor").onChange(() => {
+  ground.material.color.set(parameters.groundColor);
+});
+gui.addColor(parameters, "fogColor").onChange(() => {
+  scene.background = new THREE.Color(parameters.fogColor);
+  scene.fog?.color.set(parameters.fogColor);
+});
 
 /**
  *  Scene
  */
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(parameters.fogColor);
+scene.fog = new THREE.Fog(parameters.fogColor, 1, 20);
 
 /**
  * Utils
@@ -35,10 +48,11 @@ const copyFromBodyToMesh = (body: CANNON.Body, mesh: THREE.Mesh) => {
  * Floor
  */
 const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(10, 10, 10),
-  new THREE.MeshStandardMaterial({ color: 0xff0000 })
+  new THREE.PlaneGeometry(100, 100, 10),
+  new THREE.MeshStandardMaterial({ color: parameters.groundColor })
 );
 ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
 scene.add(ground);
 
 /**
@@ -98,9 +112,11 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
 
   // Differentiating all meshes
   for (let mesh of meshes) {
+    mesh.castShadow = true;
     switch (mesh.name) {
       case "Chassis":
         chassisMesh = mesh;
+        mesh.castShadow = true;
         break;
       case "Front_Left_Wheel":
         front_Left_Wheel = mesh;
@@ -214,6 +230,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
       copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
     }
   });
+
   function navigate(e: KeyboardEvent) {
     if (e.type != "keydown" && e.type != "keyup") return;
     let keyup = e.type == "keyup";
@@ -311,8 +328,8 @@ window.addEventListener("resize", () => {
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.z = -10;
-camera.position.y = 1;
+camera.position.z = -5;
+camera.position.y = 5;
 scene.add(camera);
 
 /**
