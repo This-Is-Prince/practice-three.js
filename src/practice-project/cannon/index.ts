@@ -251,8 +251,6 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
       maxSteerVal = 0.6;
     switch (e.code) {
       case "Space": // break
-        vehicle.setBrake(10, 0);
-        vehicle.setBrake(10, 1);
         vehicle.setBrake(10, 2);
         vehicle.setBrake(10, 3);
         break;
