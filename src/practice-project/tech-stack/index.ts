@@ -17,7 +17,7 @@ const parameters = {
 };
 gui.addColor(parameters, "fogColor").onChange(() => {
   scene.background = new THREE.Color(parameters.fogColor);
-  scene.fog.color.set(parameters.fogColor);
+  scene.fog!.color.set(parameters.fogColor);
 });
 gui.addColor(parameters, "groundColor").onChange(() => {
   ground.material.color.set(parameters.groundColor);
