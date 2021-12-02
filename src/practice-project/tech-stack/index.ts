@@ -4,6 +4,8 @@ import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 
 /**
  * Debug
@@ -14,6 +16,8 @@ const parameters = {
   groundColor: 0xf2d395,
   oddColor: 0xe5ff65,
   evenColor: 0xaa00ff,
+  ladderColor: 0xff7ee4,
+  rotateX: 0,
 };
 gui.addColor(parameters, "fogColor").onChange(() => {
   scene.background = new THREE.Color(parameters.fogColor);
@@ -75,6 +79,40 @@ directionalLight.shadow.camera.top = 3;
 directionalLight.shadow.camera.bottom = -3;
 directionalLight.position.set(3, 3, 3);
 scene.add(directionalLight);
+
+/**
+ * Models
+ */
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./static/draco/");
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.load("./static/models/ladder/ladder.glb", (gltf) => {
+  const ladder = gltf.scene.children[0] as THREE.Mesh;
+  const boundingBox = ladder.geometry.boundingBox!;
+
+  const scale = 0.5;
+  const height = -boundingBox.min.y * scale;
+  ladder.scale.set(scale, scale, scale);
+  const x = -0.55;
+  const z = 2;
+  ladder.position.set(x, height, z);
+  ladder.rotateY(0.32);
+  ladder.rotateX(-0.4675);
+  gui.add(ladder.rotation, "x").min(-Math.PI).max(Math.PI).step(0.00001);
+  gui.add(ladder.rotation, "y").min(-Math.PI).max(Math.PI).step(0.00001);
+  gui.add(ladder.rotation, "z").min(-Math.PI).max(Math.PI).step(0.00001);
+  ladder.material = new THREE.MeshStandardMaterial({
+    color: parameters.ladderColor,
+  });
+  gui.addColor(parameters, "ladderColor").onChange(() => {
+    if (ladder.material instanceof THREE.MeshStandardMaterial) {
+      ladder.material.color.set(parameters.ladderColor);
+    }
+  });
+
+  scene.add(ladder);
+});
 
 /**
  * Fonts
@@ -306,7 +344,7 @@ scene.add(camera);
  * Controls
  */
 const controls = new OrbitControls(camera, canvas);
-controls.enabled = false;
+// controls.enabled = false;
 controls.enableDamping = true;
 
 /**
@@ -333,9 +371,9 @@ const tick = () => {
   controls.update();
 
   // Update Camera
-  camera.position.y = Math.abs(Math.sin(elapsedTime - 2.5) * 2 + 3);
-  camera.position.x = Math.sin(elapsedTime) * 6;
-  camera.position.z = Math.cos(elapsedTime) * 6;
+  // camera.position.y = Math.abs(Math.sin(elapsedTime - 2.5) * 2 + 3);
+  // camera.position.x = Math.sin(elapsedTime) * 6;
+  // camera.position.z = Math.cos(elapsedTime) * 6;
 
   // Render
   renderer.render(scene, camera);
