@@ -110,7 +110,7 @@ gltfLoader.load("./static/models/ladder/ladder.glb", (gltf) => {
       ladder.material.color.set(parameters.ladderColor);
     }
   });
-
+  ladder.castShadow = true;
   scene.add(ladder);
 });
 
