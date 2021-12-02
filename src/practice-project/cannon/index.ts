@@ -24,7 +24,7 @@ gui.addColor(parameters, "groundColor").onChange(() => {
 });
 gui.addColor(parameters, "fogColor").onChange(() => {
   scene.background = new THREE.Color(parameters.fogColor);
-  scene.fog?.color.set(parameters.fogColor);
+  scene.fog!.color.set(parameters.fogColor);
 });
 
 /**
@@ -115,6 +115,14 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
     mesh.castShadow = true;
     switch (mesh.name) {
       case "Chassis":
+        // Point Light
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.shadow.mapSize.set(1024, 1024);
+        pointLight.shadow.camera.far = 20;
+        pointLight.shadow.camera.near = 3;
+        pointLight.position.set(0, 5, 5);
+        pointLight.castShadow = true;
+        mesh.add(pointLight);
         chassisMesh = mesh;
         mesh.castShadow = true;
         break;
@@ -280,21 +288,6 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
-
-// Directional Light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.near = 5;
-directionalLight.shadow.camera.far = 10;
-directionalLight.shadow.camera.left = -2;
-directionalLight.shadow.camera.right = 2;
-directionalLight.shadow.camera.top = 2;
-directionalLight.shadow.camera.bottom = -2;
-directionalLight.position.set(0, 5, 5);
-scene.add(directionalLight);
-const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-// scene.add(cameraHelper);
 
 /**
  * Sizes
