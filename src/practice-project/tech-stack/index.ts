@@ -8,12 +8,12 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 /**
  * Debug
  */
-const gui = new dat.GUI();
+const gui = new dat.GUI({ closed: true });
 const parameters = {
   fogColor: 0x83c4d9,
   groundColor: 0xf2d395,
-  fogNear: 1,
-  fogFar: 15,
+  oddColor: 0xe5ff65,
+  evenColor: 0xaa00ff,
 };
 gui.addColor(parameters, "fogColor").onChange(() => {
   scene.background = new THREE.Color(parameters.fogColor);
@@ -21,6 +21,13 @@ gui.addColor(parameters, "fogColor").onChange(() => {
 });
 gui.addColor(parameters, "groundColor").onChange(() => {
   ground.material.color.set(parameters.groundColor);
+});
+
+gui.addColor(parameters, "oddColor").onChange(() => {
+  oddMaterial.color.set(parameters.oddColor);
+});
+gui.addColor(parameters, "evenColor").onChange(() => {
+  evenMaterial.color.set(parameters.evenColor);
 });
 
 /**
@@ -76,6 +83,7 @@ const fontLoader = new FontLoader();
 fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   // Size Of Text
   let size = 0.5;
+  let height = 0.4;
   // Material
   const textMaterial = new THREE.MeshNormalMaterial();
 
@@ -86,14 +94,15 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const cssGeometry = new TextGeometry("CSS", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   cssGeometry.center();
   cssGeometry.translate(0, size / 2, 0);
   // CSS Mesh
-  const cssMesh = new THREE.Mesh(cssGeometry, textMaterial);
-  cssMesh.position.x = -1.75;
+  const cssMesh = new THREE.Mesh(cssGeometry, oddMaterial);
+  cssMesh.position.x = -1;
+  cssMesh.rotateY(Math.PI * 0.1);
   cssMesh.castShadow = true;
 
   /**
@@ -103,14 +112,15 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const htmlGeometry = new TextGeometry("HTML", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   htmlGeometry.center();
   htmlGeometry.translate(0, size / 2, 0);
   // HTML Mesh
-  const htmlMesh = new THREE.Mesh(htmlGeometry, textMaterial);
-  htmlMesh.position.x = 1.75;
+  const htmlMesh = new THREE.Mesh(htmlGeometry, oddMaterial);
+  htmlMesh.position.x = 1;
+  htmlMesh.rotateY(-Math.PI * 0.1);
   htmlMesh.castShadow = true;
 
   /**
@@ -120,14 +130,14 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const typescriptGeometry = new TextGeometry("TYPESCRIPT", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   typescriptGeometry.center();
   typescriptGeometry.translate(0, size / 2, 0);
   // Typescript Mesh
-  const typescriptMesh = new THREE.Mesh(typescriptGeometry, textMaterial);
-  typescriptMesh.position.y = size;
+  const typescriptMesh = new THREE.Mesh(typescriptGeometry, evenMaterial);
+  typescriptMesh.position.set(0, size, -0.1);
   typescriptMesh.castShadow = true;
 
   /**
@@ -137,14 +147,16 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const three_js_Geometry = new TextGeometry("THREE-JS", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   three_js_Geometry.center();
   three_js_Geometry.translate(0, size / 2, 0);
   // THREE Mesh
-  const three_js_Mesh = new THREE.Mesh(three_js_Geometry, textMaterial);
+  const three_js_Mesh = new THREE.Mesh(three_js_Geometry, oddMaterial);
   three_js_Mesh.position.y = size * 2;
+  three_js_Mesh.rotateY(Math.PI * 0.1);
+
   three_js_Mesh.castShadow = true;
 
   /**
@@ -154,14 +166,15 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const reactGeometry = new TextGeometry("REACT", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   reactGeometry.center();
   reactGeometry.translate(0, size / 2, 0);
   // React Mesh
-  const reactMesh = new THREE.Mesh(reactGeometry, textMaterial);
+  const reactMesh = new THREE.Mesh(reactGeometry, evenMaterial);
   reactMesh.position.y = size * 3;
+  reactMesh.rotateY(-Math.PI * 0.1);
   reactMesh.castShadow = true;
 
   /**
@@ -171,14 +184,15 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const blenderGeometry = new TextGeometry("BLENDER", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   blenderGeometry.center();
   blenderGeometry.translate(0, size / 2, 0);
   // Blender Mesh
-  const blenderMesh = new THREE.Mesh(blenderGeometry, textMaterial);
+  const blenderMesh = new THREE.Mesh(blenderGeometry, oddMaterial);
   blenderMesh.position.y = size * 4;
+  blenderMesh.rotateY(Math.PI * 0.1);
   blenderMesh.castShadow = true;
 
   /**
@@ -188,14 +202,15 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const node_js_Geometry = new TextGeometry("NODE-JS", {
     font,
     size,
-    height: 0.2,
+    height,
     curveSegments: 12,
   });
   node_js_Geometry.center();
   node_js_Geometry.translate(0, size / 2, 0);
   // NODE.JS Mesh
-  const node_js_Mesh = new THREE.Mesh(node_js_Geometry, textMaterial);
+  const node_js_Mesh = new THREE.Mesh(node_js_Geometry, evenMaterial);
   node_js_Mesh.position.y = size * 5;
+  node_js_Mesh.rotateY(-Math.PI * 0.1);
   node_js_Mesh.castShadow = true;
 
   scene.add(
@@ -215,6 +230,41 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
 const groundMaterial = new THREE.MeshStandardMaterial({
   color: parameters.groundColor,
 });
+const evenMaterial = new THREE.MeshStandardMaterial({
+  color: parameters.evenColor,
+});
+
+// Debug
+gui
+  .add(evenMaterial, "metalness")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("evenMetalness");
+gui
+  .add(evenMaterial, "roughness")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("evenRoughness");
+
+const oddMaterial = new THREE.MeshStandardMaterial({
+  color: parameters.oddColor,
+});
+
+// Debug
+gui
+  .add(oddMaterial, "metalness")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("oddMetalness");
+gui
+  .add(oddMaterial, "roughness")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("oddRoughness");
 
 /**
  * Geometry
@@ -256,6 +306,7 @@ scene.add(camera);
  * Controls
  */
 const controls = new OrbitControls(camera, canvas);
+controls.enabled = false;
 controls.enableDamping = true;
 
 /**
@@ -280,6 +331,11 @@ const tick = () => {
 
   // Update Controls
   controls.update();
+
+  // Update Camera
+  camera.position.y = Math.abs(Math.sin(elapsedTime - 2.5) * 2 + 3);
+  camera.position.x = Math.sin(elapsedTime) * 6;
+  camera.position.z = Math.cos(elapsedTime) * 6;
 
   // Render
   renderer.render(scene, camera);
