@@ -68,6 +68,8 @@ const updateAllMaterials = () => {
       // child.material.envMap = environmentMap;
       child.material.envMapIntensity = debugObject.envMapIntensity;
       child.material.needsUpdate = true;
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
   });
 };
@@ -122,7 +124,16 @@ gltfLoader.load(
  */
 const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
 directionalLight.position.set(0.25, 3, -2.25);
+directionalLight.castShadow = true;
+directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.mapSize.set(1024, 1024);
+directionalLight.shadow.normalBias = 0.05;
 scene.add(directionalLight);
+
+// const directionalLightCameraHelper = new THREE.CameraHelper(
+//   directionalLight.shadow.camera
+// );
+// scene.add(directionalLightCameraHelper);
 
 gui
   .add(directionalLight, "intensity")
@@ -191,6 +202,8 @@ renderer.physicallyCorrectLights = true;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 3;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 gui.add(renderer, "toneMappingExposure").min(0).max(10).step(0.001);
 
