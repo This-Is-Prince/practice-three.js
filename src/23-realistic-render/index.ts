@@ -38,6 +38,9 @@ window.addEventListener("resize", () => {
  * Debug GUI
  */
 const gui = new dat.GUI();
+const debugObject = {
+  envMapIntensity: 5,
+};
 
 /**
  * Scene
@@ -54,8 +57,65 @@ const testSphere = new THREE.Mesh(
 scene.add(testSphere);
 
 /**
+ * Update all Materials
+ */
+const updateAllMaterials = () => {
+  scene.traverse((child) => {
+    if (
+      child instanceof THREE.Mesh &&
+      child.material instanceof THREE.MeshStandardMaterial
+    ) {
+      // child.material.envMap = environmentMap;
+      child.material.envMapIntensity = debugObject.envMapIntensity;
+      child.material.needsUpdate = true;
+    }
+  });
+};
+
+/**
+ * Environment Map
+ */
+const environmentMap = cubeTextureLoader.load([
+  "./static/textures/environmentMaps/0/px.jpg",
+  "./static/textures/environmentMaps/0/nx.jpg",
+  "./static/textures/environmentMaps/0/py.jpg",
+  "./static/textures/environmentMaps/0/ny.jpg",
+  "./static/textures/environmentMaps/0/pz.jpg",
+  "./static/textures/environmentMaps/0/nz.jpg",
+]);
+scene.background = environmentMap;
+scene.environment = environmentMap;
+environmentMap.encoding = THREE.sRGBEncoding;
+
+gui
+  .add(debugObject, "envMapIntensity")
+  .min(0)
+  .max(10)
+  .step(0.001)
+  .onChange(updateAllMaterials);
+
+/**
  * Models
  */
+gltfLoader.load(
+  "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+  (gltf) => {
+    const helmet = gltf.scene;
+    const scale = 10;
+    helmet.scale.set(scale, scale, scale);
+    helmet.position.set(0, -4, 0);
+    helmet.rotation.y = Math.PI * 0.5;
+    scene.add(helmet);
+
+    gui
+      .add(helmet.rotation, "y")
+      .min(-Math.PI)
+      .max(Math.PI)
+      .step(0.0001)
+      .name("helmetRotationY");
+    updateAllMaterials();
+  }
+);
 
 /**
  * Lights
@@ -121,13 +181,31 @@ controls.enableDamping = true;
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 const updateRenderer = () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
 updateRenderer();
 renderer.physicallyCorrectLights = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 3;
+
+gui.add(renderer, "toneMappingExposure").min(0).max(10).step(0.001);
+
+gui
+  .add(renderer, "toneMapping", {
+    No: THREE.NoToneMapping,
+    Linear: THREE.LinearToneMapping,
+    Reinhard: THREE.ReinhardToneMapping,
+    Cineon: THREE.CineonToneMapping,
+    ACESFilmic: THREE.ACESFilmicToneMapping,
+  })
+  .onFinishChange(() => {
+    renderer.toneMapping = Number(renderer.toneMapping);
+    updateAllMaterials();
+  });
 
 /**
  * Tick
