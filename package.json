@@ -13,9 +13,11 @@
     "vite": "^2.6.4"
   },
   "dependencies": {
+    "@types/stats": "^0.16.30",
     "cannon-es": "^0.18.0",
     "dat.gui": "^0.7.7",
     "gsap": "^3.8.0",
+    "stats.js": "^0.17.0",
     "three": "^0.133.1"
   }
 }
