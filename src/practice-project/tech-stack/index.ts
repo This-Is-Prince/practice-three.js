@@ -6,17 +6,18 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { CameraHelper } from "three";
 
 /**
  * Debug
  */
 const gui = new dat.GUI({ closed: true });
 const parameters = {
-  fogColor: 0x83c4d9,
-  groundColor: 0xf2d395,
-  oddColor: 0xe5ff65,
+  fogColor: 0xc4e4ff,
+  groundColor: 0xff9c7e,
+  oddColor: 0x13f252,
   evenColor: 0xaa00ff,
-  ladderColor: 0xff7ee4,
+  ladderColor: 0x29eb,
   rotateX: 0,
 };
 gui.addColor(parameters, "fogColor").onChange(() => {
@@ -75,6 +76,15 @@ window.addEventListener("resize", () => {
   updateRenderer();
 });
 
+// Fullscreen
+window.addEventListener("dblclick", () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    canvas.requestFullscreen();
+  }
+});
+
 /**
  * Lights
  */
@@ -85,7 +95,7 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.camera.far = 10;
 directionalLight.shadow.camera.near = 2;
 directionalLight.shadow.camera.left = -3;
 directionalLight.shadow.camera.right = 3;
@@ -93,6 +103,8 @@ directionalLight.shadow.camera.top = 3;
 directionalLight.shadow.camera.bottom = -3;
 directionalLight.position.set(3, 3, 3);
 scene.add(directionalLight);
+
+// scene.add(new CameraHelper(directionalLight.shadow.camera));
 
 /**
  * Models
@@ -127,6 +139,31 @@ gltfLoader.load("./static/models/ladder/ladder.glb", (gltf) => {
   ladder.castShadow = true;
   scene.add(ladder);
 });
+gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
+  const treeArr = [...gltf.scene.children[0].children];
+  const tree = new THREE.Group();
+  treeArr.forEach((treeMesh) => {
+    tree.add(treeMesh);
+    treeMesh.castShadow = true;
+  });
+  const scale = 0.25;
+  tree.scale.set(scale, scale, scale);
+  tree.position.set(-2, 0, 2);
+  tree.rotation.y = Math.PI * 0.25;
+  scene.add(tree);
+});
+gltfLoader.load("./static/models/car/car.glb", (gltf) => {
+  console.log(gltf.scene);
+  const car = new THREE.Group();
+  const carArr = [...gltf.scene.children];
+  carArr.forEach((carMesh) => {
+    car.add(carMesh);
+    carMesh.castShadow = true;
+  });
+  car.position.y = -0.66;
+  car.position.z = 3;
+  scene.add(car);
+});
 
 /**
  * Fonts
@@ -136,8 +173,6 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   // Size Of Text
   let size = 0.5;
   let height = 0.4;
-  // Material
-  const textMaterial = new THREE.MeshNormalMaterial();
 
   /**
    * CSS
@@ -156,6 +191,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   cssMesh.position.x = -1;
   cssMesh.rotateY(Math.PI * 0.1);
   cssMesh.castShadow = true;
+  cssMesh.receiveShadow = true;
 
   /**
    * HTML
@@ -174,6 +210,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   htmlMesh.position.x = 1;
   htmlMesh.rotateY(-Math.PI * 0.1);
   htmlMesh.castShadow = true;
+  htmlMesh.receiveShadow = true;
 
   /**
    * Typescript
@@ -191,6 +228,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const typescriptMesh = new THREE.Mesh(typescriptGeometry, evenMaterial);
   typescriptMesh.position.set(0, size, -0.1);
   typescriptMesh.castShadow = true;
+  typescriptMesh.receiveShadow = true;
 
   /**
    * THREE
@@ -208,8 +246,8 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   const three_js_Mesh = new THREE.Mesh(three_js_Geometry, oddMaterial);
   three_js_Mesh.position.y = size * 2;
   three_js_Mesh.rotateY(Math.PI * 0.1);
-
   three_js_Mesh.castShadow = true;
+  three_js_Mesh.receiveShadow = true;
 
   /**
    * React
@@ -228,6 +266,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   reactMesh.position.y = size * 3;
   reactMesh.rotateY(-Math.PI * 0.1);
   reactMesh.castShadow = true;
+  reactMesh.receiveShadow = true;
 
   /**
    * Blender
@@ -246,6 +285,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   blenderMesh.position.y = size * 4;
   blenderMesh.rotateY(Math.PI * 0.1);
   blenderMesh.castShadow = true;
+  blenderMesh.receiveShadow = true;
 
   /**
    * NODE.JS
@@ -264,6 +304,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
   node_js_Mesh.position.y = size * 5;
   node_js_Mesh.rotateY(-Math.PI * 0.1);
   node_js_Mesh.castShadow = true;
+  node_js_Mesh.receiveShadow = true;
 
   scene.add(
     cssMesh,
@@ -302,6 +343,7 @@ gui
 
 const oddMaterial = new THREE.MeshStandardMaterial({
   color: parameters.oddColor,
+  metalness: 0.35,
 });
 
 // Debug
@@ -321,7 +363,7 @@ gui
 /**
  * Geometry
  */
-const groundGeometry = new THREE.PlaneGeometry(10, 10);
+const groundGeometry = new THREE.PlaneGeometry(100, 100);
 
 /**
  * Objects
@@ -375,7 +417,7 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 3;
+// renderer.toneMappingExposure = 2;
 
 gui
   .add(renderer, "toneMapping", {
@@ -406,6 +448,10 @@ const tick = () => {
   // camera.position.y = Math.abs(Math.sin(elapsedTime - 2.5) * 2 + 3);
   // camera.position.x = Math.sin(elapsedTime) * 6;
   // camera.position.z = Math.cos(elapsedTime) * 6;
+
+  if (renderer.toneMappingExposure < 5) {
+    renderer.toneMappingExposure = elapsedTime * 0.25;
+  }
 
   // Render
   renderer.render(scene, camera);
