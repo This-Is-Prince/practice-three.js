@@ -47,6 +47,20 @@ scene.background = new THREE.Color(parameters.fogColor);
 scene.fog = new THREE.Fog(parameters.fogColor, 1, 15);
 
 /**
+ * Update All Materials
+ */
+const updateAllMaterials = () => {
+  scene.traverse((child) => {
+    if (
+      child instanceof THREE.Mesh &&
+      child.material instanceof THREE.MeshStandardMaterial
+    ) {
+      child.material.needsUpdate = true;
+    }
+  });
+};
+
+/**
  * Window Events
  */
 window.addEventListener("resize", () => {
@@ -350,14 +364,32 @@ controls.enableDamping = true;
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 const updateRenderer = () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
 updateRenderer();
+renderer.physicallyCorrectLights = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 3;
+
+gui
+  .add(renderer, "toneMapping", {
+    No: THREE.NoToneMapping,
+    Linear: THREE.LinearToneMapping,
+    Reinhard: THREE.ReinhardToneMapping,
+    ACESFilmic: THREE.ACESFilmicToneMapping,
+    Cineon: THREE.CineonToneMapping,
+  })
+  .onFinishChange(() => {
+    renderer.toneMapping = Number(renderer.toneMapping);
+    updateAllMaterials();
+  });
+gui.add(renderer, "toneMappingExposure").min(0).max(10).step(0.001);
 
 /**
  * Animations
