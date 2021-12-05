@@ -34,11 +34,17 @@ const parameters = {
   fogColor: 0xcadee3,
   createText: () => {
     if (font) {
-      generateText({
-        x: (Math.random() - 0.5) * 2,
-        y: (Math.random() - 0.5) * 2,
-        z: (Math.random() - 0.5) * 2,
-      });
+      const char = 65 + Math.floor(Math.random() * (91 - 65));
+      generateCharacterMesh(
+        {
+          x: (Math.random() - 0.5) * 2,
+          y: 3,
+          z: (Math.random() - 0.5) * 2,
+        },
+        String.fromCharCode(char),
+        0.4,
+        0.2
+      );
     }
   },
 };
@@ -119,19 +125,36 @@ world.addBody(groundBody);
 /**
  * Text
  */
+interface PositionType {
+  x: number;
+  y: number;
+  z: number;
+}
+type GenerateCharacterMeshFunType = (
+  position: PositionType,
+  char: string,
+  size?: number,
+  height?: number
+) => void;
+
 const material = new THREE.MeshNormalMaterial();
-const generateText = ({ x, y, z }) => {
-  const rand = 65 + Math.floor(Math.random() * (91 - 65));
-  const geometry = new TextGeometry(`${String.fromCharCode(rand)}`, {
-    size: 0.4,
-    height: 0.2,
+const generateCharacterMesh: GenerateCharacterMeshFunType = (
+  { x, y, z },
+  char,
+  size = 0.4,
+  height = 0.2
+) => {
+  const geometry = new TextGeometry(char, {
+    size: size,
+    height: height,
     font,
   });
   geometry.computeBoundingBox();
   geometry.center();
-  const max = geometry.boundingBox.max!;
+  const max = geometry.boundingBox!.max;
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(x, y, z);
+  mesh.castShadow = true;
   scene.add(mesh);
 
   const body = new CANNON.Body({
@@ -155,6 +178,8 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.position.set(3, 3, 3);
 directionalLight.shadow.mapSize.set(1024, 1024);
+directionalLight.shadow.camera.far = 10;
+directionalLight.castShadow = true;
 scene.add(directionalLight);
 
 /**
