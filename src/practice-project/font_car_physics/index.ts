@@ -152,7 +152,6 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
         pointLight.castShadow = true;
         mesh.add(pointLight);
         chassisMesh = mesh;
-        mesh.castShadow = true;
         break;
       case "front_left_wheel":
         front_Left_Wheel = mesh;
@@ -278,7 +277,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
     vehicle.setBrake(0, 2);
     vehicle.setBrake(0, 3);
 
-    let engineForce = 800,
+    let engineForce = 400,
       maxSteerVal = 0.6;
     switch (e.code) {
       case "Space": // break
