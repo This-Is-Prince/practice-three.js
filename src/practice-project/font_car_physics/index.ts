@@ -3,23 +3,50 @@ import * as dat from "dat.gui";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { FontLoader, Font } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 /**
- * Canvas
+ *  Canvas
  */
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
 /**
- * Debug GUI
+ * Fonts
+ */
+let font: Font;
+const fontLoader = new FontLoader();
+fontLoader.load(
+  "./static/fonts/helvetiker_regular.typeface.json",
+  (currFont) => {
+    font = currFont;
+  }
+);
+
+/**
+ *  Debug GUI
  */
 const gui = new dat.GUI();
 const parameters = {
   groundColor: 0xfff88d,
   fogColor: 0xcadee3,
+  createText: () => {
+    if (font) {
+      const char = 65 + Math.floor(Math.random() * (91 - 65));
+      generateCharacterMesh(
+        {
+          x: (Math.random() - 0.5) * 2,
+          y: 3,
+          z: (Math.random() - 0.5) * 2,
+        },
+        String.fromCharCode(char),
+        0.8,
+        0.4
+      );
+    }
+  },
 };
 gui.addColor(parameters, "groundColor").onChange(() => {
   ground.material.color.set(parameters.groundColor);
@@ -28,9 +55,10 @@ gui.addColor(parameters, "fogColor").onChange(() => {
   scene.background = new THREE.Color(parameters.fogColor);
   scene.fog!.color.set(parameters.fogColor);
 });
+gui.add(parameters, "createText");
 
 /**
- * Scene
+ *  Scene
  */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(parameters.fogColor);
@@ -45,6 +73,7 @@ const copyFromBodyToMesh = (body: CANNON.Body, mesh: THREE.Mesh) => {
   const { x: rX, y: rY, z: rZ, w } = body.quaternion;
   mesh.quaternion.set(rX, rY, rZ, w);
 };
+let objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
 
 /**
  * Floor
@@ -58,76 +87,36 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 /**
- * Fonts
- */
-let aMesh: THREE.Mesh;
-const fontLoader = new FontLoader();
-fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  const a = new TextGeometry("A", { font, size: 0.4, height: 0.2 });
-  a.computeBoundingBox();
-  console.log(a.boundingBox);
-  const material = new THREE.MeshStandardMaterial({});
-  aMesh = new THREE.Mesh(a, material);
-  //   copyFromBodyToMesh(aBody, aMesh);
-  aMesh.position.set(2, 0, 0);
-  aBody.position.set(2, 0, 0);
-  world.addBody(aBody);
-
-  scene.add(aMesh);
-});
-
-/**
  * Physics
  **/
+
 const world = new CANNON.World();
 world.broadphase = new CANNON.SAPBroadphase(world);
-world.gravity.set(0, -10, 0);
+world.allowSleep = true;
+world.gravity.set(0, -9.8, 0);
 world.defaultContactMaterial.friction = 0;
 
 // Physics Materials
-const textMaterial = new CANNON.Material("textMaterial");
-const chassisMaterial = new CANNON.Material("chassisMaterial");
-
-const chassisTextContactMaterial = new CANNON.ContactMaterial(
-  textMaterial,
-  chassisMaterial,
-  {
-    friction: 0.1,
-    restitution: 0.7,
-  }
-);
-world.addContactMaterial(chassisTextContactMaterial);
-const aShape = new CANNON.Box(new CANNON.Vec3(0.18, 0.2, 0.1));
-const aBody = new CANNON.Body({
-  shape: aShape,
-  mass: 1,
-  material: textMaterial,
-});
-
-const groundMaterial = new CANNON.Material("groundMaterial");
-const wheelMaterial = new CANNON.Material("wheelMaterial");
-const wheelGroundContactMaterial = new CANNON.ContactMaterial(
-  wheelMaterial,
-  groundMaterial,
+const defaultMaterial = new CANNON.Material("defaultMaterial");
+const defaultContactMaterial = new CANNON.ContactMaterial(
+  defaultMaterial,
+  defaultMaterial,
   {
     friction: 0.3,
-    restitution: 0,
-    contactEquationStiffness: 1000,
+    restitution: 0.5,
+    contactEquationStiffness: 100_000,
   }
 );
-world.addContactMaterial(wheelGroundContactMaterial);
+world.addContactMaterial(defaultContactMaterial);
 
 // ground physics Body
 const groundBody = new CANNON.Body({
   mass: 0, // mass = 0 makes the body static
-  material: groundMaterial,
   shape: new CANNON.Plane(),
+  material: defaultMaterial,
   quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
 });
 world.addBody(groundBody);
-
-let chassisBody: CANNON.Body;
-let chassisMesh: THREE.Mesh;
 
 /**
  * Models
@@ -141,7 +130,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const meshes = [...gltf.scene.children] as THREE.Mesh[];
 
   // Car Chassis Mesh
-  chassisMesh = new THREE.Mesh();
+  let chassisMesh = new THREE.Mesh();
 
   // Car Wheel Meshes
   let front_Left_Wheel = new THREE.Mesh();
@@ -163,17 +152,18 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
         pointLight.castShadow = true;
         mesh.add(pointLight);
         chassisMesh = mesh;
+        mesh.castShadow = true;
         break;
-      case "Front_Left_Wheel":
+      case "front_left_wheel":
         front_Left_Wheel = mesh;
         break;
-      case "Front_Right_Wheel":
+      case "front_right_wheel":
         front_Right_Wheel = mesh;
         break;
-      case "Back_Left_Wheel":
+      case "back_left_wheel":
         back_Left_Wheel = mesh;
         break;
-      case "Back_Right_Wheel":
+      case "back_right_wheel":
         back_Right_Wheel = mesh;
         break;
     }
@@ -185,13 +175,15 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const chassisBoundingBox = chassisMesh.geometry.boundingBox!;
   const max = chassisBoundingBox.max;
   const min = chassisBoundingBox.min;
+
   const x = Math.max(Math.abs(max.x), Math.abs(min.x));
   const y = Math.max(Math.abs(max.y), Math.abs(min.y));
   const z = Math.max(Math.abs(max.z), Math.abs(min.z));
 
   // Car Physics Body
   const chassisShape = new CANNON.Box(new CANNON.Vec3(x, y, z));
-  chassisBody = new CANNON.Body({ mass: 150, material: chassisMaterial });
+  // const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.3, 0.5));
+  const chassisBody = new CANNON.Body({ mass: 150 });
   chassisBody.addShape(chassisShape);
   chassisBody.position.set(0, 4, 0);
   chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
@@ -206,7 +198,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
 
   // wheel options
   const options = {
-    radius: 0.18,
+    radius: 0.2,
     directionLocal: new CANNON.Vec3(0, -1, 0),
     suspensionStiffness: 45,
     suspensionRestLength: 0.4,
@@ -226,16 +218,6 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const wheelX = Math.abs(front_Right_Wheel.position.x);
   const wheelZ = Math.abs(front_Right_Wheel.position.z);
 
-  // Front Right Wheel
-  options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
-  vehicle.addWheel(options);
-  wheelVisuals.push(front_Right_Wheel);
-
-  // Front Left Wheel
-  options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
-  vehicle.addWheel(options);
-  wheelVisuals.push(front_Left_Wheel);
-
   // Back Right Wheel
   options.chassisConnectionPointLocal.set(wheelX, 0, -wheelZ);
   vehicle.addWheel(options);
@@ -246,6 +228,16 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   vehicle.addWheel(options);
   wheelVisuals.push(back_Left_Wheel);
 
+  // Front Right Wheel
+  options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(front_Right_Wheel);
+
+  // Front Left Wheel
+  options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(front_Left_Wheel);
+
   // Add vehicle to physics world;
   vehicle.addToWorld(world);
 
@@ -253,8 +245,8 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const wheelBodies: CANNON.Body[] = [];
   vehicle.wheelInfos.forEach((wheel, index) => {
     // Wheel Body
-    const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.13, 32);
-    const body = new CANNON.Body({ mass: 1, material: wheelMaterial });
+    const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.125, 32);
+    const body = new CANNON.Body({ mass: 1 });
     body.addShape(shape);
     wheelBodies.push(body);
 
@@ -276,6 +268,8 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
     }
   });
 
+  objectsToUpdate.push({ mesh: chassisMesh, body: chassisBody });
+
   function navigate(e: KeyboardEvent) {
     if (e.type != "keydown" && e.type != "keyup") return;
     let keyup = e.type == "keyup";
@@ -292,13 +286,13 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
         vehicle.setBrake(10, 3);
         break;
       case "ArrowUp": // forward
-        vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
-        vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
+        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
+        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
         break;
 
       case "ArrowDown": // backward
-        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
-        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
+        vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
+        vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
         break;
 
       case "ArrowRight": // right
@@ -316,6 +310,51 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   window.addEventListener("keydown", navigate);
   window.addEventListener("keyup", navigate);
 });
+
+/**
+ * Text
+ */
+interface PositionType {
+  x: number;
+  y: number;
+  z: number;
+}
+type GenerateCharacterMeshFunType = (
+  position: PositionType,
+  char: string,
+  size?: number,
+  height?: number
+) => void;
+
+const material = new THREE.MeshNormalMaterial();
+const generateCharacterMesh: GenerateCharacterMeshFunType = (
+  { x, y, z },
+  char,
+  size = 0.4,
+  height = 0.2
+) => {
+  const geometry = new TextGeometry(char, {
+    size: size,
+    height: height,
+    font,
+  });
+  geometry.computeBoundingBox();
+  geometry.center();
+  const max = geometry.boundingBox!.max;
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  scene.add(mesh);
+
+  const body = new CANNON.Body({
+    shape: new CANNON.Box(new CANNON.Vec3(max.x, max.y, max.z)),
+    mass: 1,
+    material: defaultMaterial,
+  });
+  body.position.set(x, y, z);
+  world.addBody(body);
+  objectsToUpdate.push({ mesh, body });
+};
 
 /**
  * Lights
@@ -340,22 +379,6 @@ const aspectRatio = () => {
   return sizes.width / sizes.height;
 };
 
-/**
- * Camera
- */
-const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 1000);
-camera.position.set(0, 3, 3);
-scene.add(camera);
-
-/**
- * Controls
- */
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-
-/**
- * Window Events
- */
 window.addEventListener("resize", () => {
   // Update Sizes
   updateSizes();
@@ -367,6 +390,21 @@ window.addEventListener("resize", () => {
   // Update Renderer
   updateRenderer();
 });
+
+/**
+ * Camera
+ */
+const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
+camera.position.z = 5;
+camera.position.y = 5;
+scene.add(camera);
+
+/**
+ * Controls
+ */
+const controls = new OrbitControls(camera, canvas);
+// controls.enabled = false;
+controls.enableDamping = true;
 
 /**
  * Renderer
@@ -383,11 +421,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 /**
  * Animations
  */
-// Clock
 const clock = new THREE.Clock();
 let lastTime = 0;
 
-// Tick
 const tick = () => {
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
@@ -396,15 +432,12 @@ const tick = () => {
 
   world.step(1 / 60, deltaTime, 3);
   // update the chassis position
-  if (chassisBody && chassisMesh) {
-    copyFromBodyToMesh(chassisBody, chassisMesh);
-    chassisMesh.position.y -= 0.25;
-  }
-  // Update The text
-  if (aMesh) {
-    copyFromBodyToMesh(aBody, aMesh);
-    aMesh.position.y -= 0.2;
-  }
+  objectsToUpdate.forEach(({ body, mesh }) => {
+    copyFromBodyToMesh(body, mesh);
+    if (mesh.name === "Chassis") {
+      mesh.position.y -= 0.2;
+    }
+  });
 
   // Update Controls
   controls.update();
@@ -416,10 +449,3 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 };
 tick();
-
-/**
- *
- */
-/**
- *
- */
