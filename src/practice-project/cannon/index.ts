@@ -357,7 +357,7 @@ const tick = () => {
   // update the chassis position
   if (chassisBody && chassisMesh) {
     copyFromBodyToMesh(chassisBody, chassisMesh);
-    chassisMesh.position.y -= 0.25;
+    chassisMesh.position.y -= 0.2;
   }
 
   // Update Controls
