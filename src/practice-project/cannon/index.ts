@@ -43,6 +43,7 @@ const copyFromBodyToMesh = (body: CANNON.Body, mesh: THREE.Mesh) => {
   const { x: rX, y: rY, z: rZ, w } = body.quaternion;
   mesh.quaternion.set(rX, rY, rZ, w);
 };
+let objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
 
 /**
  * Floor
@@ -87,9 +88,6 @@ const groundBody = new CANNON.Body({
 });
 world.addBody(groundBody);
 
-let chassisBody: CANNON.Body;
-let chassisMesh: THREE.Mesh;
-
 /**
  * Models
  */
@@ -102,7 +100,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const meshes = [...gltf.scene.children] as THREE.Mesh[];
 
   // Car Chassis Mesh
-  chassisMesh = new THREE.Mesh();
+  let chassisMesh = new THREE.Mesh();
 
   // Car Wheel Meshes
   let front_Left_Wheel = new THREE.Mesh();
@@ -147,13 +145,15 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const chassisBoundingBox = chassisMesh.geometry.boundingBox!;
   const max = chassisBoundingBox.max;
   const min = chassisBoundingBox.min;
+
   const x = Math.max(Math.abs(max.x), Math.abs(min.x));
   const y = Math.max(Math.abs(max.y), Math.abs(min.y));
   const z = Math.max(Math.abs(max.z), Math.abs(min.z));
 
   // Car Physics Body
   const chassisShape = new CANNON.Box(new CANNON.Vec3(x, y, z));
-  chassisBody = new CANNON.Body({ mass: 150 });
+  // const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.3, 0.5));
+  const chassisBody = new CANNON.Body({ mass: 150 });
   chassisBody.addShape(chassisShape);
   chassisBody.position.set(0, 4, 0);
   chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
@@ -168,7 +168,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
 
   // wheel options
   const options = {
-    radius: 0.18,
+    radius: 0.2,
     directionLocal: new CANNON.Vec3(0, -1, 0),
     suspensionStiffness: 45,
     suspensionRestLength: 0.4,
@@ -215,7 +215,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const wheelBodies: CANNON.Body[] = [];
   vehicle.wheelInfos.forEach((wheel, index) => {
     // Wheel Body
-    const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.13, 32);
+    const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.125, 32);
     const body = new CANNON.Body({ mass: 1, material: wheelMaterial });
     body.addShape(shape);
     wheelBodies.push(body);
@@ -237,6 +237,8 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
       copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
     }
   });
+
+  objectsToUpdate.push({ mesh: chassisMesh, body: chassisBody });
 
   function navigate(e: KeyboardEvent) {
     if (e.type != "keydown" && e.type != "keyup") return;
@@ -326,6 +328,7 @@ scene.add(camera);
  * Controls
  */
 const controls = new OrbitControls(camera, canvas);
+// controls.enabled = false;
 controls.enableDamping = true;
 
 /**
@@ -354,10 +357,10 @@ const tick = () => {
 
   world.step(1 / 60, deltaTime, 3);
   // update the chassis position
-  if (chassisBody && chassisMesh) {
-    copyFromBodyToMesh(chassisBody, chassisMesh);
-    chassisMesh.position.y -= 0.2;
-  }
+  objectsToUpdate.forEach(({ body, mesh }) => {
+    copyFromBodyToMesh(body, mesh);
+    mesh.position.y -= 0.2;
+  });
 
   // Update Controls
   controls.update();
