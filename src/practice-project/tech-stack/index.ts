@@ -153,7 +153,6 @@ gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
   scene.add(tree);
 });
 gltfLoader.load("./static/models/car/car.glb", (gltf) => {
-  console.log(gltf.scene);
   const car = new THREE.Group();
   const carArr = [...gltf.scene.children];
   carArr.forEach((carMesh) => {
