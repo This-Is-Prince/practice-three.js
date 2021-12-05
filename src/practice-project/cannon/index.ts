@@ -126,23 +126,22 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
         chassisMesh = mesh;
         mesh.castShadow = true;
         break;
-      case "Front_Left_Wheel":
+      case "front_left_wheel":
         front_Left_Wheel = mesh;
         break;
-      case "Front_Right_Wheel":
+      case "front_right_wheel":
         front_Right_Wheel = mesh;
         break;
-      case "Back_Left_Wheel":
+      case "back_left_wheel":
         back_Left_Wheel = mesh;
         break;
-      case "Back_Right_Wheel":
+      case "back_right_wheel":
         back_Right_Wheel = mesh;
         break;
     }
   }
   // Adding chassis into scene
   scene.add(chassisMesh);
-  console.log(chassisMesh);
 
   // Chassis Bounding Box
   const chassisBoundingBox = chassisMesh.geometry.boundingBox!;
@@ -189,16 +188,6 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   const wheelX = Math.abs(front_Right_Wheel.position.x);
   const wheelZ = Math.abs(front_Right_Wheel.position.z);
 
-  // Front Right Wheel
-  options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
-  vehicle.addWheel(options);
-  wheelVisuals.push(front_Right_Wheel);
-
-  // Front Left Wheel
-  options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
-  vehicle.addWheel(options);
-  wheelVisuals.push(front_Left_Wheel);
-
   // Back Right Wheel
   options.chassisConnectionPointLocal.set(wheelX, 0, -wheelZ);
   vehicle.addWheel(options);
@@ -208,6 +197,16 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   options.chassisConnectionPointLocal.set(wheelX, 0, wheelZ);
   vehicle.addWheel(options);
   wheelVisuals.push(back_Left_Wheel);
+
+  // Front Right Wheel
+  options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(front_Right_Wheel);
+
+  // Front Left Wheel
+  options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
+  vehicle.addWheel(options);
+  wheelVisuals.push(front_Left_Wheel);
 
   // Add vehicle to physics world;
   vehicle.addToWorld(world);
@@ -255,13 +254,13 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
         vehicle.setBrake(10, 3);
         break;
       case "ArrowUp": // forward
-        vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
-        vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
+        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
+        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
         break;
 
       case "ArrowDown": // backward
-        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
-        vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3);
+        vehicle.applyEngineForce(keyup ? 0 : engineForce, 2);
+        vehicle.applyEngineForce(keyup ? 0 : engineForce, 3);
         break;
 
       case "ArrowRight": // right
@@ -319,7 +318,7 @@ window.addEventListener("resize", () => {
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.z = -5;
+camera.position.z = 5;
 camera.position.y = 5;
 scene.add(camera);
 
