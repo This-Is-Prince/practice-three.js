@@ -62,27 +62,24 @@ scene.add(ground);
 
 const world = new CANNON.World();
 world.broadphase = new CANNON.SAPBroadphase(world);
-world.gravity.set(0, -10, 0);
-world.defaultContactMaterial.friction = 0;
+world.gravity.set(0, -9.8, 0);
 
 // Physics Materials
-const groundMaterial = new CANNON.Material("groundMaterial");
-const wheelMaterial = new CANNON.Material("wheelMaterial");
-const wheelGroundContactMaterial = new CANNON.ContactMaterial(
-  wheelMaterial,
-  groundMaterial,
+const defaultMaterial = new CANNON.Material("defaultMaterial");
+const defaultContactMaterial = new CANNON.ContactMaterial(
+  defaultMaterial,
+  defaultMaterial,
   {
-    friction: 0.3,
+    friction: 0,
     restitution: 0,
-    contactEquationStiffness: 1000,
+    contactEquationStiffness: 100_000,
   }
 );
-world.addContactMaterial(wheelGroundContactMaterial);
+world.defaultContactMaterial = defaultContactMaterial;
 
 // ground physics Body
 const groundBody = new CANNON.Body({
   mass: 0, // mass = 0 makes the body static
-  material: groundMaterial,
   shape: new CANNON.Plane(),
   quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
 });
@@ -216,7 +213,7 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   vehicle.wheelInfos.forEach((wheel, index) => {
     // Wheel Body
     const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.125, 32);
-    const body = new CANNON.Body({ mass: 1, material: wheelMaterial });
+    const body = new CANNON.Body({ mass: 1 });
     body.addShape(shape);
     wheelBodies.push(body);
 
