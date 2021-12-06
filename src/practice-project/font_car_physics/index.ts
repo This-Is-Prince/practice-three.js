@@ -141,10 +141,8 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   // Differentiating all meshes
   for (let mesh of meshes) {
     if (mesh.material instanceof THREE.MeshStandardMaterial) {
-      const color = mesh.material.color;
-
       mesh.material = new THREE.MeshBasicMaterial({
-        color: `#${color.getHexString()}`,
+        color: `#${mesh.material.color.getHexString()}`,
         side: THREE.DoubleSide,
       });
     }
@@ -166,8 +164,15 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
         break;
     }
   }
+
   // Adding chassis into scene
   scene.add(chassisMesh);
+
+  const wheelGeometry = front_Left_Wheel.geometry;
+  const material = front_Left_Wheel.material;
+  const wheel = new THREE.InstancedMesh(wheelGeometry, material, 4);
+  wheel.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  scene.add(wheel);
 
   // Chassis Bounding Box
   const chassisBoundingBox = chassisMesh.geometry.boundingBox!;
@@ -219,22 +224,22 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   // Back Right Wheel
   options.chassisConnectionPointLocal.set(wheelX, 0, -wheelZ);
   vehicle.addWheel(options);
-  wheelVisuals.push(back_Right_Wheel);
+  // wheelVisuals.push(back_Right_Wheel);
 
   // Back Left Wheel
   options.chassisConnectionPointLocal.set(wheelX, 0, wheelZ);
   vehicle.addWheel(options);
-  wheelVisuals.push(back_Left_Wheel);
+  // wheelVisuals.push(back_Left_Wheel);
 
   // Front Right Wheel
   options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
   vehicle.addWheel(options);
-  wheelVisuals.push(front_Right_Wheel);
+  // wheelVisuals.push(front_Right_Wheel);
 
   // Front Left Wheel
   options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
   vehicle.addWheel(options);
-  wheelVisuals.push(front_Left_Wheel);
+  // wheelVisuals.push(front_Left_Wheel);
 
   // Add vehicle to physics world;
   vehicle.addToWorld(world);
@@ -249,8 +254,8 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
     wheelBodies.push(body);
 
     // Wheel Meshes
-    const wheelMesh = wheelVisuals[index];
-    scene.add(wheelMesh);
+    // const wheelMesh = wheelVisuals[index];
+    // scene.add(wheelMesh);
   });
 
   // update the wheels to match the physics
@@ -262,8 +267,20 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
       wheelBodies[i].position.copy(t.position);
       wheelBodies[i].quaternion.copy(t.quaternion);
       // update wheel visuals
-      copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
+      // copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
+      const { x, y, z } = wheelBodies[i].position;
+      // console.log(x, y, z);
+
+      const position = new THREE.Vector3(x, y, z);
+      const q = wheelBodies[i].quaternion;
+      const quaternion = new THREE.Quaternion(q.x, q.y, q.z, q.w);
+
+      const matrix = new THREE.Matrix4();
+      matrix.makeRotationFromQuaternion(quaternion);
+      matrix.setPosition(position);
+      wheel.setMatrixAt(i, matrix);
     }
+    wheel.instanceMatrix.needsUpdate = true;
   });
 
   objectsToUpdate.push({ mesh: chassisMesh, body: chassisBody });
