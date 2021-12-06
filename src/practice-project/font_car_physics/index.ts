@@ -30,8 +30,8 @@ fontLoader.load(
  */
 const gui = new dat.GUI();
 const parameters = {
-  groundColor: 0xfff88d,
-  fogColor: 0xcadee3,
+  groundColor: 0xf7e400,
+  fogColor: 0x5d9eff,
   createText: () => {
     if (font) {
       const char = 65 + Math.floor(Math.random() * (91 - 65));
@@ -80,9 +80,10 @@ let objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
  */
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(100, 100, 10),
-  new THREE.MeshBasicMaterial({ color: parameters.groundColor })
+  new THREE.MeshStandardMaterial({ color: parameters.groundColor })
 );
 ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
 scene.add(ground);
 
 /**
@@ -133,43 +134,29 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   let chassisMesh = new THREE.Mesh();
 
   // Car Wheel Meshes
-  let front_Left_Wheel = new THREE.Mesh();
-  let front_Right_Wheel = new THREE.Mesh();
-  let back_Left_Wheel = new THREE.Mesh();
-  let back_Right_Wheel = new THREE.Mesh();
+  let wheelMesh = new THREE.Mesh();
 
   // Differentiating all meshes
   for (let mesh of meshes) {
-    if (mesh.material instanceof THREE.MeshStandardMaterial) {
-      mesh.material = new THREE.MeshBasicMaterial({
-        color: `#${mesh.material.color.getHexString()}`,
-        side: THREE.DoubleSide,
-      });
-    }
-    switch (mesh.name) {
-      case "Chassis":
-        chassisMesh = mesh;
-        break;
-      case "front_left_wheel":
-        front_Left_Wheel = mesh;
-        break;
-      case "front_right_wheel":
-        front_Right_Wheel = mesh;
-        break;
-      case "back_left_wheel":
-        back_Left_Wheel = mesh;
-        break;
-      case "back_right_wheel":
-        back_Right_Wheel = mesh;
-        break;
+    // if (mesh.material instanceof THREE.MeshStandardMaterial) {
+    //   mesh.material = new THREE.MeshStandardMaterial({
+    //     color: `#${mesh.material.color.getHexString()}`,
+    //     side: THREE.DoubleSide,
+    //   });
+    // }
+    mesh.castShadow = true;
+    if (mesh.name === "Chassis") {
+      chassisMesh = mesh;
+    } else {
+      wheelMesh = mesh;
     }
   }
 
   // Adding chassis into scene
   scene.add(chassisMesh);
 
-  const wheelGeometry = front_Left_Wheel.geometry;
-  const material = front_Left_Wheel.material;
+  const wheelGeometry = wheelMesh.geometry;
+  const material = wheelMesh.material;
   const wheel = new THREE.InstancedMesh(wheelGeometry, material, 4);
   wheel.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   scene.add(wheel);
@@ -216,46 +203,37 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
     customSlidingRotationalSpeed: -30,
     useCustomSlidingRotationalSpeed: true,
   };
-  const wheelVisuals: THREE.Mesh[] = [];
 
-  const wheelX = Math.abs(front_Right_Wheel.position.x);
-  const wheelZ = Math.abs(front_Right_Wheel.position.z);
+  const wheelX = Math.abs(wheelMesh.position.x);
+  const wheelZ = Math.abs(wheelMesh.position.z);
 
   // Back Right Wheel
   options.chassisConnectionPointLocal.set(wheelX, 0, -wheelZ);
   vehicle.addWheel(options);
-  // wheelVisuals.push(back_Right_Wheel);
 
   // Back Left Wheel
   options.chassisConnectionPointLocal.set(wheelX, 0, wheelZ);
   vehicle.addWheel(options);
-  // wheelVisuals.push(back_Left_Wheel);
 
   // Front Right Wheel
   options.chassisConnectionPointLocal.set(-wheelX, 0, -wheelZ);
   vehicle.addWheel(options);
-  // wheelVisuals.push(front_Right_Wheel);
 
   // Front Left Wheel
   options.chassisConnectionPointLocal.set(-wheelX, 0, wheelZ);
   vehicle.addWheel(options);
-  // wheelVisuals.push(front_Left_Wheel);
 
   // Add vehicle to physics world;
   vehicle.addToWorld(world);
 
   // Car Wheels Body
   const wheelBodies: CANNON.Body[] = [];
-  vehicle.wheelInfos.forEach((wheel, index) => {
+  vehicle.wheelInfos.forEach((wheel) => {
     // Wheel Body
     const shape = new CANNON.Cylinder(wheel.radius, wheel.radius, 0.125, 32);
     const body = new CANNON.Body({ mass: 1 });
     body.addShape(shape);
     wheelBodies.push(body);
-
-    // Wheel Meshes
-    // const wheelMesh = wheelVisuals[index];
-    // scene.add(wheelMesh);
   });
 
   // update the wheels to match the physics
@@ -266,11 +244,9 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
       // update wheel physics
       wheelBodies[i].position.copy(t.position);
       wheelBodies[i].quaternion.copy(t.quaternion);
-      // update wheel visuals
-      // copyFromBodyToMesh(wheelBodies[i], wheelVisuals[i]);
-      const { x, y, z } = wheelBodies[i].position;
-      // console.log(x, y, z);
 
+      // update wheel visuals
+      const { x, y, z } = wheelBodies[i].position;
       const position = new THREE.Vector3(x, y, z);
       const q = wheelBodies[i].quaternion;
       const quaternion = new THREE.Quaternion(q.x, q.y, q.z, q.w);
@@ -372,6 +348,16 @@ const generateCharacterMesh: GenerateCharacterMeshFunType = (
 };
 
 /**
+ * Lights
+ */
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(0, 4, 4);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+/**
  * Sizes
  */
 const sizes = {
@@ -417,12 +403,36 @@ controls.enableDamping = true;
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas });
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true,
+  powerPreference: "high-performance",
+});
 const updateRenderer = () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
 updateRenderer();
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.physicallyCorrectLights = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 3;
+
+gui
+  .add(renderer, "toneMapping", {
+    No: THREE.NoToneMapping,
+    Linear: THREE.LinearToneMapping,
+    Cineon: THREE.CineonToneMapping,
+    ACES: THREE.ACESFilmicToneMapping,
+    Reinhard: THREE.ReinhardToneMapping,
+  })
+  .onChange(() => {
+    renderer.toneMapping = Number(renderer.toneMapping);
+  });
+
+gui.add(renderer, "toneMappingExposure").min(0).max(10).step(0.001);
 
 /**
  * Animations
