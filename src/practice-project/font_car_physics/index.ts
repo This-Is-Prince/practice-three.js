@@ -80,10 +80,9 @@ let objectsToUpdate: { mesh: THREE.Mesh; body: CANNON.Body }[] = [];
  */
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(100, 100, 10),
-  new THREE.MeshStandardMaterial({ color: parameters.groundColor })
+  new THREE.MeshBasicMaterial({ color: parameters.groundColor })
 );
 ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
 scene.add(ground);
 
 /**
@@ -128,6 +127,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load("./static/models/car/car.glb", (gltf) => {
   // All Car Meshes
   const meshes = [...gltf.scene.children] as THREE.Mesh[];
+  console.log(meshes);
 
   // Car Chassis Mesh
   let chassisMesh = new THREE.Mesh();
@@ -140,17 +140,16 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
 
   // Differentiating all meshes
   for (let mesh of meshes) {
-    mesh.castShadow = true;
+    if (mesh.material instanceof THREE.MeshStandardMaterial) {
+      const color = mesh.material.color;
+
+      mesh.material = new THREE.MeshBasicMaterial({
+        color: `#${color.getHexString()}`,
+        side: THREE.DoubleSide,
+      });
+    }
     switch (mesh.name) {
       case "Chassis":
-        // Point Light
-        const pointLight = new THREE.PointLight(0xffffff, 0.5);
-        pointLight.shadow.mapSize.set(1024, 1024);
-        pointLight.shadow.camera.far = 20;
-        pointLight.shadow.camera.near = 3;
-        pointLight.position.set(0, 5, 5);
-        pointLight.castShadow = true;
-        mesh.add(pointLight);
         chassisMesh = mesh;
         break;
       case "front_left_wheel":
@@ -281,8 +280,8 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
       maxSteerVal = 0.6;
     switch (e.code) {
       case "Space": // break
-        vehicle.setBrake(10, 2);
-        vehicle.setBrake(10, 3);
+        vehicle.setBrake(15, 2);
+        vehicle.setBrake(15, 3);
         break;
       case "ArrowUp": // forward
         vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2);
@@ -356,13 +355,6 @@ const generateCharacterMesh: GenerateCharacterMeshFunType = (
 };
 
 /**
- * Lights
- */
-// Ambient Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
-
-/**
  * Sizes
  */
 const sizes = {
@@ -414,8 +406,6 @@ const updateRenderer = () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
 updateRenderer();
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
  * Animations
