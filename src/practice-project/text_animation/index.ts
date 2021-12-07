@@ -2,6 +2,8 @@ import "../../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { Font, FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 /**
  * Canvas
@@ -9,8 +11,63 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
 /**
+ * Font Loader
+ */
+let wheelPosition = 0;
+const skillsArr = [
+  "Node.js",
+  "React.js",
+  "Three.js",
+  "CSS",
+  "HTML",
+  "Typescript",
+  "Express.js",
+  "Mongoose.js",
+];
+let textMeshes: THREE.Mesh[] = [];
+let font: Font;
+const fontLoader = new FontLoader();
+fontLoader.load(
+  "./static/fonts/helvetiker_regular.typeface.json",
+  (currFont) => {
+    font = currFont;
+    const material = new THREE.MeshNormalMaterial();
+    skillsArr.forEach((skill, index) => {
+      const geometry = new TextGeometry(skill, {
+        font,
+        size: 0.4,
+        height: 0.2,
+      });
+      geometry.center();
+      const mesh = new THREE.Mesh(geometry, material);
+      let angle = Math.PI * 2 * (index / skillsArr.length);
+      mesh.position.x = Math.sin(angle) * 5;
+      mesh.position.z = Math.cos(angle) * 5;
+      textMeshes.push(mesh);
+      scene.add(mesh);
+    });
+  }
+);
+
+/**
  * Window Events
  */
+// document.addEventListener(
+//   "wheel",
+//   (e) => {
+//     if (e.deltaY > 0) {
+//       wheelPosition++;
+//     } else {
+//       wheelPosition--;
+//     }
+//     textMeshes.forEach((mesh, index) => {
+//       mesh.position.y = index + wheelPosition;
+//     });
+//     return false;
+//   },
+//   true
+// );
+
 window.addEventListener("resize", () => {
   // Update sizes
   updateSizes();
@@ -60,6 +117,7 @@ scene.add(camera);
  * Controls
  */
 const controls = new OrbitControls(camera, canvas);
+// controls.enabled = false;
 controls.enableDamping = true;
 
 /**

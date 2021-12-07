@@ -17,6 +17,7 @@
     "cannon-es": "^0.18.0",
     "dat.gui": "^0.7.7",
     "gsap": "^3.8.0",
+    "scrollmagic": "^2.0.8",
     "stats.js": "^0.17.0",
     "three": "^0.133.1"
   }
