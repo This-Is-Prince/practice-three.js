@@ -1,6 +1,7 @@
 import "../../style.css";
 import * as THREE from "three";
 import * as dat from "dat.gui";
+import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Font, FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
@@ -40,9 +41,10 @@ fontLoader.load(
       });
       geometry.center();
       const mesh = new THREE.Mesh(geometry, material);
-      let angle = Math.PI * 2 * (index / skillsArr.length);
-      mesh.position.x = Math.sin(angle) * 5;
-      mesh.position.z = Math.cos(angle) * 5;
+      // let angle = Math.PI * 2 * (index / skillsArr.length);
+      // mesh.position.x = Math.sin(angle) * 3;
+      // mesh.position.y = Math.cos(angle) * 3;
+      mesh.position.y = -index;
       textMeshes.push(mesh);
       scene.add(mesh);
     });
@@ -52,21 +54,32 @@ fontLoader.load(
 /**
  * Window Events
  */
-// document.addEventListener(
-//   "wheel",
-//   (e) => {
-//     if (e.deltaY > 0) {
-//       wheelPosition++;
-//     } else {
-//       wheelPosition--;
-//     }
-//     textMeshes.forEach((mesh, index) => {
-//       mesh.position.y = index + wheelPosition;
-//     });
-//     return false;
-//   },
-//   true
-// );
+document.addEventListener(
+  "wheel",
+  (e) => {
+    let index = wheelPosition % textMeshes.length;
+    if (wheelPosition >= 0) {
+      gsap.to(textMeshes[index].position, { z: 0, duration: 1 });
+    }
+    if (e.deltaY > 0) {
+      wheelPosition++;
+      textMeshes.forEach((text) => {
+        gsap.to(text.position, { y: text.position.y + 1, duration: 1 });
+      });
+    } else {
+      wheelPosition--;
+      textMeshes.forEach((text) => {
+        gsap.to(text.position, { y: text.position.y - 1, duration: 1 });
+      });
+    }
+    index = wheelPosition % textMeshes.length;
+    if (wheelPosition >= 0) {
+      gsap.to(textMeshes[index].position, { z: 1, duration: 1 });
+    }
+    return false;
+  },
+  true
+);
 
 window.addEventListener("resize", () => {
   // Update sizes
@@ -117,7 +130,7 @@ scene.add(camera);
  * Controls
  */
 const controls = new OrbitControls(camera, canvas);
-// controls.enabled = false;
+controls.enabled = false;
 controls.enableDamping = true;
 
 /**
