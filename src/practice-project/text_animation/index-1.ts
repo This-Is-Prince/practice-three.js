@@ -15,61 +15,58 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
  * Font Loader
  */
 let wheelPosition = 0;
-const characters = "Node.js";
-
-let characterMeshes: THREE.Mesh[] = [];
-
+const skillsArr = [
+  "Node.js",
+  "React.js",
+  "Three.js",
+  "CSS",
+  "HTML",
+  "Typescript",
+  "Express.js",
+  "Mongoose.js",
+];
+let textMeshes: THREE.Mesh[] = [];
+let font: Font;
 const fontLoader = new FontLoader();
-fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  const material = new THREE.MeshNormalMaterial({}),
-    size = 0.4,
-    height = 0.2;
-
-  characters.split("").forEach((char) => {
-    const geometry = new TextGeometry(char, {
-      font,
-      size,
-      height,
+fontLoader.load(
+  "./static/fonts/helvetiker_regular.typeface.json",
+  (currFont) => {
+    font = currFont;
+    const material = new THREE.MeshNormalMaterial({});
+    skillsArr.forEach((skill, index) => {
+      const geometry = new TextGeometry(skill, {
+        font,
+        size: 0.4,
+        height: 0.2,
+      });
+      geometry.center();
+      const mesh = new THREE.Mesh(geometry, material);
+      // let angle = Math.PI * 2 * (index / skillsArr.length);
+      // mesh.position.x = Math.sin(angle) * 3;
+      // mesh.position.y = Math.cos(angle) * 3;
+      mesh.position.y = -index;
+      textMeshes.push(mesh);
+      scene.add(mesh);
     });
-    geometry.center();
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.x = (Math.random() - 0.5) * 2;
-    mesh.position.y = (Math.random() - 0.5) * 2;
-    mesh.position.z = (Math.random() - 0.5) * 2;
-    prevPosition.push(mesh.position.clone());
-    characterMeshes.push(mesh);
-    scene.add(mesh);
-  });
-});
+  }
+);
 
 /**
  * Window Events
  */
-const prevPosition: THREE.Vector3[] = [];
 document.addEventListener(
   "wheel",
   (e) => {
     let duration = 1;
     if (e.deltaY > 0) {
       wheelPosition++;
-      characterMeshes.forEach((characterMesh, index) => {
-        gsap.to(characterMesh.position, {
-          x: index * 0.4,
-          y: 0,
-          z: 0,
-          duration,
-        });
+      textMeshes.forEach((text) => {
+        gsap.to(text.position, { y: text.position.y + 1, duration });
       });
     } else {
       wheelPosition--;
-      characterMeshes.forEach((characterMesh, index) => {
-        const { x, y, z } = prevPosition[index];
-        gsap.to(characterMesh.position, {
-          x,
-          y,
-          z,
-          duration,
-        });
+      textMeshes.forEach((text) => {
+        gsap.to(text.position, { y: text.position.y - 1, duration });
       });
     }
     return false;
