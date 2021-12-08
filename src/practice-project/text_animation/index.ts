@@ -14,16 +14,18 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 /**
  * Font Loader
  */
-let wheelPosition = 0;
-const characters = "Node.js";
+let wheelPosition = 0,
+  radius = 3,
+  characters = "PRINCE",
+  prevPosition: THREE.Vector3[] = [],
+  size = 0.4,
+  height = 0.2;
 
 let characterMeshes: THREE.Mesh[] = [];
 
 const fontLoader = new FontLoader();
 fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  const material = new THREE.MeshNormalMaterial({}),
-    size = 0.4,
-    height = 0.2;
+  const material = new THREE.MeshNormalMaterial({});
 
   characters.split("").forEach((char) => {
     const geometry = new TextGeometry(char, {
@@ -33,9 +35,14 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
     });
     geometry.center();
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.x = (Math.random() - 0.5) * 2;
-    mesh.position.y = (Math.random() - 0.5) * 2;
-    mesh.position.z = (Math.random() - 0.5) * 2;
+    // Position
+    mesh.position.x = (Math.random() - 0.5) * radius;
+    mesh.position.y = (Math.random() - 0.5) * radius;
+    mesh.position.z = (Math.random() - 0.5) * radius;
+    // Rotation
+    mesh.rotation.x = Math.PI * 2 * Math.random();
+    mesh.rotation.y = Math.PI * 2 * Math.random();
+    mesh.rotation.z = Math.PI * 2 * Math.random();
     prevPosition.push(mesh.position.clone());
     characterMeshes.push(mesh);
     scene.add(mesh);
@@ -45,29 +52,35 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
 /**
  * Window Events
  */
-const prevPosition: THREE.Vector3[] = [];
 document.addEventListener(
   "wheel",
   (e) => {
     let duration = 1;
     if (e.deltaY > 0) {
       wheelPosition++;
+      const len = characterMeshes.length;
       characterMeshes.forEach((characterMesh, index) => {
         gsap.to(characterMesh.position, {
-          x: index * 0.4,
+          x: (index - len / 2) * size,
           y: 0,
           z: 0,
           duration,
         });
+        gsap.to(characterMesh.rotation, { x: 0, y: 0, z: 0, duration });
       });
     } else {
       wheelPosition--;
-      characterMeshes.forEach((characterMesh, index) => {
-        const { x, y, z } = prevPosition[index];
+      characterMeshes.forEach((characterMesh) => {
         gsap.to(characterMesh.position, {
-          x,
-          y,
-          z,
+          x: (Math.random() - 0.5) * radius,
+          y: (Math.random() - 0.5) * radius,
+          z: (Math.random() - 0.5) * radius,
+          duration,
+        });
+        gsap.to(characterMesh.rotation, {
+          x: Math.PI * 2 * Math.random(),
+          y: Math.PI * 2 * Math.random(),
+          z: Math.PI * 2 * Math.random(),
           duration,
         });
       });
