@@ -16,9 +16,9 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
  */
 let wheelPosition = 0,
   radius = 3,
-  characters = "PRINCE",
+  characters = "Hi My Name Is Prince Kumar",
   prevPosition: THREE.Vector3[] = [],
-  size = 0.4,
+  size = 0.2,
   height = 0.2;
 
 let characterMeshes: THREE.Mesh[] = [];
@@ -58,15 +58,23 @@ document.addEventListener(
     let duration = 1;
     if (e.deltaY > 0) {
       wheelPosition++;
-      const len = characterMeshes.length;
+      const halfLen = characterMeshes.length / 2;
       characterMeshes.forEach((characterMesh, index) => {
         gsap.to(characterMesh.position, {
-          x: (index - len / 2) * size,
-          y: 0,
+          x:
+            index < halfLen
+              ? (index - halfLen / 2) * (size + 0.1)
+              : (index - halfLen * 1.5) * (size + 0.1),
+          y: index < halfLen ? 0.25 : -0.25,
           z: 0,
           duration,
         });
-        gsap.to(characterMesh.rotation, { x: 0, y: 0, z: 0, duration });
+        gsap.to(characterMesh.rotation, {
+          x: 0,
+          y: (halfLen - index) / halfLen,
+          z: 0,
+          duration,
+        });
       });
     } else {
       wheelPosition--;
