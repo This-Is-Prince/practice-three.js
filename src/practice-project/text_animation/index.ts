@@ -25,14 +25,16 @@ let characterMeshes: THREE.Mesh[] = [];
 
 const fontLoader = new FontLoader();
 fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  const material = new THREE.MeshNormalMaterial({});
+  const material = new THREE.MeshNormalMaterial({ wireframe: true });
 
   characters.split("").forEach((char) => {
     const geometry = new TextGeometry(char, {
       font,
       size,
       height,
+      curveSegments: 12,
     });
+
     geometry.center();
     const mesh = new THREE.Mesh(geometry, material);
     // Position
