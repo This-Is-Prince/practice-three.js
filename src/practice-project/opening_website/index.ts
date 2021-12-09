@@ -113,22 +113,24 @@ updateRenderer();
  */
 const clock = new THREE.Clock();
 let index = 0;
+let isUpdate = true;
 
 const tick = () => {
   // Elapsed Time
   const elapsedTime = clock.getElapsedTime();
 
   // Update Material
-  if (material) {
+  if (material && isUpdate) {
     material.uniforms.uTime.value = elapsedTime;
     const count = geometry.attributes.position.count;
     const randoms = new Float32Array(count);
-    // for (let i = 0; i < count; i++) {
-    //   randoms[i] = Math.random();
-    // }
-    randoms[index % count] = Math.random() * 0.1;
-    index++;
+    for (let i = 0; i < count; i++) {
+      randoms[i] = Math.random() * 0.1;
+    }
+    // randoms[index % count] = Math.random() * 0.1;
+    // index++;
     geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+    isUpdate = false;
   }
 
   // Update Controls
