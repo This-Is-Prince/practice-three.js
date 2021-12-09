@@ -35,14 +35,22 @@ window.addEventListener("resize", () => {
 /**
  * Font Loader
  */
+let geometry: TextGeometry;
 let material: THREE.RawShaderMaterial;
 const fontLoader = new FontLoader();
 fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  const geometry = new TextGeometry("Prince", {
+  geometry = new TextGeometry("P", {
     font,
     size: 0.4,
     height: 0.2,
   });
+  //   const count = geometry.attributes.position.count;
+  //   const randoms = new Float32Array(count);
+  //   for (let i = 0; i < count; i++) {
+  //     randoms[i] = Math.random();
+  //   }
+  //   geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+
   geometry.center();
   material = new THREE.RawShaderMaterial({
     vertexShader,
@@ -51,6 +59,7 @@ fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
       uTime: { value: 0 },
     },
   });
+
   const text = new THREE.Mesh(geometry, material);
   scene.add(text);
 });
@@ -80,7 +89,7 @@ updateSizes();
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 100);
-camera.position.set(0, 0, 2);
+camera.position.set(0, 0, 1);
 scene.add(camera);
 
 /**
@@ -103,6 +112,7 @@ updateRenderer();
  * Tick
  */
 const clock = new THREE.Clock();
+let index = 0;
 
 const tick = () => {
   // Elapsed Time
@@ -111,6 +121,14 @@ const tick = () => {
   // Update Material
   if (material) {
     material.uniforms.uTime.value = elapsedTime;
+    const count = geometry.attributes.position.count;
+    const randoms = new Float32Array(count);
+    // for (let i = 0; i < count; i++) {
+    //   randoms[i] = Math.random();
+    // }
+    randoms[index % count] = Math.random() * 0.1;
+    index++;
+    geometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
   }
 
   // Update Controls
