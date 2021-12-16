@@ -19,6 +19,7 @@ const pannerNode = audioContext.createPanner();
 track.connect(pannerNode).connect(audioContext.destination);
 audio.addEventListener("ended", () => {
   isClicked = false;
+  mesh.material.color.set(0xff0000);
 });
 
 /**
@@ -84,7 +85,7 @@ const scene = new THREE.Scene();
  */
 const mesh = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0xffff00 })
+  new THREE.MeshBasicMaterial({ color: 0xff0000 })
 );
 scene.add(mesh);
 
