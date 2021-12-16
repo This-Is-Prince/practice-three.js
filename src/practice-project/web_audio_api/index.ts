@@ -58,9 +58,11 @@ window.addEventListener(
         audioContext.resume();
       }
       if (isClicked) {
+        mesh.material.color.set(0xffff00);
         audio.play();
       } else {
         audio.pause();
+        mesh.material.color.set(0xff0000);
       }
     }
   },
