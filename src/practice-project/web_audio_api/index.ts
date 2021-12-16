@@ -4,6 +4,24 @@ import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
+ * Audio
+ */
+// fetch audio file
+const audio = new Audio("./static/sounds/The_Rains_of_Castamere.m4a");
+
+// AudioContext
+const audioContext = new AudioContext();
+const track = audioContext.createMediaElementSource(audio);
+
+// PannerNode
+const pannerNode = audioContext.createPanner();
+
+track.connect(pannerNode).connect(audioContext.destination);
+audio.addEventListener("ended", () => {
+  isClicked = false;
+});
+
+/**
  * Canvas
  */
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -30,21 +48,6 @@ window.addEventListener("mousemove", (e) => {
   mouse.x = (e.clientX / sizes.width - 0.5) * 2;
   mouse.y = -((e.clientY / sizes.height - 0.5) * 2);
 });
-
-/**
- * Audio
- */
-// fetch audio file
-const audio = new Audio("./static/sounds/The_Rains_of_Castamere.m4a");
-
-// AudioContext
-const audioContext = new AudioContext();
-const track = audioContext.createMediaElementSource(audio);
-
-// PannerNode
-const pannerNode = audioContext.createPanner();
-
-track.connect(pannerNode).connect(audioContext.destination);
 
 window.addEventListener(
   "click",
