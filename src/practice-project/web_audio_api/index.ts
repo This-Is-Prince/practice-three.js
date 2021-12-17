@@ -100,11 +100,13 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.near = 0;
-directionalLight.shadow.camera.far = 10;
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 9;
+
+directionalLight.position.set(0, 3, 3);
 
 const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(ambientLight, directionalLight, cameraHelper);
+scene.add(ambientLight, directionalLight);
 
 // Debug;
 gui.add(ambientLight, "intensity").min(0).max(10).step(0.01);
@@ -116,12 +118,13 @@ gui.add(directionalLight, "intensity").min(0).max(10).step(0.01);
 const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
 const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+cube.position.y = 3;
 cube.castShadow = true;
 
 /**
  * Ground
  */
-const groundGeometry = new THREE.PlaneGeometry(5, 5);
+const groundGeometry = new THREE.PlaneGeometry(10, 10);
 const groundMaterial = new THREE.MeshStandardMaterial({});
 const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 ground.rotateX(-Math.PI * 0.5);
@@ -129,8 +132,26 @@ ground.position.y = -1;
 ground.receiveShadow = true;
 
 /**
- * Meshes
+ * Music Meshes
  */
+const bars: THREE.Mesh[] = [];
+const createBars = () => {
+  const barWidth = (10 / bufferLength) * 2.5;
+  let x = -5;
+  for (let i = 0; i < bufferLength; i++) {
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0xff00ff })
+    );
+    mesh.scale.set(barWidth, 1, barWidth);
+    mesh.position.x = x;
+    x += barWidth + 1;
+    scene.add(mesh);
+    bars.push(mesh);
+  }
+  console.log(barWidth);
+};
+createBars();
 
 // Adding Meshes into scene
 scene.add(cube, ground);
@@ -218,8 +239,13 @@ const tick = () => {
   rayCasting.setFromCamera(mouse, camera);
 
   const obj = rayCasting.intersectObjects([cube]);
-  if (isClicked) {
-    analyserNode.getByteFrequencyData(dataArray);
+  analyserNode.getByteFrequencyData(dataArray);
+  for (let i = 0; i < bufferLength; i++) {
+    let barHeight = dataArray[i];
+    bars[i].scale.y = barHeight * 0.05;
+    if (bars[i].scale.y > 0) {
+      console.log(bars[i].scale.y);
+    }
   }
   if (obj.length > 0) {
     isMouseOver = true;
