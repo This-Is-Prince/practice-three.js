@@ -101,7 +101,7 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
 directionalLight.shadow.camera.near = 0;
-directionalLight.shadow.camera.far = 5;
+directionalLight.shadow.camera.far = 10;
 
 const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
 scene.add(ambientLight, directionalLight, cameraHelper);
