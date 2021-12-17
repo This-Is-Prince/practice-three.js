@@ -124,7 +124,7 @@ cube.castShadow = true;
 /**
  * Ground
  */
-const groundGeometry = new THREE.PlaneGeometry(10, 10);
+const groundGeometry = new THREE.PlaneGeometry(20, 20);
 const groundMaterial = new THREE.MeshStandardMaterial({});
 const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 ground.rotateX(-Math.PI * 0.5);
@@ -136,20 +136,17 @@ ground.receiveShadow = true;
  */
 const bars: THREE.Mesh[] = [];
 const createBars = () => {
-  const barWidth = (10 / bufferLength) * 2.5;
-  let x = -5;
+  const barWidth = 0.2;
   for (let i = 0; i < bufferLength; i++) {
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: 0xff00ff })
-    );
-    mesh.scale.set(barWidth, 1, barWidth);
-    mesh.position.x = x;
-    x += barWidth + 1;
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshStandardMaterial({ color: 0xff00ff });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.set(barWidth, 0, barWidth);
+    mesh.position.x = i;
     scene.add(mesh);
     bars.push(mesh);
   }
-  console.log(barWidth);
 };
 createBars();
 
@@ -241,11 +238,8 @@ const tick = () => {
   const obj = rayCasting.intersectObjects([cube]);
   analyserNode.getByteFrequencyData(dataArray);
   for (let i = 0; i < bufferLength; i++) {
-    let barHeight = dataArray[i];
-    bars[i].scale.y = barHeight * 0.05;
-    if (bars[i].scale.y > 0) {
-      console.log(bars[i].scale.y);
-    }
+    let barHeight = dataArray[i] * 0.05;
+    bars[i].scale.y = barHeight;
   }
   if (obj.length > 0) {
     isMouseOver = true;
