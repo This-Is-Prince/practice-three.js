@@ -122,37 +122,14 @@ cube.position.y = 3;
 cube.castShadow = true;
 
 /**
- * Ground
- */
-const groundGeometry = new THREE.PlaneGeometry(20, 20);
-const groundMaterial = new THREE.MeshStandardMaterial({});
-const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-ground.rotateX(-Math.PI * 0.5);
-ground.position.y = -1;
-ground.receiveShadow = true;
-
-/**
  * Music Meshes
  */
-const bars: THREE.Mesh[] = [];
-const createBars = () => {
-  const barWidth = 0.2;
-  for (let i = 0; i < bufferLength; i++) {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({ color: 0xff00ff });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.scale.set(barWidth, 0, barWidth);
-    mesh.position.x = i;
-    mesh.castShadow = true;
-    scene.add(mesh);
-    bars.push(mesh);
-  }
-};
-createBars();
+const geometry = new THREE.SphereGeometry(1, 32, 32);
+const material = new THREE.PointsMaterial({ size: 0.02 });
+const sphere = new THREE.Points(geometry, material);
 
 // Adding Meshes into scene
-scene.add(cube, ground);
+scene.add(cube, sphere);
 
 /**
  * Sizes
@@ -238,10 +215,6 @@ const tick = () => {
 
   const obj = rayCasting.intersectObjects([cube]);
   analyserNode.getByteFrequencyData(dataArray);
-  for (let i = 0; i < bufferLength; i++) {
-    let barHeight = dataArray[i] * 0.05;
-    bars[i].scale.y = barHeight;
-  }
   if (obj.length > 0) {
     isMouseOver = true;
   } else {
