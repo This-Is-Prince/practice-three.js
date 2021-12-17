@@ -144,6 +144,7 @@ const createBars = () => {
     const mesh = new THREE.Mesh(geometry, material);
     mesh.scale.set(barWidth, 0, barWidth);
     mesh.position.x = i;
+    mesh.castShadow = true;
     scene.add(mesh);
     bars.push(mesh);
   }
