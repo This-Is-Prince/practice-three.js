@@ -11,16 +11,27 @@ const audio = new Audio("./static/sounds/The_Rains_of_Castamere.m4a");
 
 // AudioContext
 const audioContext = new AudioContext();
-const track = audioContext.createMediaElementSource(audio);
+const source = audioContext.createMediaElementSource(audio);
 
 // PannerNode
 const pannerNode = audioContext.createPanner();
 
-track.connect(pannerNode).connect(audioContext.destination);
+// AnalyserNode
+const analyserNode = audioContext.createAnalyser();
+
+source
+  .connect(pannerNode)
+  .connect(analyserNode)
+  .connect(audioContext.destination);
+
 audio.addEventListener("ended", () => {
   isClicked = false;
-  mesh.material.color.set(0xff0000);
+  cube.material.color.set(0xff0000);
 });
+
+analyserNode.fftSize = 256;
+const bufferLength = analyserNode.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
 
 /**
  * Canvas
@@ -59,11 +70,11 @@ window.addEventListener(
         audioContext.resume();
       }
       if (isClicked) {
-        mesh.material.color.set(0xffff00);
+        cube.material.color.set(0xffff00);
         audio.play();
       } else {
         audio.pause();
-        mesh.material.color.set(0xff0000);
+        cube.material.color.set(0xff0000);
       }
     }
   },
@@ -81,13 +92,48 @@ const gui = new dat.GUI();
 const scene = new THREE.Scene();
 
 /**
- * Objects
+ * Lights
  */
-const mesh = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0xff0000 })
-);
-scene.add(mesh);
+// AmbientLight
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// DirectionalLight
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.set(1024, 1024);
+directionalLight.shadow.camera.near = 0;
+directionalLight.shadow.camera.far = 5;
+
+const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+scene.add(ambientLight, directionalLight, cameraHelper);
+
+// Debug;
+gui.add(ambientLight, "intensity").min(0).max(10).step(0.01);
+gui.add(directionalLight, "intensity").min(0).max(10).step(0.01);
+
+/**
+ * Input Cube
+ */
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+cube.castShadow = true;
+
+/**
+ * Ground
+ */
+const groundGeometry = new THREE.PlaneGeometry(5, 5);
+const groundMaterial = new THREE.MeshStandardMaterial({});
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.rotateX(-Math.PI * 0.5);
+ground.position.y = -1;
+ground.receiveShadow = true;
+
+/**
+ * Meshes
+ */
+
+// Adding Meshes into scene
+scene.add(cube, ground);
 
 /**
  * Sizes
@@ -127,6 +173,26 @@ const updateRenderer = () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
 updateRenderer();
+renderer.physicallyCorrectLights = true;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 2;
+
+// Debug
+gui
+  .add(renderer, "toneMapping", {
+    No: THREE.NoToneMapping,
+    Reinhard: THREE.ReinhardToneMapping,
+    Cineon: THREE.CineonToneMapping,
+    Linear: THREE.LinearToneMapping,
+    ACES: THREE.ACESFilmicToneMapping,
+  })
+  .onChange(() => {
+    renderer.toneMapping = Number(renderer.toneMapping);
+  });
+gui.add(renderer, "toneMappingExposure").min(0).max(10).step(1);
 
 /**
  * RayCasting
@@ -151,7 +217,10 @@ const tick = () => {
   // Cast A Ray
   rayCasting.setFromCamera(mouse, camera);
 
-  const obj = rayCasting.intersectObjects([mesh]);
+  const obj = rayCasting.intersectObjects([cube]);
+  if (isClicked) {
+    analyserNode.getByteFrequencyData(dataArray);
+  }
   if (obj.length > 0) {
     isMouseOver = true;
   } else {
