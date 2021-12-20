@@ -5,20 +5,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>three.js fundamentals</title>
+    <style>
+      body {
+        counter-reset: my-counter;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        row-gap: 2rem;
+      }
+      a {
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 2rem;
+        color: crimson;
+      }
+      a::before {
+        counter-increment: my-counter;
+        content: "Chapter " counter(my-counter) " :- ";
+      }
+    </style>
   </head>
   <body>
-    <canvas id="canvas"></canvas>
-    <!-- Fundaments -->
-
-    <!-- 1-Basics -->
-
-    <!-- 1-Fundamentals -->
-    <!-- <script type="module" src="./1-Basics/1-Fundamentals/index.ts"></script> -->
-
-    <!-- 2-Responsive Design -->
-    <script
-      type="module"
-      src="./1-Basics/2-Responsive_Design/index.ts"
-    ></script>
+    <ul>
+      <!-- 1-Basics -->
+      <li>
+        <a href="./1-Basics/index.html"> Basics </a>
+      </li>
+      <!-- 2-Fundamentals -->
+      <li>
+        <a href="./1-Basics/index.html"> Fundamentals </a>
+      </li>
+    </ul>
   </body>
 </html>
