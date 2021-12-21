@@ -7,17 +7,52 @@ import * as THREE from "three";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 /**
+ * Sizes
+ */
+const sizes = { width: 0, height: 0 };
+const updateSizes = () => {
+  sizes.width = canvas.clientWidth;
+  sizes.height = canvas.clientHeight;
+};
+updateSizes();
+const aspectRatio = () => {
+  return sizes.width / sizes.height;
+};
+
+/**
+ * Events
+ */
+window.addEventListener("resize", () => {
+  // Update Sizes
+  updateSizes();
+
+  // Update Camera
+  camera.aspect = aspectRatio();
+  camera.updateProjectionMatrix();
+
+  // Update Renderer
+  updateRenderer();
+});
+
+/**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const updateRenderer = () => {
+  const pixelRatio = Math.min(window.devicePixelRatio, 2);
+  const width = (sizes.width * pixelRatio) | 0;
+  const height = (sizes.height * pixelRatio) | 0;
+  renderer.setSize(width, height, false);
+};
+updateRenderer();
+
 /**
  * Camera
  */
 const fov = 75;
-const aspect = 2; // the canvas default
 const near = 0.1;
 const far = 5;
-const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+const camera = new THREE.PerspectiveCamera(fov, aspectRatio(), near, far);
 camera.position.z = 2;
 
 /**
@@ -69,33 +104,11 @@ const cubes = [
 ];
 
 /**
- * Rendering
- */
-// renderer.render(scene, camera);
-const resizeRendererToDisplaySize = (renderer: THREE.WebGLRenderer) => {
-  const pixelRatio = Math.min(window.devicePixelRatio, 2);
-  const width = canvas.clientWidth * pixelRatio;
-  const height = canvas.clientHeight * pixelRatio;
-  const needResize = canvas.width !== width || canvas.height !== height;
-
-  if (needResize) {
-    renderer.setSize(width, height, false);
-  }
-  return needResize;
-};
-
-/**
  * Animate
  */
 const render = (time: number) => {
   // Time in milliseconds
   time *= 0.001; //convert time to seconds
-
-  // Change Camera Aspect
-  if (resizeRendererToDisplaySize(renderer)) {
-    camera.aspect = canvas.clientWidth / canvas.clientHeight;
-    camera.updateProjectionMatrix();
-  }
 
   // Animate Cube
   //   cube.rotation.set(time, time, 0);
