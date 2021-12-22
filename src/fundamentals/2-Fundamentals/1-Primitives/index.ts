@@ -1,4 +1,10 @@
 import * as THREE from "three";
+import * as dat from "dat.gui";
+
+/**
+ * GUI
+ */
+const gui = new dat.GUI();
 
 /**
  * Canvas
@@ -73,13 +79,14 @@ scene.add(ambientLight);
  */
 const material = new THREE.MeshStandardMaterial({
   color: 0xff0000,
-  wireframe: true,
 });
+gui.add(material, "wireframe");
 
 /**
  * Geometry
  */
 let geometry: THREE.BufferGeometry;
+let isMesh = true;
 // 1.Box
 {
   const width = 8;
@@ -97,12 +104,183 @@ let geometry: THREE.BufferGeometry;
     depthSegments
   );
 }
+// Circle
+{
+  const radius = 7;
+  const segments = 24;
+  geometry = new THREE.CircleGeometry(radius, segments);
+  const thetaStart = 0;
+  const thetaLength = Math.PI;
+  geometry = new THREE.CircleGeometry(
+    radius,
+    segments,
+    thetaStart,
+    thetaLength
+  );
+}
+// Cone
+{
+  const radius = 6;
+  const height = 8;
+  const radialSegments = 16;
+  geometry = new THREE.ConeGeometry(radius, height, radialSegments);
+  const heightSegments = 2;
+  const openEnded = true;
+  const thetaStart = 0;
+  const thetaLength = Math.PI;
+  geometry = new THREE.ConeGeometry(
+    radius,
+    height,
+    radialSegments,
+    heightSegments,
+    openEnded,
+    thetaStart,
+    thetaLength
+  );
+}
+// Cylinder
+{
+  const radiusTop = 4;
+  const radiusBottom = 4;
+  const height = 8;
+  const radialSegments = 12;
+  geometry = new THREE.CylinderGeometry(
+    radiusTop,
+    radiusBottom,
+    height,
+    radialSegments
+  );
+  const heightSegments = 2;
+  const openEnded = true;
+  const thetaStart = 0;
+  const thetaLength = Math.PI;
+
+  geometry = new THREE.CylinderGeometry(
+    radiusTop,
+    radiusBottom,
+    height,
+    radialSegments,
+    heightSegments,
+    openEnded,
+    thetaStart,
+    thetaLength
+  );
+}
+// Dodecahedron
+{
+  const radius = 7;
+  const detail = 2;
+  geometry = new THREE.DodecahedronGeometry(radius, detail);
+}
+// ExtrudeGeometry
+// 1.
+{
+  const shape = new THREE.Shape();
+  const x = -2.5;
+  const y = -5;
+  shape.moveTo(x + 2.5, y + 2.5);
+  shape.bezierCurveTo(x + 2.5, y + 2.5, x + 2, y, x, y);
+  shape.bezierCurveTo(x - 3, y, x - 3, y + 3.5, x - 3, y + 3.5);
+  shape.bezierCurveTo(x - 3, y + 5.5, x - 1.5, y + 7.7, x + 2.5, y + 9.5);
+  shape.bezierCurveTo(x + 6, y + 7.7, x + 8, y + 4.5, x + 8, y + 3.5);
+  shape.bezierCurveTo(x + 8, y + 3.5, x + 8, y, x + 5, y);
+  shape.bezierCurveTo(x + 3.5, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5);
+
+  geometry = new THREE.ExtrudeGeometry(shape, {
+    steps: 2,
+    depth: 2,
+    bevelEnabled: true,
+    bevelThickness: 1,
+    bevelSegments: 2,
+    bevelSize: 2,
+  });
+}
+// 2.
+// {
+//   const outline = new THREE.Shape(
+//     [
+//       [-2, -0.1],
+//       [2, -0.1],
+//       [2, 0.6],
+//       [1.6, 0.6],
+//       [1.6, 0.1],
+//       [-2, 0.1],
+//     ].map((p) => new THREE.Vector2(...p))
+//   );
+
+//   const x = -2.5;
+//   const y = -5;
+//   const shape = new THREE.CurvePath();
+//   const points = [
+//     [x + 2.5, y + 2.5],
+//     [x + 2.5, y + 2.5],
+//     [x + 2, y],
+//     [x, y],
+//     [x - 3, y],
+//     [x - 3, y + 3.5],
+//     [x - 3, y + 3.5],
+//     [x - 3, y + 5.5],
+//     [x - 1.5, y + 7.7],
+//     [x + 2.5, y + 9.5],
+//     [x + 6, y + 7.7],
+//     [x + 8, y + 4.5],
+//     [x + 8, y + 3.5],
+//     [x + 8, y + 3.5],
+//     [x + 8, y],
+//     [x + 5, y],
+//     [x + 3.5, y],
+//     [x + 2.5, y + 2.5],
+//     [x + 2.5, y + 2.5],
+//   ].map((p) => new THREE.Vector3(...p, 0));
+
+//   for (let i = 0; i < points.length; i += 3) {
+//     const { 0: v0, 1: v1, 2: v2, 3: v3 } = points.slice(i, i + 4);
+//     shape.add(new THREE.CubicBezierCurve3(v0, v1, v2, v3));
+//   }
+//   geometry = new THREE.ExtrudeGeometry(outline, {
+//     steps: 100,
+//     bevelEnabled: false,
+//     extrudePath: shape,
+//   });
+// }
+
+// IcosahedronGeometry
+{
+  const radius = 7;
+  const detail = 2;
+  geometry = new THREE.IcosahedronGeometry(radius, detail);
+}
+
+// Edges Geometry
+{
+  const size = 8;
+  const widthSegments = 2;
+  const heightSegments = 2;
+  const depthSegments = 2;
+  const boxGeometry = new THREE.BoxGeometry(
+    size,
+    size,
+    size,
+    widthSegments,
+    heightSegments,
+    depthSegments
+  );
+  const edges = new THREE.EdgesGeometry(boxGeometry);
+  const line = new THREE.LineSegments(
+    edges,
+    new THREE.LineBasicMaterial({ color: 0xffffff })
+  );
+  scene.add(line);
+  isMesh = false;
+}
 
 /**
  * Mesh
  */
 const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+if (isMesh) {
+  scene.add(mesh);
+}
 
 /**
  * Animate
@@ -112,9 +290,11 @@ const render = (time: number) => {
   time *= 0.001; //convert time to seconds
 
   // Animate Mesh
-  mesh.rotation.x = 2 * Math.PI * time * 0.1;
-  mesh.rotation.y = 2 * Math.PI * time * 0.1;
-  mesh.rotation.z = 2 * Math.PI * time * 0.1;
+  if (isMesh) {
+    mesh.rotation.x = 2 * Math.PI * time * 0.1;
+    mesh.rotation.y = 2 * Math.PI * time * 0.1;
+    mesh.rotation.z = 2 * Math.PI * time * 0.1;
+  }
 
   // Rendering scene using camera
   renderer.render(scene, camera);
