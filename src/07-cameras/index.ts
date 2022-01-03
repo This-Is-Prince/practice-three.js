@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import "../style.css";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
@@ -14,7 +15,11 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 /**
  * Canvas
  */
-const canvas = document.getElementById("myCanvas")!;
+const canvas = document.getElementById("myCanvas")! as HTMLCanvasElement;
+const { clientHeight, clientWidth } = canvas;
+const pixelRatio = Math.min(window.devicePixelRatio, 2);
+canvas.width = (clientWidth * pixelRatio) | 0;
+canvas.height = (clientHeight * pixelRatio) | 0;
 
 /**
  * Scene
@@ -36,6 +41,11 @@ const sizes = {
   width: 800,
   height: 600,
 };
+const updateSize = () => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+};
+updateSize();
 
 // Orthographic Camera
 // const aspectRatio = sizes.width / sizes.height;
@@ -50,14 +60,14 @@ const sizes = {
 
 // ---- Perspective Camera
 const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
+  30,
+  canvas.width / canvas.height,
+  1.0,
   100
 );
 
-camera.position.set(2, 2, 2);
-camera.lookAt(mesh.position);
+camera.position.set(3, 3, 7);
+// camera.lookAt(mesh.position);
 scene.add(camera);
 
 /**
@@ -66,6 +76,7 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 // controls.target.y = 2;
 controls.enableDamping = true;
+controls.enabled = false;
 
 /**
  * Renderer
