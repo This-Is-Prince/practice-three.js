@@ -89,10 +89,10 @@ world.addBody(groundBody);
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("../../../static/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("./static/models/car/car.glb", (gltf) => {
+gltfLoader.load("../../../static/models/car/car.glb", (gltf) => {
   // All Car Meshes
   const meshes = [...gltf.scene.children] as THREE.Mesh[];
 

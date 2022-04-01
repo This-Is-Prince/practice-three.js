@@ -1,7 +1,6 @@
 import "../../style.css";
 import * as dat from "dat.gui";
 import * as THREE from "three";
-import * as CANNON from "cannon-es";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
@@ -49,10 +48,10 @@ let cube: THREE.Mesh;
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("../../../static/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("./static/models/test_cube/cube.glb", (gltf) => {
+gltfLoader.load("../../../static/models/test_cube/cube.glb", (gltf) => {
   cube = gltf.scene.children[0] as THREE.Mesh;
   cube.material = new THREE.MeshStandardMaterial({
     color: parameters.cubeColor,

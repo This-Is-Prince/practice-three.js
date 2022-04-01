@@ -6,7 +6,6 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { CameraHelper } from "three";
 
 /**
  * Debug
@@ -110,10 +109,10 @@ scene.add(directionalLight);
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("../../../static/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("./static/models/ladder/ladder.glb", (gltf) => {
+gltfLoader.load("../../../static/models/ladder/ladder.glb", (gltf) => {
   const ladder = gltf.scene.children[0] as THREE.Mesh;
   const boundingBox = ladder.geometry.boundingBox!;
 
@@ -139,7 +138,7 @@ gltfLoader.load("./static/models/ladder/ladder.glb", (gltf) => {
   ladder.castShadow = true;
   scene.add(ladder);
 });
-gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
+gltfLoader.load("../../../static/models/tree/tree.glb", (gltf) => {
   const treeArr = [...gltf.scene.children[0].children];
   const tree = new THREE.Group();
   treeArr.forEach((treeMesh) => {
@@ -152,7 +151,7 @@ gltfLoader.load("./static/models/tree/tree.glb", (gltf) => {
   tree.rotation.y = Math.PI * 0.25;
   scene.add(tree);
 });
-gltfLoader.load("./static/models/car/car.glb", (gltf) => {
+gltfLoader.load("../../../static/models/car/car.glb", (gltf) => {
   const car = new THREE.Group();
   const carArr = [...gltf.scene.children];
   carArr.forEach((carMesh) => {
@@ -168,153 +167,156 @@ gltfLoader.load("./static/models/car/car.glb", (gltf) => {
  * Fonts
  */
 const fontLoader = new FontLoader();
-fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  // Size Of Text
-  let size = 0.5;
-  let height = 0.4;
+fontLoader.load(
+  "../../../static/fonts/helvetiker_regular.typeface.json",
+  (font) => {
+    // Size Of Text
+    let size = 0.5;
+    let height = 0.4;
 
-  /**
-   * CSS
-   */
-  // CSS Geometry
-  const cssGeometry = new TextGeometry("CSS", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  cssGeometry.center();
-  cssGeometry.translate(0, size / 2, 0);
-  // CSS Mesh
-  const cssMesh = new THREE.Mesh(cssGeometry, oddMaterial);
-  cssMesh.position.x = -1;
-  cssMesh.rotateY(Math.PI * 0.1);
-  cssMesh.castShadow = true;
-  cssMesh.receiveShadow = true;
+    /**
+     * CSS
+     */
+    // CSS Geometry
+    const cssGeometry = new TextGeometry("CSS", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    cssGeometry.center();
+    cssGeometry.translate(0, size / 2, 0);
+    // CSS Mesh
+    const cssMesh = new THREE.Mesh(cssGeometry, oddMaterial);
+    cssMesh.position.x = -1;
+    cssMesh.rotateY(Math.PI * 0.1);
+    cssMesh.castShadow = true;
+    cssMesh.receiveShadow = true;
 
-  /**
-   * HTML
-   */
-  // HTML Geometry
-  const htmlGeometry = new TextGeometry("HTML", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  htmlGeometry.center();
-  htmlGeometry.translate(0, size / 2, 0);
-  // HTML Mesh
-  const htmlMesh = new THREE.Mesh(htmlGeometry, oddMaterial);
-  htmlMesh.position.x = 1;
-  htmlMesh.rotateY(-Math.PI * 0.1);
-  htmlMesh.castShadow = true;
-  htmlMesh.receiveShadow = true;
+    /**
+     * HTML
+     */
+    // HTML Geometry
+    const htmlGeometry = new TextGeometry("HTML", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    htmlGeometry.center();
+    htmlGeometry.translate(0, size / 2, 0);
+    // HTML Mesh
+    const htmlMesh = new THREE.Mesh(htmlGeometry, oddMaterial);
+    htmlMesh.position.x = 1;
+    htmlMesh.rotateY(-Math.PI * 0.1);
+    htmlMesh.castShadow = true;
+    htmlMesh.receiveShadow = true;
 
-  /**
-   * Typescript
-   */
-  // Typescript Geometry
-  const typescriptGeometry = new TextGeometry("TYPESCRIPT", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  typescriptGeometry.center();
-  typescriptGeometry.translate(0, size / 2, 0);
-  // Typescript Mesh
-  const typescriptMesh = new THREE.Mesh(typescriptGeometry, evenMaterial);
-  typescriptMesh.position.set(0, size, -0.1);
-  typescriptMesh.castShadow = true;
-  typescriptMesh.receiveShadow = true;
+    /**
+     * Typescript
+     */
+    // Typescript Geometry
+    const typescriptGeometry = new TextGeometry("TYPESCRIPT", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    typescriptGeometry.center();
+    typescriptGeometry.translate(0, size / 2, 0);
+    // Typescript Mesh
+    const typescriptMesh = new THREE.Mesh(typescriptGeometry, evenMaterial);
+    typescriptMesh.position.set(0, size, -0.1);
+    typescriptMesh.castShadow = true;
+    typescriptMesh.receiveShadow = true;
 
-  /**
-   * THREE
-   */
-  // THREE Geometry
-  const three_js_Geometry = new TextGeometry("THREE-JS", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  three_js_Geometry.center();
-  three_js_Geometry.translate(0, size / 2, 0);
-  // THREE Mesh
-  const three_js_Mesh = new THREE.Mesh(three_js_Geometry, oddMaterial);
-  three_js_Mesh.position.y = size * 2;
-  three_js_Mesh.rotateY(Math.PI * 0.1);
-  three_js_Mesh.castShadow = true;
-  three_js_Mesh.receiveShadow = true;
+    /**
+     * THREE
+     */
+    // THREE Geometry
+    const three_js_Geometry = new TextGeometry("THREE-JS", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    three_js_Geometry.center();
+    three_js_Geometry.translate(0, size / 2, 0);
+    // THREE Mesh
+    const three_js_Mesh = new THREE.Mesh(three_js_Geometry, oddMaterial);
+    three_js_Mesh.position.y = size * 2;
+    three_js_Mesh.rotateY(Math.PI * 0.1);
+    three_js_Mesh.castShadow = true;
+    three_js_Mesh.receiveShadow = true;
 
-  /**
-   * React
-   */
-  // React Geometry
-  const reactGeometry = new TextGeometry("REACT", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  reactGeometry.center();
-  reactGeometry.translate(0, size / 2, 0);
-  // React Mesh
-  const reactMesh = new THREE.Mesh(reactGeometry, evenMaterial);
-  reactMesh.position.y = size * 3;
-  reactMesh.rotateY(-Math.PI * 0.1);
-  reactMesh.castShadow = true;
-  reactMesh.receiveShadow = true;
+    /**
+     * React
+     */
+    // React Geometry
+    const reactGeometry = new TextGeometry("REACT", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    reactGeometry.center();
+    reactGeometry.translate(0, size / 2, 0);
+    // React Mesh
+    const reactMesh = new THREE.Mesh(reactGeometry, evenMaterial);
+    reactMesh.position.y = size * 3;
+    reactMesh.rotateY(-Math.PI * 0.1);
+    reactMesh.castShadow = true;
+    reactMesh.receiveShadow = true;
 
-  /**
-   * Blender
-   */
-  // Blender Geometry
-  const blenderGeometry = new TextGeometry("BLENDER", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  blenderGeometry.center();
-  blenderGeometry.translate(0, size / 2, 0);
-  // Blender Mesh
-  const blenderMesh = new THREE.Mesh(blenderGeometry, oddMaterial);
-  blenderMesh.position.y = size * 4;
-  blenderMesh.rotateY(Math.PI * 0.1);
-  blenderMesh.castShadow = true;
-  blenderMesh.receiveShadow = true;
+    /**
+     * Blender
+     */
+    // Blender Geometry
+    const blenderGeometry = new TextGeometry("BLENDER", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    blenderGeometry.center();
+    blenderGeometry.translate(0, size / 2, 0);
+    // Blender Mesh
+    const blenderMesh = new THREE.Mesh(blenderGeometry, oddMaterial);
+    blenderMesh.position.y = size * 4;
+    blenderMesh.rotateY(Math.PI * 0.1);
+    blenderMesh.castShadow = true;
+    blenderMesh.receiveShadow = true;
 
-  /**
-   * NODE.JS
-   */
-  // NODE.JS Geometry
-  const node_js_Geometry = new TextGeometry("NODE-JS", {
-    font,
-    size,
-    height,
-    curveSegments: 12,
-  });
-  node_js_Geometry.center();
-  node_js_Geometry.translate(0, size / 2, 0);
-  // NODE.JS Mesh
-  const node_js_Mesh = new THREE.Mesh(node_js_Geometry, evenMaterial);
-  node_js_Mesh.position.y = size * 5;
-  node_js_Mesh.rotateY(-Math.PI * 0.1);
-  node_js_Mesh.castShadow = true;
-  node_js_Mesh.receiveShadow = true;
+    /**
+     * GoLang
+     */
+    // GoLang Geometry
+    const node_js_Geometry = new TextGeometry("GoLang", {
+      font,
+      size,
+      height,
+      curveSegments: 12,
+    });
+    node_js_Geometry.center();
+    node_js_Geometry.translate(0, size / 2, 0);
+    // GoLang Mesh
+    const node_js_Mesh = new THREE.Mesh(node_js_Geometry, evenMaterial);
+    node_js_Mesh.position.y = size * 5;
+    node_js_Mesh.rotateY(-Math.PI * 0.1);
+    node_js_Mesh.castShadow = true;
+    node_js_Mesh.receiveShadow = true;
 
-  scene.add(
-    cssMesh,
-    htmlMesh,
-    typescriptMesh,
-    three_js_Mesh,
-    reactMesh,
-    blenderMesh,
-    node_js_Mesh
-  );
-});
+    scene.add(
+      cssMesh,
+      htmlMesh,
+      typescriptMesh,
+      three_js_Mesh,
+      reactMesh,
+      blenderMesh,
+      node_js_Mesh
+    );
+  }
+);
 
 /**
  * Materials
@@ -448,7 +450,7 @@ const tick = () => {
   // camera.position.x = Math.sin(elapsedTime) * 6;
   // camera.position.z = Math.cos(elapsedTime) * 6;
 
-  if (renderer.toneMappingExposure < 5) {
+  if (renderer.toneMappingExposure < 2) {
     renderer.toneMappingExposure = elapsedTime * 0.25;
   }
 

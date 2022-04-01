@@ -2,7 +2,6 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
-uniform float uTime;
 
 attribute float aRandom;
 attribute vec3 position;

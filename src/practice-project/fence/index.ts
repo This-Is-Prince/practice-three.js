@@ -28,10 +28,10 @@ const scene = new THREE.Scene();
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("../../../static/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("./static/models/fence/fence.glb", (gltf) => {
+gltfLoader.load("../../../static/models/fence/fence.glb", (gltf) => {
   const fenceWood = gltf.scene.children[0].children[0];
   fenceWood.castShadow = true;
   const fenceBolt = gltf.scene.children[0].children[1];

@@ -7,7 +7,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
  * Audio
  */
 // fetch audio file
-const audio = new Audio("./static/sounds/The_Rains_of_Castamere.m4a");
+const audio = new Audio("../../../static/sounds/The_Rains_of_Castamere.m4a");
 
 // AudioContext
 const audioContext = new AudioContext();

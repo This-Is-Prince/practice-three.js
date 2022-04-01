@@ -28,10 +28,10 @@ const scene = new THREE.Scene();
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("../../../static/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("./static/models/axe/axe.glb", (gltf) => {
+gltfLoader.load("../../../static/models/axe/axe.glb", (gltf) => {
   const axeHandle = gltf.scene.children[0];
   const axeHead = gltf.scene.children[1];
   const axe = new THREE.Group();

@@ -24,32 +24,35 @@ let wheelPosition = 0,
 let characterMeshes: THREE.Mesh[] = [];
 
 const fontLoader = new FontLoader();
-fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
-  const material = new THREE.MeshNormalMaterial({ wireframe: true });
+fontLoader.load(
+  "../../../static/fonts/helvetiker_regular.typeface.json",
+  (font) => {
+    const material = new THREE.MeshNormalMaterial({ wireframe: true });
 
-  characters.split("").forEach((char) => {
-    const geometry = new TextGeometry(char, {
-      font,
-      size,
-      height,
-      curveSegments: 12,
+    characters.split("").forEach((char) => {
+      const geometry = new TextGeometry(char, {
+        font,
+        size,
+        height,
+        curveSegments: 12,
+      });
+
+      geometry.center();
+      const mesh = new THREE.Mesh(geometry, material);
+      // Position
+      mesh.position.x = (Math.random() - 0.5) * radius;
+      mesh.position.y = (Math.random() - 0.5) * radius;
+      mesh.position.z = (Math.random() - 0.5) * radius;
+      // Rotation
+      mesh.rotation.x = Math.PI * 2 * Math.random();
+      mesh.rotation.y = Math.PI * 2 * Math.random();
+      mesh.rotation.z = Math.PI * 2 * Math.random();
+      prevPosition.push(mesh.position.clone());
+      characterMeshes.push(mesh);
+      scene.add(mesh);
     });
-
-    geometry.center();
-    const mesh = new THREE.Mesh(geometry, material);
-    // Position
-    mesh.position.x = (Math.random() - 0.5) * radius;
-    mesh.position.y = (Math.random() - 0.5) * radius;
-    mesh.position.z = (Math.random() - 0.5) * radius;
-    // Rotation
-    mesh.rotation.x = Math.PI * 2 * Math.random();
-    mesh.rotation.y = Math.PI * 2 * Math.random();
-    mesh.rotation.z = Math.PI * 2 * Math.random();
-    prevPosition.push(mesh.position.clone());
-    characterMeshes.push(mesh);
-    scene.add(mesh);
-  });
-});
+  }
+);
 
 /**
  * Window Events
