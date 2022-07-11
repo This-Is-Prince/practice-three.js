@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
@@ -25,7 +25,7 @@ window.addEventListener("resize", () => {
 /**
  * GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Scene
@@ -75,12 +75,12 @@ updateRenderer();
  * Animations
  */
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 // Tick
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Controls
   controls.update();

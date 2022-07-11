@@ -81,16 +81,16 @@ const playHitSound = (collision: CollisionType) => {
 /**
  * Textures
  */
-const textureLoader = new THREE.TextureLoader();
-const cubeTextureLoader = new THREE.CubeTextureLoader();
-const environmentMapTexture = cubeTextureLoader.load([
-  "./static/textures/environmentMaps/4/px.png",
-  "./static/textures/environmentMaps/4/nx.png",
-  "./static/textures/environmentMaps/4/py.png",
-  "./static/textures/environmentMaps/4/ny.png",
-  "./static/textures/environmentMaps/4/pz.png",
-  "./static/textures/environmentMaps/4/nz.png",
-]);
+// const textureLoader = new THREE.TextureLoader();
+// const cubeTextureLoader = new THREE.CubeTextureLoader();
+// const environmentMapTexture = cubeTextureLoader.load([
+//   "./static/textures/environmentMaps/4/px.png",
+//   "./static/textures/environmentMaps/4/nx.png",
+//   "./static/textures/environmentMaps/4/py.png",
+//   "./static/textures/environmentMaps/4/ny.png",
+//   "./static/textures/environmentMaps/4/pz.png",
+//   "./static/textures/environmentMaps/4/nz.png",
+// ]);
 
 /**
  * Physics

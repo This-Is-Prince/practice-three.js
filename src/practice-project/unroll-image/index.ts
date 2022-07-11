@@ -1,6 +1,6 @@
 import "../../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import fragmentShader from "./shaders/index-1/fragment.fs.glsl?raw";
 import vertexShader from "./shaders/index-1/vertex.vs.glsl?raw";
@@ -28,7 +28,7 @@ window.addEventListener("resize", () => {
 /**
  * GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Scene

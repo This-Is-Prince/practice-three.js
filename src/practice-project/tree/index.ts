@@ -157,8 +157,8 @@ updateRenderer();
  * Animation
  */
 // Clock
-const clock = new THREE.Clock();
-let oldElapsedTime = 0;
+// const clock = new THREE.Clock();
+// let oldElapsedTime = 0;
 
 // Tick
 const tick = () => {
@@ -166,9 +166,9 @@ const tick = () => {
   controls.update();
 
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
-  const deltaTime = elapsedTime - oldElapsedTime;
-  oldElapsedTime = elapsedTime;
+  // const elapsedTime = clock.getElapsedTime();
+  // const deltaTime = elapsedTime - oldElapsedTime;
+  // oldElapsedTime = elapsedTime;
 
   // Render
   renderer.render(scene, camera);

@@ -42,16 +42,16 @@ scene.add(axesHelper);
  * Objects
  */
 
-let particlesMaterial = new THREE.PointsMaterial({
-  size: 0.02,
-  // vertexColors: true,
-});
+// let particlesMaterial = new THREE.PointsMaterial({
+//   size: 0.02,
+//   // vertexColors: true,
+// });
 
-let particlesGeometry = new THREE.BufferGeometry();
-let particles: THREE.Points;
-const noOfParticle = 1000;
-let positions = new Float32Array(noOfParticle * 3);
-let colors = new Float32Array(noOfParticle * 3);
+// let particlesGeometry = new THREE.BufferGeometry();
+// let particles: THREE.Points;
+// const noOfParticle = 1000;
+// let positions = new Float32Array(noOfParticle * 3);
+// let colors = new Float32Array(noOfParticle * 3);
 
 // const makeCircle = (radius: number, thickness: number) => {
 //   for (let i = 0; i < noOfParticle; i++) {
@@ -76,78 +76,78 @@ let colors = new Float32Array(noOfParticle * 3);
 // particles = new THREE.Points(particlesGeometry, particlesMaterial);
 // scene.add(particles);
 
-const galaxyParameters = {
-  noOfParticles: 100000,
-  noOfSubDivision: 18,
-  radius: 10,
-  height: 0.1,
-  subDivisionThickness: 0.25,
-  bending: 3,
-  insideColor: 0xff6030,
-  outsideColor: 0x1b3984,
-};
-const makeGalaxy = () => {
-  // Remove Previous Particles
-  if (particles !== undefined) {
-    particlesGeometry.dispose();
-    particlesMaterial.dispose();
-    scene.remove(particles);
-  }
+// const galaxyParameters = {
+//   noOfParticles: 100000,
+//   noOfSubDivision: 18,
+//   radius: 10,
+//   height: 0.1,
+//   subDivisionThickness: 0.25,
+//   bending: 3,
+//   insideColor: 0xff6030,
+//   outsideColor: 0x1b3984,
+// };
+// const makeGalaxy = () => {
+//   // Remove Previous Particles
+//   if (particles !== undefined) {
+//     particlesGeometry.dispose();
+//     particlesMaterial.dispose();
+//     scene.remove(particles);
+//   }
 
-  particlesGeometry = new THREE.BufferGeometry();
-  positions = new Float32Array(galaxyParameters.noOfParticles * 3);
-  colors = new Float32Array(galaxyParameters.noOfParticles * 3);
+//   particlesGeometry = new THREE.BufferGeometry();
+//   positions = new Float32Array(galaxyParameters.noOfParticles * 3);
+//   colors = new Float32Array(galaxyParameters.noOfParticles * 3);
 
-  const insideColor = new THREE.Color(galaxyParameters.insideColor);
-  const outsideColor = new THREE.Color(galaxyParameters.outsideColor);
+//   const insideColor = new THREE.Color(galaxyParameters.insideColor);
+//   const outsideColor = new THREE.Color(galaxyParameters.outsideColor);
 
-  // Calculate Positions of particles
-  for (let i = 0; i < galaxyParameters.noOfParticles; i++) {
-    let index = i * 3;
+//   // Calculate Positions of particles
+//   for (let i = 0; i < galaxyParameters.noOfParticles; i++) {
+//     let index = i * 3;
 
-    // Distance From Center Of Galaxy (radius)
-    let distanceFromCenterOfGalaxy = Math.random() * galaxyParameters.radius;
-    // Find How Many SubDivision
-    let whichSubDivision = i % galaxyParameters.noOfSubDivision;
-    let rnd = Math.random();
-    // Angle For Each Subdivision
-    let angleOfSubDivision =
-      Math.PI * 2 * (whichSubDivision / galaxyParameters.noOfSubDivision) +
-      (Math.random() - 0.5) *
-        galaxyParameters.subDivisionThickness *
-        (rnd < 0.5 ? 0.2 : 1) +
-      Math.pow(distanceFromCenterOfGalaxy, galaxyParameters.bending) * 0.01;
-    // x Position
-    positions[index + 0] =
-      Math.cos(angleOfSubDivision) * distanceFromCenterOfGalaxy;
-    // y Position
-    positions[index + 1] = (Math.random() - 0.5) * galaxyParameters.height;
-    // z Position
-    positions[index + 2] =
-      Math.sin(angleOfSubDivision) * distanceFromCenterOfGalaxy;
+//     // Distance From Center Of Galaxy (radius)
+//     let distanceFromCenterOfGalaxy = Math.random() * galaxyParameters.radius;
+//     // Find How Many SubDivision
+//     let whichSubDivision = i % galaxyParameters.noOfSubDivision;
+//     let rnd = Math.random();
+//     // Angle For Each Subdivision
+//     let angleOfSubDivision =
+//       Math.PI * 2 * (whichSubDivision / galaxyParameters.noOfSubDivision) +
+//       (Math.random() - 0.5) *
+//         galaxyParameters.subDivisionThickness *
+//         (rnd < 0.5 ? 0.2 : 1) +
+//       Math.pow(distanceFromCenterOfGalaxy, galaxyParameters.bending) * 0.01;
+//     // x Position
+//     positions[index + 0] =
+//       Math.cos(angleOfSubDivision) * distanceFromCenterOfGalaxy;
+//     // y Position
+//     positions[index + 1] = (Math.random() - 0.5) * galaxyParameters.height;
+//     // z Position
+//     positions[index + 2] =
+//       Math.sin(angleOfSubDivision) * distanceFromCenterOfGalaxy;
 
-    // Colors
-    const mixedColor = insideColor.clone();
-    mixedColor.lerp(
-      outsideColor,
-      distanceFromCenterOfGalaxy / galaxyParameters.radius
-    );
-    colors[index + 0] = mixedColor.r;
-    colors[index + 1] = mixedColor.g;
-    colors[index + 2] = mixedColor.b;
-  }
-  // SetAttribute in Buffer Geometry
-  particlesGeometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(positions, 3)
-  );
-  particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-  // New Particles
-  particles = new THREE.Points(particlesGeometry, particlesMaterial);
+//     // Colors
+//     const mixedColor = insideColor.clone();
+//     mixedColor.lerp(
+//       outsideColor,
+//       distanceFromCenterOfGalaxy / galaxyParameters.radius
+//     );
+//     colors[index + 0] = mixedColor.r;
+//     colors[index + 1] = mixedColor.g;
+//     colors[index + 2] = mixedColor.b;
+//   }
+//   // SetAttribute in Buffer Geometry
+//   particlesGeometry.setAttribute(
+//     "position",
+//     new THREE.BufferAttribute(positions, 3)
+//   );
+//   particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+//   // New Particles
+//   particles = new THREE.Points(particlesGeometry, particlesMaterial);
 
-  // Adding in Scene
-  scene.add(particles);
-};
+//   // Adding in Scene
+//   scene.add(particles);
+// };
 // Making Galaxy
 // makeGalaxy();
 // Make Galaxy Debug GUI
@@ -193,10 +193,10 @@ const makeGalaxy = () => {
 /**
  * Stars
  */
-const starsParameters = {
-  noOfStars: 1000,
-  maxDistanceFromCenter: 10,
-};
+// const starsParameters = {
+//   noOfStars: 1000,
+//   maxDistanceFromCenter: 10,
+// };
 // const makeStars = () => {
 //   //Destroy Old Stars
 //   if (particles !== undefined) {
@@ -494,14 +494,14 @@ updateRenderer();
  * Tick
  */
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Update Controls
   controls.update();
 
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Objects
 

@@ -2,7 +2,7 @@ import "../../style.css";
 import * as THREE from "three";
 import Stats from "stats.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
+// import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
 
 /**
  * Stats
@@ -133,11 +133,11 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Animate
  */
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   stats.begin();
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update test mesh
   // torusKnot.rotation.y = elapsedTime * 0.1;

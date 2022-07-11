@@ -2,13 +2,13 @@ import "../../style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 
 /**
  * Base
  */
 // Debug
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 // Canvas
 const canvas = document.getElementById("myCanvas")!;

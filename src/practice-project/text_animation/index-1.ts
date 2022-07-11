@@ -1,6 +1,6 @@
 import "../../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Font, FontLoader } from "three/examples/jsm/loaders/FontLoader";
@@ -14,7 +14,7 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 /**
  * Font Loader
  */
-let wheelPosition = 0;
+// let wheelPosition = 0;
 const skillsArr = [
   "Node.js",
   "React.js",
@@ -59,12 +59,12 @@ document.addEventListener(
   (e) => {
     let duration = 1;
     if (e.deltaY > 0) {
-      wheelPosition++;
+      // wheelPosition++;
       textMeshes.forEach((text) => {
         gsap.to(text.position, { y: text.position.y + 1, duration });
       });
     } else {
-      wheelPosition--;
+      // wheelPosition--;
       textMeshes.forEach((text) => {
         gsap.to(text.position, { y: text.position.y - 1, duration });
       });
@@ -89,7 +89,7 @@ window.addEventListener("resize", () => {
 /**
  * GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Scene
@@ -140,12 +140,12 @@ updateRenderer();
  * Animations
  */
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 // Tick
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Controls
   controls.update();

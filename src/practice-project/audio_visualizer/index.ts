@@ -105,7 +105,7 @@ directionalLight.shadow.camera.far = 9;
 
 directionalLight.position.set(0, 3, 3);
 
-const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+// const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
 scene.add(ambientLight, directionalLight);
 
 // Debug;
@@ -226,12 +226,12 @@ let isMouseOver = false;
 let isClicked = false;
 
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 // Tick
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Cast A Ray
   rayCasting.setFromCamera(mouse, camera);

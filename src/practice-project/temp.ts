@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 function main() {
   const canvas = document.querySelector("#c");
-  const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas as HTMLCanvasElement });
   renderer.setClearColor(0xaaaaaa);
   renderer.shadowMap.enabled = true;
 
@@ -187,7 +187,7 @@ function main() {
   splineObject.position.y = 0.05;
   scene.add(splineObject);
 
-  function resizeRendererToDisplaySize(renderer) {
+  function resizeRendererToDisplaySize(renderer:any) {
     const canvas = renderer.domElement;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -211,7 +211,7 @@ function main() {
 
   const infoElem = document.querySelector("#info");
 
-  function render(time) {
+  function render(time: number) {
     time *= 0.001;
 
     if (resizeRendererToDisplaySize(renderer)) {
@@ -254,7 +254,7 @@ function main() {
     });
 
     const camera = cameras[(time * 0.25) % cameras.length | 0];
-    infoElem.textContent = camera.desc;
+    (infoElem as HTMLElement).textContent = camera.desc;
 
     renderer.render(scene, camera.cam);
 

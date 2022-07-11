@@ -29,7 +29,7 @@ window.addEventListener("mousemove", (event) => {
   mouse.y = -((event.clientY / sizes.height) * 2 - 1);
 });
 // Mouse Click
-window.addEventListener("click", (event) => {
+window.addEventListener("click", () => {
   if (currentIntersect) {
     switch (currentIntersect.object) {
       case object1:

@@ -1,9 +1,9 @@
 import "../../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Font, FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import {  FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 /**
@@ -14,8 +14,7 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 /**
  * Font Loader
  */
-let wheelPosition = 0,
-  radius = 3,
+let radius = 3,
   characters = "Hi My Name Is Prince Kumar",
   prevPosition: THREE.Vector3[] = [],
   size = 0.2,
@@ -62,7 +61,6 @@ document.addEventListener(
   (e) => {
     let duration = 1;
     if (e.deltaY > 0) {
-      wheelPosition++;
       const halfLen = characterMeshes.length / 2;
       characterMeshes.forEach((characterMesh, index) => {
         gsap.to(characterMesh.position, {
@@ -82,7 +80,6 @@ document.addEventListener(
         });
       });
     } else {
-      wheelPosition--;
       characterMeshes.forEach((characterMesh) => {
         gsap.to(characterMesh.position, {
           x: (Math.random() - 0.5) * radius,
@@ -118,7 +115,7 @@ window.addEventListener("resize", () => {
 /**
  * GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Scene
@@ -169,12 +166,12 @@ updateRenderer();
  * Animations
  */
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 // Tick
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Controls
   controls.update();

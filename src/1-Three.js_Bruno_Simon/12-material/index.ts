@@ -32,34 +32,34 @@ const environmentMapTexture = cubeTextureLoader.load([
   "../../../static/textures/environmentMaps/0/nz.jpg",
 ]);
 
-const textureLoader = new THREE.TextureLoader();
-const doorColorTexture = textureLoader.load(
-  "../../../static/textures/door/color.jpg"
-);
-const doorHeightTexture = textureLoader.load(
-  "../../../static/textures/door/height.jpg"
-);
-const doorNormalTexture = textureLoader.load(
-  "../../../static/textures/door/normal.jpg"
-);
-const doorAlphaTexture = textureLoader.load(
-  "../../../static/textures/door/alpha.jpg"
-);
-const doorAmbientOcclusionTexture = textureLoader.load(
-  "../../../static/textures/door/ambientOcclusion.jpg"
-);
-const doorMetalnessTexture = textureLoader.load(
-  "../../../static/textures/door/metalness.jpg"
-);
-const doorRoughnessTexture = textureLoader.load(
-  "../../../static/textures/door/roughness.jpg"
-);
-const matcapTexture = textureLoader.load(
-  "../../../static/textures/matcaps/1.png"
-);
-const gradientTexture = textureLoader.load(
-  "../../../static/textures/gradients/3.jpg"
-);
+// const textureLoader = new THREE.TextureLoader();
+// const doorColorTexture = textureLoader.load(
+//   "../../../static/textures/door/color.jpg"
+// );
+// const doorHeightTexture = textureLoader.load(
+//   "../../../static/textures/door/height.jpg"
+// );
+// const doorNormalTexture = textureLoader.load(
+//   "../../../static/textures/door/normal.jpg"
+// );
+// const doorAlphaTexture = textureLoader.load(
+//   "../../../static/textures/door/alpha.jpg"
+// );
+// const doorAmbientOcclusionTexture = textureLoader.load(
+//   "../../../static/textures/door/ambientOcclusion.jpg"
+// );
+// const doorMetalnessTexture = textureLoader.load(
+//   "../../../static/textures/door/metalness.jpg"
+// );
+// const doorRoughnessTexture = textureLoader.load(
+//   "../../../static/textures/door/roughness.jpg"
+// );
+// const matcapTexture = textureLoader.load(
+//   "../../../static/textures/matcaps/1.png"
+// );
+// const gradientTexture = textureLoader.load(
+//   "../../../static/textures/gradients/3.jpg"
+// );
 
 // gradientTexture.generateMipmaps = false;
 // gradientTexture.minFilter = THREE.NearestFilter;

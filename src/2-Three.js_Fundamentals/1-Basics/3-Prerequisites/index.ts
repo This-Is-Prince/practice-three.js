@@ -1,7 +1,7 @@
 /**
  * This import is valid if we specify type = "module" attribute in script tag
  */
-import * as THREE from "three";
+// import * as THREE from "three";
 
 /**
  * Know How closures work
@@ -50,6 +50,6 @@ console.log(another_y, another_z);
 // Destructuring also works in function arguments
 const vector = [3, 4];
 
-function lengthOfVector([x, y]) {
+function lengthOfVector([x, y]: number[]) {
   return Math.sqrt(x * x + y * y);
 }

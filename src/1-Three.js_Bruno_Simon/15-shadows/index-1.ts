@@ -7,7 +7,7 @@ import * as dat from "dat.gui";
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const bakedShadow = textureLoader.load("./static/textures/bakedShadow.jpg");
+// const bakedShadow = textureLoader.load("./static/textures/bakedShadow.jpg");
 const simpleShadow = textureLoader.load("./static/textures/simpleShadow.jpg");
 /**
  * Debug GUI

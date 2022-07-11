@@ -35,7 +35,7 @@ const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(sizes.width, sizes.height);
 
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 // Animations
 gsap.to(mesh.position, { x: 2, duration: 1, delay: 1 });
@@ -43,7 +43,7 @@ gsap.to(mesh.position, { x: 0, delay: 2, duration: 1 });
 
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Objects
 

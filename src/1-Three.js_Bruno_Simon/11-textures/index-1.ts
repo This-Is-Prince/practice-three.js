@@ -53,18 +53,18 @@ const colorTexture = textureLoader.load("./static/textures/minecraft.png");
 // const colorTexture = textureLoader.load(
 //   "./static/textures/checkerboard-1024x1024.png"
 // );
-const alphaTexture = textureLoader.load("./static/textures/door/alpha.jpg");
-const heightTexture = textureLoader.load("./static/textures/door/height.jpg");
-const normalTexture = textureLoader.load("./static/textures/door/normal.jpg");
-const ambientOcclusionTexture = textureLoader.load(
-  "./static/textures/door/ambientOcclusion.jpg"
-);
-const metalnessTexture = textureLoader.load(
-  "./static/textures/door/metalness.jpg"
-);
-const roughnessTexture = textureLoader.load(
-  "./static/textures/door/roughness.jpg"
-);
+// const alphaTexture = textureLoader.load("./static/textures/door/alpha.jpg");
+// const heightTexture = textureLoader.load("./static/textures/door/height.jpg");
+// const normalTexture = textureLoader.load("./static/textures/door/normal.jpg");
+// const ambientOcclusionTexture = textureLoader.load(
+//   "./static/textures/door/ambientOcclusion.jpg"
+// );
+// const metalnessTexture = textureLoader.load(
+//   "./static/textures/door/metalness.jpg"
+// );
+// const roughnessTexture = textureLoader.load(
+//   "./static/textures/door/roughness.jpg"
+// );
 
 //----- Transforming Texture
 // 1.Repeat

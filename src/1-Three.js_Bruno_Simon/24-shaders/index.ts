@@ -1,10 +1,10 @@
 import "../../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import vertexShader from "./shaders/second/vertex.vs.glsl?raw";
 import fragmentShader from "./shaders/second/fragment.fs.glsl?raw";
-import BasicCustomShader from "./shaders/CustomMaterial/BasicCustomShader";
+// import BasicCustomShader from "./shaders/CustomMaterial/BasicCustomShader";
 
 /**
  * Canvas
@@ -14,7 +14,7 @@ const canvas = document.getElementById("myCanvas")!;
 /**
  * Debug GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Window Events
@@ -171,14 +171,14 @@ updateRenderer();
 /**
  * Tick
  */
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Update Controls
   controls.update();
 
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Materials
   // material.uniforms.uTime.value = elapsedTime;

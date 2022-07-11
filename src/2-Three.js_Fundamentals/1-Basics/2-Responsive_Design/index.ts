@@ -79,8 +79,8 @@ const boxHeight = 1;
 const boxDepth = 1;
 const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 // const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 }); //greenish blue
-const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
-const cube = new THREE.Mesh(geometry, material);
+// const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
+// const cube = new THREE.Mesh(geometry, material);
 // scene.add(cube);
 
 type MakeInstanceType = (

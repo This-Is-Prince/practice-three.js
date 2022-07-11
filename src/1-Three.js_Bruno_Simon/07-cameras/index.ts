@@ -89,11 +89,11 @@ renderer.setSize(sizes.width, sizes.height);
  */
 
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Camera
   // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;

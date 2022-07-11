@@ -109,7 +109,7 @@ const defaultMaterial = new CANNON.Material("defaultMaterial");
 const groundMaterial = defaultMaterial;
 const textMaterial = defaultMaterial;
 const wheelMaterial = defaultMaterial;
-const chassisMaterial = defaultMaterial;
+// const chassisMaterial = defaultMaterial;
 
 // Physics Body
 const groundBody = new CANNON.Body({

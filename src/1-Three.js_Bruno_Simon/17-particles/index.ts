@@ -1,12 +1,12 @@
 import "../../style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 
 /**
  * GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Canvas
@@ -140,7 +140,7 @@ const tick = () => {
   for (let i = 0; i < count; i++) {
     const i3 = i * 3;
     let x = particlesGeometry.attributes.position.array[i3 + 0];
-    particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(
+    (particlesGeometry.attributes.position as any).array[i3 + 1] = Math.sin(
       elapsedTime + x
     );
   }

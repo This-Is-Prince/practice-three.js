@@ -79,7 +79,7 @@ const playHitSound = (collision: CollisionType) => {
 /**
  * Textures
  */
-const textureLoader = new THREE.TextureLoader();
+// const textureLoader = new THREE.TextureLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const environmentMapTexture = cubeTextureLoader.load([
   "./static/textures/environmentMaps/4/px.png",

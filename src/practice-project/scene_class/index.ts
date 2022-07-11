@@ -1,6 +1,6 @@
 import "../../style.css";
 import * as THREE from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
@@ -11,7 +11,7 @@ const canvas = document.getElementById("myCanvas")!;
 /**
  * Debug GUi
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Window Events
@@ -108,14 +108,14 @@ updateRenderer();
 /**
  * Tick
  */
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Update Controls
   controls.update();
 
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Render
   renderer.render(scene, camera);

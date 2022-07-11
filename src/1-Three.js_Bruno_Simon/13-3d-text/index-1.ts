@@ -163,14 +163,14 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  */
 
 // Clock
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Update Controls
   controls.update();
 
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Render
   renderer.render(scene, camera);

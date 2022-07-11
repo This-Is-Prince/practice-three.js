@@ -38,7 +38,7 @@ const scene = new THREE.Scene();
 /**
  * Texture Loader
  */
-const textureLoader = new THREE.TextureLoader();
+// const textureLoader = new THREE.TextureLoader();
 
 /**
  * Geometry
@@ -187,11 +187,11 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Tick
  */
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update Controls
   controls.update();

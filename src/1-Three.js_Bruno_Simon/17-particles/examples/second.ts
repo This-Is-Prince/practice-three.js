@@ -56,7 +56,7 @@ const scene = new THREE.Scene();
 /**
  * Texture Loader
  */
-const textureLoader = new THREE.TextureLoader();
+// const textureLoader = new THREE.TextureLoader();
 
 /**
  * Geometry
@@ -152,22 +152,22 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Tick
  */
-const clock = new THREE.Clock();
+// const clock = new THREE.Clock();
 
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
   // Update
   // rayCaster.setFromCamera(mouse, camera);
   if (points) {
     for (let i = 0; i < obj.count; i++) {
       let i3 = i * 3;
-      geometry.attributes.position.array[i3 + 0] =
+      (geometry.attributes.position as any).array[i3 + 0] =
         geometry.attributes.position.array[i3 + 0] * 1.05;
-      geometry.attributes.position.array[i3 + 1] =
+      (geometry.attributes.position as any).array[i3 + 1] =
         geometry.attributes.position.array[i3 + 1] * 1.05;
-      geometry.attributes.position.array[i3 + 2] = 0;
+      (geometry.attributes.position as any).array[i3 + 2] = 0;
     }
     geometry.attributes.position.needsUpdate = true;
   }

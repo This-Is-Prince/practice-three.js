@@ -139,15 +139,15 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
  * Animations
  */
 // Clock
-const clock = new THREE.Clock();
-let lastTime = 0;
+// const clock = new THREE.Clock();
+// let lastTime = 0;
 
 // Tick
 const tick = () => {
   // Elapsed Time
-  const elapsedTime = clock.getElapsedTime();
-  const deltaTime = elapsedTime - lastTime;
-  lastTime = elapsedTime;
+  // const elapsedTime = clock.getElapsedTime();
+  // const deltaTime = elapsedTime - lastTime;
+  // lastTime = elapsedTime;
 
   // Update Controls
   controls.update();

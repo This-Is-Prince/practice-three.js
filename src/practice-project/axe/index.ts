@@ -1,5 +1,5 @@
 import "../../style.css";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
@@ -13,11 +13,11 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 /**
  *  Debug GUI
  */
-const gui = new dat.GUI();
-const parameters = {
-  metalColor: 0xcccccc,
-  woodColor: 0xcc6022,
-};
+// const gui = new dat.GUI();
+// const parameters = {
+//   metalColor: 0xcccccc,
+//   woodColor: 0xcc6022,
+// };
 
 /**
  *  Scene

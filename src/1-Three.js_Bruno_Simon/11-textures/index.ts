@@ -1,12 +1,12 @@
 import "../../style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 
 /**
  * Debug GUI
  */
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 /**
  * Canvas
@@ -56,24 +56,24 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 const colorTexture = textureLoader.load(
   "../../../static/textures/minecraft.png"
 );
-const alphaTexture = textureLoader.load(
-  "../../../static/textures/door/alpha.jpg"
-);
-const heightTexture = textureLoader.load(
-  "../../../static/textures/door/height.jpg"
-);
-const normalTexture = textureLoader.load(
-  "../../../static/textures/door/normal.jpg"
-);
-const ambientOcclusionTexture = textureLoader.load(
-  "../../../static/textures/door/ambientOcclusion.jpg"
-);
-const metalnessTexture = textureLoader.load(
-  "../../../static/textures/door/metalness.jpg"
-);
-const roughnessTexture = textureLoader.load(
-  "../../../static/textures/door/roughness.jpg"
-);
+// const alphaTexture = textureLoader.load(
+//   "../../../static/textures/door/alpha.jpg"
+// );
+// const heightTexture = textureLoader.load(
+//   "../../../static/textures/door/height.jpg"
+// );
+// const normalTexture = textureLoader.load(
+//   "../../../static/textures/door/normal.jpg"
+// );
+// const ambientOcclusionTexture = textureLoader.load(
+//   "../../../static/textures/door/ambientOcclusion.jpg"
+// );
+// const metalnessTexture = textureLoader.load(
+//   "../../../static/textures/door/metalness.jpg"
+// );
+// const roughnessTexture = textureLoader.load(
+//   "../../../static/textures/door/roughness.jpg"
+// );
 
 // Repeat
 // colorTexture.repeat.set(2, 3);
