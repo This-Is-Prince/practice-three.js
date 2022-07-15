@@ -137,7 +137,7 @@ const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
 //   new THREE.MeshBasicMaterial({ map: bakedShadow })
 // );
 plane.rotation.x = -Math.PI * 0.5;
-plane.position.y = -0.65;
+plane.position.y = -1;
 scene.add(plane);
 
 // Shadow
@@ -204,7 +204,7 @@ const tick = () => {
   // Update Sphere
   sphere.position.x = Math.cos(elapsedTime) * 1.5;
   sphere.position.z = Math.sin(elapsedTime) * 1.5;
-  sphere.position.y = Math.abs(Math.sin(elapsedTime * 3) * 1);
+  sphere.position.y = Math.abs(Math.sin(elapsedTime * 3)) - 0.5;
 
   // Update SphereShadow
   sphereShadow.position.x = sphere.position.x;
