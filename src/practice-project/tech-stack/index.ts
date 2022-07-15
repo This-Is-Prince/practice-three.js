@@ -109,10 +109,10 @@ scene.add(directionalLight);
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("../../../static/draco/");
+dracoLoader.setDecoderPath("../../../draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("../../../static/models/ladder/ladder.glb", (gltf) => {
+gltfLoader.load("../../../models/ladder/ladder.glb", (gltf) => {
   const ladder = gltf.scene.children[0] as THREE.Mesh;
   const boundingBox = ladder.geometry.boundingBox!;
 
@@ -138,7 +138,7 @@ gltfLoader.load("../../../static/models/ladder/ladder.glb", (gltf) => {
   ladder.castShadow = true;
   scene.add(ladder);
 });
-gltfLoader.load("../../../static/models/tree/tree.glb", (gltf) => {
+gltfLoader.load("../../../models/tree/tree.glb", (gltf) => {
   const treeArr = [...gltf.scene.children[0].children];
   const tree = new THREE.Group();
   treeArr.forEach((treeMesh) => {
@@ -151,7 +151,7 @@ gltfLoader.load("../../../static/models/tree/tree.glb", (gltf) => {
   tree.rotation.y = Math.PI * 0.25;
   scene.add(tree);
 });
-gltfLoader.load("../../../static/models/car/car.glb", (gltf) => {
+gltfLoader.load("../../../models/car/car.glb", (gltf) => {
   const car = new THREE.Group();
   const carArr = [...gltf.scene.children];
   carArr.forEach((carMesh) => {
@@ -168,7 +168,7 @@ gltfLoader.load("../../../static/models/car/car.glb", (gltf) => {
  */
 const fontLoader = new FontLoader();
 fontLoader.load(
-  "../../../static/fonts/helvetiker_regular.typeface.json",
+  "../../../fonts/helvetiker_regular.typeface.json",
   (font) => {
     // Size Of Text
     let size = 0.5;

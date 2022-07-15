@@ -44,12 +44,12 @@ const updateAllMaterials = () => {
  * Environment map
  */
 const environmentMap = cubeTextureLoader.load([
-  "../../../static/textures/environmentMaps/0/px.jpg",
-  "../../../static/textures/environmentMaps/0/nx.jpg",
-  "../../../static/textures/environmentMaps/0/py.jpg",
-  "../../../static/textures/environmentMaps/0/ny.jpg",
-  "../../../static/textures/environmentMaps/0/pz.jpg",
-  "../../../static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 environmentMap.encoding = THREE.sRGBEncoding;
 
@@ -62,12 +62,12 @@ scene.environment = environmentMap;
 
 // Textures
 const mapTexture = textureLoader.load(
-  "../../../static/models/LeePerrySmith/color.jpg"
+  "../../../models/LeePerrySmith/color.jpg"
 );
 mapTexture.encoding = THREE.sRGBEncoding;
 
 const normalTexture = textureLoader.load(
-  "../../../static/models/LeePerrySmith/normal.jpg"
+  "../../../models/LeePerrySmith/normal.jpg"
 );
 
 // Material
@@ -158,7 +158,7 @@ depthMaterial.onBeforeCompile = (shader) => {
  * Models
  */
 gltfLoader.load(
-  "../../../static/models/LeePerrySmith/LeePerrySmith.glb",
+  "../../../models/LeePerrySmith/LeePerrySmith.glb",
   (gltf) => {
     // Model
     const mesh = gltf.scene.children[0];

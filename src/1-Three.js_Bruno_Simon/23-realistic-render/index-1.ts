@@ -59,12 +59,12 @@ const updateAllMaterials = () => {
 // CubeTextureLoader
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const environmentMap = cubeTextureLoader.load([
-  "./static/textures/environmentMaps/0/px.jpg",
-  "./static/textures/environmentMaps/0/nx.jpg",
-  "./static/textures/environmentMaps/0/py.jpg",
-  "./static/textures/environmentMaps/0/ny.jpg",
-  "./static/textures/environmentMaps/0/pz.jpg",
-  "./static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 environmentMap.encoding = THREE.sRGBEncoding;
 scene.background = environmentMap;
@@ -83,14 +83,14 @@ gui
  */
 // GLTFLoader
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("./draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 // 1.FLightHelmet
 
 // gltfLoader.load(
-//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   "./models/FlightHelmet/glTF/FlightHelmet.gltf",
 //   (gltf) => {
 //     gltf.scene.scale.set(10, 10, 10);
 //     gltf.scene.position.set(0, -4, 0);
@@ -108,7 +108,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
 // );
 
 // 2.Hamburger
-gltfLoader.load("./static/models/Hamburger/hamburger.glb", (gltf) => {
+gltfLoader.load("../../../models/Hamburger/hamburger.glb", (gltf) => {
   gltf.scene.scale.set(0.3, 0.3, 0.3);
   gltf.scene.position.set(0, -1, 0);
   scene.add(gltf.scene);

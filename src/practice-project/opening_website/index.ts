@@ -39,7 +39,7 @@ let geometry: TextGeometry;
 let material: THREE.RawShaderMaterial;
 const fontLoader = new FontLoader();
 fontLoader.load(
-  "../../../static/fonts/helvetiker_regular.typeface.json",
+  "../../../fonts/helvetiker_regular.typeface.json",
   (font) => {
     geometry = new TextGeometry("P", {
       font,

@@ -19,7 +19,7 @@ const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 let font: Font;
 const fontLoader = new FontLoader();
 fontLoader.load(
-  "../../../static/fonts/helvetiker_regular.typeface.json",
+  "../../../fonts/helvetiker_regular.typeface.json",
   (currFont) => {
     font = currFont;
   }
@@ -122,10 +122,10 @@ world.addBody(groundBody);
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("../../../static/draco/");
+dracoLoader.setDecoderPath("../../../draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("../../../static/models/car/car.glb", (gltf) => {
+gltfLoader.load("../../../models/car/car.glb", (gltf) => {
   // All Car Meshes
   const meshes = [...gltf.scene.children] as THREE.Mesh[];
   console.log(meshes);

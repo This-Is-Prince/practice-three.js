@@ -33,37 +33,37 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager);
 
 // All Textures
-// const doorColorTexture = textureLoader.load("./static/textures/door/color.jpg");
-// const doorAlphaTexture = textureLoader.load("./static/textures/door/alpha.jpg");
+// const doorColorTexture = textureLoader.load("./textures/door/color.jpg");
+// const doorAlphaTexture = textureLoader.load("./textures/door/alpha.jpg");
 // const doorNormalTexture = textureLoader.load(
-//   "./static/textures/door/normal.jpg"
+//   "./textures/door/normal.jpg"
 // );
 // const doorHeightTexture = textureLoader.load(
-//   "./static/textures/door/height.jpg"
+//   "./textures/door/height.jpg"
 // );
 // const doorAmbientOcclusionTexture = textureLoader.load(
-//   "./static/textures/door/ambientOcclusion.jpg"
+//   "./textures/door/ambientOcclusion.jpg"
 // );
 // const doorMetalnessTexture = textureLoader.load(
-//   "./static/textures/door/metalness.jpg"
+//   "./textures/door/metalness.jpg"
 // );
 // const doorRoughnessTexture = textureLoader.load(
-//   "./static/textures/door/roughness.jpg"
+//   "./textures/door/roughness.jpg"
 // );
-// const matcapTexture = textureLoader.load("./static/textures/matcaps/1.png");
-const gradientTexture = textureLoader.load("./static/textures/gradients/3.jpg");
+// const matcapTexture = textureLoader.load("./textures/matcaps/1.png");
+const gradientTexture = textureLoader.load("./textures/gradients/3.jpg");
 
 gradientTexture.generateMipmaps = false;
 gradientTexture.minFilter = THREE.NearestFilter;
 gradientTexture.magFilter = THREE.NearestFilter;
 
 const environmentMapTexture = cubeTextureLoader.load([
-  "./static/textures/environmentMaps/0/px.jpg",
-  "./static/textures/environmentMaps/0/nx.jpg",
-  "./static/textures/environmentMaps/0/py.jpg",
-  "./static/textures/environmentMaps/0/ny.jpg",
-  "./static/textures/environmentMaps/0/pz.jpg",
-  "./static/textures/environmentMaps/0/nz.jpg",
+  "./textures/environmentMaps/0/px.jpg",
+  "./textures/environmentMaps/0/nx.jpg",
+  "./textures/environmentMaps/0/py.jpg",
+  "./textures/environmentMaps/0/ny.jpg",
+  "./textures/environmentMaps/0/pz.jpg",
+  "./textures/environmentMaps/0/nz.jpg",
 ]);
 
 /**

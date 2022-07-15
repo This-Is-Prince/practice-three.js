@@ -45,10 +45,10 @@ const scene = new THREE.Scene();
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("../../../static/draco/");
+dracoLoader.setDecoderPath("../../../draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("../../../static/models/tree/tree.glb", (gltf) => {
+gltfLoader.load("../../../models/tree/tree.glb", (gltf) => {
   let treeTop = gltf.scene.children[0].children[0];
   let treeBottom = gltf.scene.children[0].children[1];
 
@@ -72,7 +72,7 @@ gltfLoader.load("../../../static/models/tree/tree.glb", (gltf) => {
   scene.add(gltf.scene);
 });
 
-gltfLoader.load("../../../static/models/table/table.glb", (gltf) => {
+gltfLoader.load("../../../models/table/table.glb", (gltf) => {
   console.log(gltf.scene);
   scene.add(gltf.scene);
 });

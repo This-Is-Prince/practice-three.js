@@ -52,12 +52,12 @@ const updateAllMaterials = () => {
  * Environment map
  */
 const environmentMap = cubeTextureLoader.load([
-  "../../../static/textures/environmentMaps/0/px.jpg",
-  "../../../static/textures/environmentMaps/0/nx.jpg",
-  "../../../static/textures/environmentMaps/0/py.jpg",
-  "../../../static/textures/environmentMaps/0/ny.jpg",
-  "../../../static/textures/environmentMaps/0/pz.jpg",
-  "../../../static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 environmentMap.encoding = THREE.sRGBEncoding;
 
@@ -68,7 +68,7 @@ scene.environment = environmentMap;
  * Models
  */
 gltfLoader.load(
-  "../../../static/models/DamagedHelmet/glTF/DamagedHelmet.gltf",
+  "../../../models/DamagedHelmet/glTF/DamagedHelmet.gltf",
   (gltf) => {
     gltf.scene.scale.set(2, 2, 2);
     gltf.scene.rotation.y = Math.PI * 0.5;
@@ -292,7 +292,7 @@ const DisplacementShader = {
 };
 const displacementPass = new ShaderPass(DisplacementShader);
 displacementPass.material.uniforms.uNormalMap.value = textureLoader.load(
-  "../../../static/textures/interfaceNormalMap.png"
+  "../../../textures/interfaceNormalMap.png"
 );
 effectComposer.addPass(displacementPass);
 

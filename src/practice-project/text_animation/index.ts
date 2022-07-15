@@ -24,7 +24,7 @@ let characterMeshes: THREE.Mesh[] = [];
 
 const fontLoader = new FontLoader();
 fontLoader.load(
-  "../../../static/fonts/helvetiker_regular.typeface.json",
+  "../../../fonts/helvetiker_regular.typeface.json",
   (font) => {
     const material = new THREE.MeshNormalMaterial({ wireframe: true });
 

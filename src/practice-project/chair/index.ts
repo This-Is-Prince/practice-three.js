@@ -28,10 +28,10 @@ const scene = new THREE.Scene();
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("../../../static/draco/");
+dracoLoader.setDecoderPath("../../../draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("../../../static/models/chair/chair.glb", (gltf) => {
+gltfLoader.load("../../../models/chair/chair.glb", (gltf) => {
   const chairWood = gltf.scene.children[0].children[0];
   const chairMetal = gltf.scene.children[0].children[1];
   chairWood.castShadow = true;

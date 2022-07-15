@@ -29,7 +29,7 @@ let textMeshes: THREE.Mesh[] = [];
 let font: Font;
 const fontLoader = new FontLoader();
 fontLoader.load(
-  "../../../static/fonts/helvetiker_regular.typeface.json",
+  "../../../fonts/helvetiker_regular.typeface.json",
   (currFont) => {
     font = currFont;
     const material = new THREE.MeshNormalMaterial({});

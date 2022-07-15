@@ -34,7 +34,7 @@ window.addEventListener("resize", () => {
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const flagTexture = textureLoader.load("./static/textures/flag-french.jpg");
+const flagTexture = textureLoader.load("../../../textures/flag-french.jpg");
 /**
  * Scene
  */

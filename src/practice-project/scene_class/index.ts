@@ -34,12 +34,12 @@ window.addEventListener("resize", () => {
  */
 const cubeTexturesLoader = new THREE.CubeTextureLoader();
 const cubeTextures = cubeTexturesLoader.load([
-  "../../../static/textures/environmentMaps/0/px.jpg",
-  "../../../static/textures/environmentMaps/0/nx.jpg",
-  "../../../static/textures/environmentMaps/0/py.jpg",
-  "../../../static/textures/environmentMaps/0/ny.jpg",
-  "../../../static/textures/environmentMaps/0/pz.jpg",
-  "../../../static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 
 /**

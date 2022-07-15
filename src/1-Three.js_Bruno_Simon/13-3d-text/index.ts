@@ -47,7 +47,7 @@ scene.add(axesHelper);
  */
 const textureLoader = new THREE.TextureLoader();
 const matcapTexture = textureLoader.load(
-  "../../../static/textures/matcaps/8.png"
+  "../../../textures/matcaps/8.png"
 );
 
 /**
@@ -55,7 +55,7 @@ const matcapTexture = textureLoader.load(
  */
 const fontLoader = new FontLoader();
 fontLoader.load(
-  "../../../static/fonts/helvetiker_regular.typeface.json",
+  "../../../fonts/helvetiker_regular.typeface.json",
   (font) => {
     const textGeometry = new TextGeometry("Hello Three.js", {
       font,

@@ -48,10 +48,10 @@ let cube: THREE.Mesh;
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("../../../static/draco/");
+dracoLoader.setDecoderPath("../../../draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
-gltfLoader.load("../../../static/models/test_cube/cube.glb", (gltf) => {
+gltfLoader.load("../../../models/test_cube/cube.glb", (gltf) => {
   cube = gltf.scene.children[0] as THREE.Mesh;
   cube.material = new THREE.MeshStandardMaterial({
     color: parameters.cubeColor,

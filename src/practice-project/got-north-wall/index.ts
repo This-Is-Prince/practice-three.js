@@ -45,25 +45,25 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 // -----------All Textures-----------
 
 // ice_1
-let ice_1_Texture = textureLoader.load("../../../static/example/ice-1.jfif");
+let ice_1_Texture = textureLoader.load("../../../example/ice-1.jfif");
 ice_1_Texture.generateMipmaps = false;
 ice_1_Texture.minFilter = THREE.NearestFilter;
 ice_1_Texture.magFilter = THREE.NearestFilter;
 
 // ice_2
-let ice_2_Texture = textureLoader.load("../../../static/example/ice-2.jfif");
+let ice_2_Texture = textureLoader.load("../../../example/ice-2.jfif");
 ice_2_Texture.generateMipmaps = false;
 ice_2_Texture.minFilter = THREE.NearestFilter;
 ice_2_Texture.magFilter = THREE.NearestFilter;
 
 // ice_3
-let ice_3_Texture = textureLoader.load("../../../static/example/ice-3.jpg");
+let ice_3_Texture = textureLoader.load("../../../example/ice-3.jpg");
 ice_3_Texture.generateMipmaps = false;
 ice_3_Texture.minFilter = THREE.NearestFilter;
 ice_3_Texture.magFilter = THREE.NearestFilter;
 
 // ice_4
-let ice_4_Texture = textureLoader.load("../../../static/example/ice-4.jpg");
+let ice_4_Texture = textureLoader.load("../../../example/ice-4.jpg");
 ice_4_Texture.generateMipmaps = false;
 ice_4_Texture.minFilter = THREE.NearestFilter;
 ice_4_Texture.magFilter = THREE.NearestFilter;

@@ -9,7 +9,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
  * Loaders
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("../../../static/draco/");
+dracoLoader.setDecoderPath("../../../draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -78,12 +78,12 @@ const updateAllMaterials = () => {
  * Environment Map
  */
 const environmentMap = cubeTextureLoader.load([
-  "../../../static/textures/environmentMaps/0/px.jpg",
-  "../../../static/textures/environmentMaps/0/nx.jpg",
-  "../../../static/textures/environmentMaps/0/py.jpg",
-  "../../../static/textures/environmentMaps/0/ny.jpg",
-  "../../../static/textures/environmentMaps/0/pz.jpg",
-  "../../../static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 scene.background = environmentMap;
 scene.environment = environmentMap;
@@ -100,7 +100,7 @@ gui
  * Models
  */
 gltfLoader.load(
-  "../../../static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+  "../../../models/FlightHelmet/glTF/FlightHelmet.gltf",
   (gltf) => {
     const helmet = gltf.scene;
     const scale = 10;

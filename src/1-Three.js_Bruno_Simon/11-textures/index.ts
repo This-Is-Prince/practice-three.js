@@ -54,25 +54,25 @@ const loadingManager = new THREE.LoadingManager();
 
 const textureLoader = new THREE.TextureLoader(loadingManager);
 const colorTexture = textureLoader.load(
-  "../../../static/textures/minecraft.png"
+  "../../../textures/minecraft.png"
 );
 // const alphaTexture = textureLoader.load(
-//   "../../../static/textures/door/alpha.jpg"
+//   "../../../textures/door/alpha.jpg"
 // );
 // const heightTexture = textureLoader.load(
-//   "../../../static/textures/door/height.jpg"
+//   "../../../textures/door/height.jpg"
 // );
 // const normalTexture = textureLoader.load(
-//   "../../../static/textures/door/normal.jpg"
+//   "../../../textures/door/normal.jpg"
 // );
 // const ambientOcclusionTexture = textureLoader.load(
-//   "../../../static/textures/door/ambientOcclusion.jpg"
+//   "../../../textures/door/ambientOcclusion.jpg"
 // );
 // const metalnessTexture = textureLoader.load(
-//   "../../../static/textures/door/metalness.jpg"
+//   "../../../textures/door/metalness.jpg"
 // );
 // const roughnessTexture = textureLoader.load(
-//   "../../../static/textures/door/roughness.jpg"
+//   "../../../textures/door/roughness.jpg"
 // );
 
 // Repeat

@@ -9,7 +9,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
  * Loaders
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("./draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -79,12 +79,12 @@ const updateALlMaterials = () => {
  * Environment Map
  */
 const environmentMap = cubeTextureLoader.load([
-  "./static/textures/environmentMaps/0/px.jpg",
-  "./static/textures/environmentMaps/0/nx.jpg",
-  "./static/textures/environmentMaps/0/py.jpg",
-  "./static/textures/environmentMaps/0/ny.jpg",
-  "./static/textures/environmentMaps/0/pz.jpg",
-  "./static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 environmentMap.encoding = THREE.sRGBEncoding;
 
@@ -105,7 +105,7 @@ gui
 // 1.FlightHelmet Models
 
 // gltfLoader.load(
-//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   "./models/FlightHelmet/glTF/FlightHelmet.gltf",
 //   (gltf) => {
 //     gltf.scene.scale.set(10, 10, 10);
 //     gltf.scene.position.set(0, -4, 0);
@@ -124,7 +124,7 @@ gui
 // );
 
 // 2.Hamburger Models
-gltfLoader.load("./static/models/Hamburger-1/Hamburger.glb", (gltf) => {
+gltfLoader.load("../../../models/Hamburger-1/Hamburger.glb", (gltf) => {
   gltf.scene.scale.set(0.3, 0.3, 0.3);
   gltf.scene.position.set(0, -1, 0);
   gltf.scene.rotation.y = Math.PI * 0.5;

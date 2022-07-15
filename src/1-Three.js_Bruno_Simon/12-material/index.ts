@@ -24,41 +24,41 @@ const scene = new THREE.Scene();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 
 const environmentMapTexture = cubeTextureLoader.load([
-  "../../../static/textures/environmentMaps/0/px.jpg",
-  "../../../static/textures/environmentMaps/0/nx.jpg",
-  "../../../static/textures/environmentMaps/0/py.jpg",
-  "../../../static/textures/environmentMaps/0/ny.jpg",
-  "../../../static/textures/environmentMaps/0/pz.jpg",
-  "../../../static/textures/environmentMaps/0/nz.jpg",
+  "../../../textures/environmentMaps/0/px.jpg",
+  "../../../textures/environmentMaps/0/nx.jpg",
+  "../../../textures/environmentMaps/0/py.jpg",
+  "../../../textures/environmentMaps/0/ny.jpg",
+  "../../../textures/environmentMaps/0/pz.jpg",
+  "../../../textures/environmentMaps/0/nz.jpg",
 ]);
 
 // const textureLoader = new THREE.TextureLoader();
 // const doorColorTexture = textureLoader.load(
-//   "../../../static/textures/door/color.jpg"
+//   "../../../textures/door/color.jpg"
 // );
 // const doorHeightTexture = textureLoader.load(
-//   "../../../static/textures/door/height.jpg"
+//   "../../../textures/door/height.jpg"
 // );
 // const doorNormalTexture = textureLoader.load(
-//   "../../../static/textures/door/normal.jpg"
+//   "../../../textures/door/normal.jpg"
 // );
 // const doorAlphaTexture = textureLoader.load(
-//   "../../../static/textures/door/alpha.jpg"
+//   "../../../textures/door/alpha.jpg"
 // );
 // const doorAmbientOcclusionTexture = textureLoader.load(
-//   "../../../static/textures/door/ambientOcclusion.jpg"
+//   "../../../textures/door/ambientOcclusion.jpg"
 // );
 // const doorMetalnessTexture = textureLoader.load(
-//   "../../../static/textures/door/metalness.jpg"
+//   "../../../textures/door/metalness.jpg"
 // );
 // const doorRoughnessTexture = textureLoader.load(
-//   "../../../static/textures/door/roughness.jpg"
+//   "../../../textures/door/roughness.jpg"
 // );
 // const matcapTexture = textureLoader.load(
-//   "../../../static/textures/matcaps/1.png"
+//   "../../../textures/matcaps/1.png"
 // );
 // const gradientTexture = textureLoader.load(
-//   "../../../static/textures/gradients/3.jpg"
+//   "../../../textures/gradients/3.jpg"
 // );
 
 // gradientTexture.generateMipmaps = false;

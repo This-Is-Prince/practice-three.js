@@ -39,7 +39,7 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load("../../../static/textures/flag-indian.png");
+const texture = textureLoader.load("../../../textures/flag-indian.png");
 
 /**
  * Objects

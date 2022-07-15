@@ -13,12 +13,12 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 //   console.log("image loaded");
 //   texture.needsUpdate = true;
 // };
-// image.src = "./static/textures/door/color.jpg";
+// image.src = "./textures/door/color.jpg";
 
 // -----> 2.way
 // const textureLoader = new THREE.TextureLoader();
 // const texture = textureLoader.load(
-//   "./static/textures/door/color.jpg",
+//   "./textures/door/color.jpg",
 //   () => {
 //     console.log("load");
 //   },
@@ -45,25 +45,25 @@ loadingManager.onError = () => {
   console.log("onError");
 };
 const textureLoader = new THREE.TextureLoader(loadingManager);
-// const colorTexture = textureLoader.load("./static/textures/door/color.jpg");
-const colorTexture = textureLoader.load("./static/textures/minecraft.png");
+// const colorTexture = textureLoader.load("./textures/door/color.jpg");
+const colorTexture = textureLoader.load("./textures/minecraft.png");
 // const colorTexture = textureLoader.load(
-//   "./static/textures/checkerboard-8x8.png"
+//   "./textures/checkerboard-8x8.png"
 // );
 // const colorTexture = textureLoader.load(
-//   "./static/textures/checkerboard-1024x1024.png"
+//   "./textures/checkerboard-1024x1024.png"
 // );
-// const alphaTexture = textureLoader.load("./static/textures/door/alpha.jpg");
-// const heightTexture = textureLoader.load("./static/textures/door/height.jpg");
-// const normalTexture = textureLoader.load("./static/textures/door/normal.jpg");
+// const alphaTexture = textureLoader.load("./textures/door/alpha.jpg");
+// const heightTexture = textureLoader.load("./textures/door/height.jpg");
+// const normalTexture = textureLoader.load("./textures/door/normal.jpg");
 // const ambientOcclusionTexture = textureLoader.load(
-//   "./static/textures/door/ambientOcclusion.jpg"
+//   "./textures/door/ambientOcclusion.jpg"
 // );
 // const metalnessTexture = textureLoader.load(
-//   "./static/textures/door/metalness.jpg"
+//   "./textures/door/metalness.jpg"
 // );
 // const roughnessTexture = textureLoader.load(
-//   "./static/textures/door/roughness.jpg"
+//   "./textures/door/roughness.jpg"
 // );
 
 //----- Transforming Texture

@@ -35,7 +35,7 @@ window.addEventListener("resize", () => {
  *  Loader
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("./draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
@@ -43,7 +43,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
  * Fox Model
  */
 let mixer: THREE.AnimationMixer;
-gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
+gltfLoader.load("./models/Fox/glTF/Fox.gltf", (gltf) => {
   mixer = new THREE.AnimationMixer(gltf.scene);
   const action = mixer.clipAction(gltf.animations[2]);
   action.play();
@@ -57,7 +57,7 @@ gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
 
 // ----1.way
 // gltfLoader.load(
-//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   "./models/FlightHelmet/glTF/FlightHelmet.gltf",
 //   (gltf) => {
 //     // console.log(gltf.scene);
 //     // scene.add(gltf.scene.children[0]);
@@ -80,26 +80,26 @@ gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
  * Duck Model
  */
 // ---- 1.type
-// const model = gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+// const model = gltfLoader.load("./models/Duck/glTF/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 
 // ---- 2.type
-// gltfLoader.load("./static/models/Duck/glTF-Binary/Duck.glb", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF-Binary/Duck.glb", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 
 // ---- 3.type
-// gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene);
 // });
 
-// gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene);
 // });
 
 // ---- 4.type
-// gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 

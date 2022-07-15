@@ -23,7 +23,7 @@ const loadingManager = new THREE.LoadingManager();
  * Texture Loader
  */
 const textureLoader = new THREE.TextureLoader(loadingManager);
-const matcapTexture = textureLoader.load("./static/textures/matcaps/1.png");
+const matcapTexture = textureLoader.load("./textures/matcaps/1.png");
 
 /**
  * Font Loader
@@ -31,7 +31,7 @@ const matcapTexture = textureLoader.load("./static/textures/matcaps/1.png");
 
 const fontLoader = new FontLoader(loadingManager);
 
-fontLoader.load("./static/fonts/helvetiker_regular.typeface.json", (font) => {
+fontLoader.load("./fonts/helvetiker_regular.typeface.json", (font) => {
   const textGeometry = new TextGeometry("Hello Three.js", {
     font: font,
     size: 0.5,

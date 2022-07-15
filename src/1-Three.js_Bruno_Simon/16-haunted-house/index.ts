@@ -24,53 +24,53 @@ scene.fog = fog;
 const textureLoader = new THREE.TextureLoader();
 
 const doorColorTexture = textureLoader.load(
-  "../../../static/textures/door/color.jpg"
+  "../../../textures/door/color.jpg"
 );
 const doorAlphaTexture = textureLoader.load(
-  "../../../static/textures/door/alpha.jpg"
+  "../../../textures/door/alpha.jpg"
 );
 const doorHeightTexture = textureLoader.load(
-  "../../../static/textures/door/height.jpg"
+  "../../../textures/door/height.jpg"
 );
 const doorNormalTexture = textureLoader.load(
-  "../../../static/textures/door/normal.jpg"
+  "../../../textures/door/normal.jpg"
 );
 const doorAmbientOcclusionTexture = textureLoader.load(
-  "../../../static/textures/door/ambientOcclusion.jpg"
+  "../../../textures/door/ambientOcclusion.jpg"
 );
 const doorMetalnessTexture = textureLoader.load(
-  "../../../static/textures/door/metalness.jpg"
+  "../../../textures/door/metalness.jpg"
 );
 const doorRoughnessTexture = textureLoader.load(
-  "../../../static/textures/door/roughness.jpg"
+  "../../../textures/door/roughness.jpg"
 );
 
 // Bricks Textures
 const bricksColorTexture = textureLoader.load(
-  "../../../static/textures/bricks/color.jpg"
+  "../../../textures/bricks/color.jpg"
 );
 const bricksAmbientOcclusionTexture = textureLoader.load(
-  "../../../static/textures/bricks/ambientOcclusion.jpg"
+  "../../../textures/bricks/ambientOcclusion.jpg"
 );
 const bricksNormalTexture = textureLoader.load(
-  "../../../static/textures/bricks/normal.jpg"
+  "../../../textures/bricks/normal.jpg"
 );
 const bricksRoughnessTexture = textureLoader.load(
-  "../../../static/textures/bricks/roughness.jpg"
+  "../../../textures/bricks/roughness.jpg"
 );
 
 // Grass Textures
 const grassColorTexture = textureLoader.load(
-  "../../../static/textures/grass/color.jpg"
+  "../../../textures/grass/color.jpg"
 );
 const grassAmbientOcclusionTexture = textureLoader.load(
-  "../../../static/textures/grass/ambientOcclusion.jpg"
+  "../../../textures/grass/ambientOcclusion.jpg"
 );
 const grassNormalTexture = textureLoader.load(
-  "../../../static/textures/grass/normal.jpg"
+  "../../../textures/grass/normal.jpg"
 );
 const grassRoughnessTexture = textureLoader.load(
-  "../../../static/textures/grass/roughness.jpg"
+  "../../../textures/grass/roughness.jpg"
 );
 
 grassColorTexture.repeat.set(8, 8);

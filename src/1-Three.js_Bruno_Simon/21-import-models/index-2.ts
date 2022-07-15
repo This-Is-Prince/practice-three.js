@@ -40,35 +40,35 @@ const scene = new THREE.Scene();
  * Models
  */
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("./static/draco/");
+dracoLoader.setDecoderPath("./draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 // ######## 1.Duck Model
 
 // ------1.GLTF
-// gltfLoader.load("./static/models/Duck/glTF/Duck.gltf", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 
 // ------2.GLTF Binary
-// gltfLoader.load("./static/models/Duck/glTF-Binary/Duck.glb", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF-Binary/Duck.glb", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 
 // ------3.GLTF Draco
-// gltfLoader.load("./static/models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF-Draco/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 
 // ------4.GLTF Embedded
-// gltfLoader.load("./static/models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
+// gltfLoader.load("./models/Duck/glTF-Embedded/Duck.gltf", (gltf) => {
 //   scene.add(gltf.scene.children[0]);
 // });
 
 // ######## 2.FlightHelmet Model
 // gltfLoader.load(
-//   "./static/models/FlightHelmet/glTF/FlightHelmet.gltf",
+//   "./models/FlightHelmet/glTF/FlightHelmet.gltf",
 //   (gltf) => {
 //     scene.add(gltf.scene);
 //   }
@@ -76,7 +76,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
 
 // ######## 3.Fox Model
 let mixer: THREE.AnimationMixer;
-gltfLoader.load("./static/models/Fox/glTF/Fox.gltf", (gltf) => {
+gltfLoader.load("./models/Fox/glTF/Fox.gltf", (gltf) => {
   mixer = new THREE.AnimationMixer(gltf.scene);
   const action = mixer.clipAction(gltf.animations[1]);
 
